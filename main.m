@@ -1,4 +1,6 @@
+%MAIN
 
+%% Setup
 
 xN = 2^7;
 xL = 10*pi;
@@ -10,65 +12,39 @@ yL = 1*pi;
 yS = yL/yN;
 y = linspace(yS,yL,yN);
 
-L = [xL, yL];
+H0 = 1 ...
+    + 0.10*rand() * cos(4*y + pi*rand())...
+    + 0.02*rand() * cos(x + pi*rand())...
+    + 0.05*rand() * cos(x + 4*y + rand())...
+    + 0.05*rand() * cos(x - 4*y + rand());
 
-H0 = 1 + ...
-    0.1*rand() * (cos(4*y + pi*rand()) + 1.1) + ...
-    0.02*rand() * (cos(x + pi*rand()) + 1.1) + ...
-    0.05*rand() * (cos(x + 4*y + rand()) + 1.1) + ...
-    0.05*rand() * (cos(x - 4*y + rand()) + 1.1);
+% delta, theta, Re, We, C
+params = [1,pi/2,1,0,1];
 
-%%
-% plot_surface(x,y,H0)
-% 
-% gradH = grad(H0,L);
-% 
-% plot_surface(x,y,gradH(:,:,1));
-% 
-% plot_surface(x,y,gradH(:,:,2));
-% 
-% lapH = lap(H0,L);
-% 
-% plot_surface(x,y,lapH);
-% 
-% RH = R(H0,L);
-% 
-% plot_surface(x,y,RH);
-% 
-% F = f_benney(H0,L,[1,1,1,1,1]);
-% 
-% plot_surface(x,y,F);
+tFinal = 1;
 
-%%
-params = [1,1,1,1,1];
 
-tFinal = 10;
+%% Solve
 
 tic
-[H, ~, t] = compute_numerical_solution2(@f_benney, params, H0, tFinal, L, [xN, yN], 1e-3);
+[H, ~, t] = solver(@f_benney, params, H0, tFinal, [xL, yL], [xN, yN], @(~,H) is_dewetted(H), 1e-3);
 toc
 
-%%
+%% Plot overview
+
 plot_surface(x,y,H(:,:,1));
 
 plot_surface(x,y,H(:,:,end));
 
+figure
+plot(t, squeeze(sum((H-1).^2 * xS * yS,[1,2])))
 
-%%
+%% Plot specific
 
 plot_surface(x,y,H(:,:,90));
 
 
-%%
+%% Save
+
 filename = replace(sprintf('data-%g-%g-%g-%g-%g.mat',params),'.','_');
 save(filename,'H','H0','params','t','x','y');
-
-%%
-function plot_surface(x,y,H)
-    figure
-    [X, Y] = meshgrid(x,y);
-    surf(X,Y,H');
-    xlabel('x')
-    ylabel('y')
-    shading interp
-end 

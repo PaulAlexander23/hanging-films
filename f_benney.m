@@ -6,9 +6,10 @@ function F = f_benney(H,L,params)
     We = params(4);
     C = params(5);
     
+    
     e1 = zeros(1,1,2);
     e1(1,1,1) = 1;
-    Hx = compute_diff_ps(H,1,L(1));
+    Hx = diff_ps(H,1,L(1));
     
     P = H * cot(theta) - We * R(H, L) - 1/2 * 1/C * lap(H, L);
     F = div(...

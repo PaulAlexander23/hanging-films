@@ -18,14 +18,11 @@ function out = R(H, L, suppression)
 
     % Apply fractional Laplacian
     [Kx,Ky] = meshgrid(ky,kx);
-    
     RHF = sqrt(Kx.^2 + Ky.^2) .* HF;
 
     % Posterior suppression
-    % HFx(abs(HFx) < suppression*N*2) = 0 ;
-    % HFx(abs(HFx) < suppression*max(abs(HFx))) = 0 ;
-    % HFy(abs(HFy) < suppression*N*2) = 0 ;
-    % HFy(abs(HFy) < suppression*max(abs(HFy))) = 0 ;
+    % HF(abs(HF) < suppression*Nx*Ny*2) = 0 ;
+    % HF(abs(HF) < suppression*max(abs(HF))) = 0 ;
     
     % Transform back into real space
     out = ifft2(RHF);
