@@ -1,4 +1,4 @@
-function dy = compute_diff_ps(y, degree, xL, suppression)
+function dy = diff_ps(y, degree, xL, suppression)
     %DIFF_PSEUDO_SPECTRAL Uses the pseudo-spectral method to differentiate
     %   Detailed explanation goes here
     if nargin < 4
