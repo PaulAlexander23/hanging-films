@@ -1,6 +1,11 @@
 ## Tasks:
-- [ ] Write up equation.
-- [ ] Rederive the equation.
+- [ ] Write linear test
+- [ ] Write volume test
+- [ ] Write Lyapunov test
+- [ ] Write resolution test
+- [ ] Write test for independence of Re
+- [ ] Write script to automate running a parameter set
+- [ ] Write a script to automate running on the cluster
 - [x] Implement equation in matlab
 - [x] Write up the code to solve the equation.
 - [x] Add test script.

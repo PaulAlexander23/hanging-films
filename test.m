@@ -1,51 +1,74 @@
 %TEST Testing code for the pseudo-spectral Benney-type equation solver.
 
-reset;
+clear;
 clc;
 
-%% Setup
-xN = 2^7;
-xL = 10*pi;
-xS = xL/xN;
-x = linspace(xS,xL,xN)';
-
-yN = 2^5;
-yL = 1*pi;
-yS = yL/yN;
-y = linspace(yS,yL,yN);
+setup;
 
 L = [xL, yL];
 
-H0 = 1 + ...
-    0.1*rand() * (cos(4*y + pi*rand()) + 1.1) + ...
-    0.02*rand() * (cos(x + pi*rand()) + 1.1) + ...
-    0.05*rand() * (cos(x + 4*y + rand()) + 1.1) + ...
-    0.05*rand() * (cos(x - 4*y + rand()) + 1.1);
+H1 = 1 + sin(2*pi*x/xL + 4*pi*y/yL);
 
 %%
 
 plot_surface(x,y,H0)
 
-gradH = grad(H0,L);
+plot_surface(x,y,H1)
 
-plot_surface(x,y,gradH(:,:,1));
+%% Grad
 
-plot_surface(x,y,gradH(:,:,2));
+gradH0 = grad(H0,L);
 
-lapH = lap(H0,L);
+plot_surface(x,y,gradH0(:,:,1));
+plot_surface(x,y,gradH0(:,:,2));
 
-plot_surface(x,y,lapH);
+gradH1 = grad(H1,L);
 
-RH = R(H0,L);
+plot_surface(x,y,gradH1(:,:,1));
+plot_surface(x,y,gradH1(:,:,2));
 
-plot_surface(x,y,RH);
+%% Laplacian
 
-F = f_benney(H0,L,[1,1,1,1,1]);
+lapH0 = lap(H0,L);
 
-plot_surface(x,y,F);
+plot_surface(x,y,lapH0);
 
-%%
+lapH1 = lap(H1,L);
 
-tic
-[H, ~, t] = solver(@f_benney, params, H0, tFinal, L, [xN, yN], @(~,H) is_dewetted(H), 1e-3);
-toc
+plot_surface(x,y,lapH1);
+
+%% R
+
+RH0 = R(H0,L);
+
+plot_surface(x,y,RH0);
+
+RH1 = R(H1,L);
+
+plot_surface(x,y,RH1);
+
+%% F
+
+F0 = f_benney(H0,L,[1,1,1,1,1]);
+
+plot_surface(x,y,F0);
+
+F1 = f_benney(H1,L,[1,1,1,1,1]);
+
+plot_surface(x,y,F1);
+
+%%% Linear
+%
+%tic
+%[H, ~, t] = solver(@f_benney, params, H0, tFinal, L, [xN, yN], @(~,H) is_dewetted(H), 1e-3);
+%toc
+%
+%%% Hanging film is independent of Re
+%
+%%% Lyapanov expontent
+%
+%
+%
+%%% Volume conservation
+%
+%%% Resolution decrease, increases accuracy
