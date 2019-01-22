@@ -1,28 +1,6 @@
 %MAIN
 
-%% Setup
-
-xN = 2^7;
-xL = 10*pi;
-xS = xL/xN;
-x = linspace(xS,xL,xN)';
-
-yN = 2^5;
-yL = 1*pi;
-yS = yL/yN;
-y = linspace(yS,yL,yN);
-
-H0 = 1 ...
-    + 0.10*rand() * cos(4*y + pi*rand())...
-    + 0.02*rand() * cos(x + pi*rand())...
-    + 0.05*rand() * cos(x + 4*y + rand())...
-    + 0.05*rand() * cos(x - 4*y + rand());
-
-% delta, theta, Re, We, C
-params = [1,pi/2,1,0,1];
-
-tFinal = 1;
-
+setup;
 
 %% Solve
 
