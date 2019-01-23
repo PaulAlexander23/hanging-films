@@ -25,24 +25,24 @@ do
     
         fileout="$HOME/pbs_scripts/run-d-$delta-theta-$theta-Re-$Re-We-$We-C-$C-xL-$xL-yL-$yL-T-$T.pbs"
         echo "#!/bin/sh
-        #PBS -l walltime=24:00:00
-        #PBS -l select=1:ncpus=1:mem=4gb
-        
-        echo Loading matlab
-        module load matlab
-        
-        echo Copying directory
-        cp $HOME/colab-ruben-benney $TMPDIR -r
-        
-        echo Moving into directory
-        cd colab-ruben-benney
-        
-        echo Running matlab command
-        matlab -nodesktop -nojvm -r 'create($delta,$theta,$Re,$We,$C,$xL,$yL,$T); quit'
-        
-        cp data-* \$WORK/
-        
-        echo Complete
+#PBS -l walltime=24:00:00
+#PBS -l select=1:ncpus=1:mem=4gb
+
+echo Loading matlab
+module load matlab
+
+echo Copying directory
+cp $HOME/colab-ruben-benney $TMPDIR -r
+
+echo Moving into directory
+cd colab-ruben-benney
+
+echo Running matlab command
+matlab -nodesktop -nojvm -r 'create($delta,$theta,$Re,$We,$C,$xL,$yL,$T); quit'
+
+cp data-* \$WORK/
+
+echo Complete
         " > $fileout
         
         if [ $run = true ]
