@@ -27,6 +27,6 @@ function create(delta,theta,Re,We,C,xL,yL,tFinal)
     [H, ~, t] = solver(@f_benney, params, H0, tFinal, [xL, yL], [xN, yN], @(~,H) is_dewetted(H), 1e-3);
     toc
     
-    filename = replace(sprintf('data-d-%g-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g.mat',[params,xL,yL,T),'.','_');
+    filename = replace(sprintf('data-d-%g-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g.mat',[params,xL,yL,T]),'.','_');
     save(filename,'H','params','t','x','y');
 end
