@@ -1,4 +1,5 @@
 ## Tasks:
+- [ ] Write scripts to analyse data: Lyapunov exponent
 - [ ] Write linear test
 - [ ] Write volume test
 - [ ] Write Lyapunov test
@@ -10,3 +11,4 @@
 - [x] Improve initial condition.
 - [x] Write script to automate running a parameter set
 - [x] Write a script to automate running on the cluster
+- [x] Write scripts to analyse data: Volume, Fourier series, Energy
