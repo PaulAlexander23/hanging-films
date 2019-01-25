@@ -20,7 +20,7 @@ function [y, x, t] = solver(F, params, ic, tFinal, xL, xN, evnt, RelTol)
     
     function [value, isterminal, direction] = event(t,y)
         Y = reshape(y,shape);
-        value = evnt(t,Y);
+        value = 2*evnt(t,Y) - 1;
         isterminal = 1; % Terminal
         direction = 0; % Any approach direction
     end
