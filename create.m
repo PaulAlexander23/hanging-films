@@ -3,11 +3,11 @@ function create(delta,theta,Re,We,C,xL,yL,T)
     % delta, theta, Re, We, C
     params = [delta,theta,Re,We,C];
     
-    xN = 2^7;
+    xN = 2^8;
     xS = xL/xN;
     x = linspace(xS,xL,xN)';
     
-    yN = 2^7;
+    yN = 2^8;
     yS = yL/yN;
     y = linspace(yS,yL,yN);
     
@@ -24,9 +24,9 @@ function create(delta,theta,Re,We,C,xL,yL,T)
         + sum(1e-4 * R3 .* cos(V(1,1,:,1) .* x - V(1,1,:,2) .* y + 2*pi*R4),3);
 
     tic
-    [H, ~, t] = solver(@f_benney, params, H0, T, [xL, yL], [xN, yN], @(~,H) is_wetted(H), 1e-3);
-    toc
+    [H, ~, t] = solver(@f_benney, params, H0, T, [xL, yL], [xN, yN], @(~,H) is_wetted(H), 1e-5);
+    timeTaken = toc
     
-    filename = replace(sprintf('data-d-%g-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g.mat',[params,xL,yL,T]),'.','_');
-    save(filename,'H','params','t','x','y');
+    filename = replace(sprintf('data-d-%g-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g',[params,xL,yL,T]),'.','_');
+    save(filename,'H','params','t','x','y','timeTaken');
 end
