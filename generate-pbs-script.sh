@@ -26,7 +26,7 @@ do
         fileout="$HOME/pbs_scripts/run-d-$delta-theta-$theta-Re-$Re-We-$We-C-$C-xL-$xL-yL-$yL-T-$T.pbs"
         echo "#!/bin/sh
 #PBS -l walltime=24:00:00
-#PBS -l select=1:ncpus=1:mem=4gb
+#PBS -l select=1:ncpus=8:mem=8gb
 
 echo Loading matlab
 module load matlab
