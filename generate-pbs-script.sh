@@ -32,7 +32,7 @@ echo Loading matlab
 module load matlab
 
 echo Copying directory
-cp $HOME/colab-ruben-benney $TMPDIR -r
+cp \$HOME/colab-ruben-benney \$TMPDIR -r
 
 echo Moving into directory
 cd colab-ruben-benney
