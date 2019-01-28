@@ -3,11 +3,11 @@ function create(delta,theta,Re,We,C,xL,yL,T)
     % delta, theta, Re, We, C
     params = [delta,theta,Re,We,C];
     
-    xN = 2^8;
+    xN = 2^7;
     xS = xL/xN;
     x = linspace(xS,xL,xN)';
     
-    yN = 2^8;
+    yN = 2^7;
     yS = yL/yN;
     y = linspace(yS,yL,yN);
     

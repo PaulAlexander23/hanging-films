@@ -12,6 +12,7 @@ function [y, x, t] = solver(F, params, ic, tFinal, xL, xN, evnt, RelTol)
     for k = 1:dim
         x{k} = linspace(xS(k), xL(k), xN(k))';
     end
+    tStep = 0.125;
     
     shape = size(ic);
     ic = reshape(ic, [prod(shape),1]);
@@ -32,7 +33,7 @@ function [y, x, t] = solver(F, params, ic, tFinal, xL, xN, evnt, RelTol)
         ...'OutputFcn','odeprint',...
         'RelTol',RelTol); % Default: 1e-3
     
-    [t, y] = ode15s(func, [0,tFinal], ic, options);
+    [t, y] = ode15s(func, 0:tStep:tFinal, ic, options);
     y = y';
     
     y = reshape(y,[shape,length(t)]);
