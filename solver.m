@@ -25,12 +25,18 @@ function [y, x, t] = solver(F, params, ic, tFinal, xL, xN, evnt, RelTol)
         isterminal = 1; % Terminal
         direction = 0; % Any approach direction
     end
-    
+
+    function [status] = outputfunction(t,y,flags)
+        whos;
+        status = 0;
+    end
+
     options = odeset(...
         ...'Vectorized','on',...
         'BDF','on',... % Backward differentiation formulae
         'Event', @(t,y) event(t,y),...
         ...'OutputFcn','odeprint',...
+        'OutputFcn',@outputfunction,...
         'RelTol',RelTol); % Default: 1e-3
     
     [t, y] = ode15s(func, 0:tStep:tFinal, ic, options);
