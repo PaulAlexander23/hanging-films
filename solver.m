@@ -39,8 +39,11 @@ function [y, x, t] = solver(F, params, ic, tFinal, xL, xN, evnt, RelTol)
         'OutputFcn',@outputfunction,...
         'RelTol',RelTol); % Default: 1e-3
     
-    [t, y] = ode15s(func, 0:tStep:tFinal, ic, options);
-    y = y';
+    %[t, y] = ode15s(func, 0:tStep:tFinal, ic, options);
+    %y = y';
+    
+    t = 0:tStep:tFinal;
+    y = bdf_lmb(func, t, ic);
     
     y = reshape(y,[shape,length(t)]);
     
