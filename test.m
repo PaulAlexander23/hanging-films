@@ -7,7 +7,7 @@ setup;
 
 L = [xL, yL];
 
-H1 = 1 + sin(2*pi*x/xL + 4*pi*y/yL);
+H1 = 1 + 0.1*sin(2*pi*x/xL + 4*pi*y/yL);
 
 %%
 
@@ -33,6 +33,8 @@ lapH0 = lap(H0,L);
 
 plot_surface(x,y,lapH0);
 
+err = lapH0 + 2 * cos(x + y);
+
 lapH1 = lap(H1,L);
 
 plot_surface(x,y,lapH1);
@@ -53,7 +55,7 @@ F0 = f_benney(H0,L,[1,1,1,1,1]);
 
 plot_surface(x,y,F0);
 
-F1 = f_benney(H1,L,[1,1,1,1,1]);
+F1 = f_benney(H1,L,[1,1,1,1,1000]);
 
 plot_surface(x,y,F1);
 
