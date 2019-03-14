@@ -12,7 +12,7 @@ function [y, x, t] = solver(F, params, ic, tFinal, xL, xN, evnt, RelTol)
     for k = 1:dim
         x{k} = linspace(xS(k), xL(k), xN(k))';
     end
-    tStep = 0.125;
+    tStep = 0.125/100;
     
     shape = size(ic);
     ic = reshape(ic, [prod(shape),1]);
@@ -27,24 +27,34 @@ function [y, x, t] = solver(F, params, ic, tFinal, xL, xN, evnt, RelTol)
     end
 
     function [status] = outputfunction(t,y,flags)
-        whos;
+        %whos;
         status = 0;
     end
 
     options = odeset(...
         ...'Vectorized','on',...
-        'BDF','on',... % Backward differentiation formulae
-        'Event', @(t,y) event(t,y),...
+        ...'BDF','on',... % Backward differentiation formulae
+        ...'Event', @(t,y) event(t,y),...
         ...'OutputFcn','odeprint',...
-        'OutputFcn',@outputfunction,...
-        'RelTol',RelTol); % Default: 1e-3
+        ...'OutputFcn',@outputfunction,...
+        'RelTol',RelTol...
+        ); % Default: 1e-3
     
+<<<<<<< Updated upstream
     %[t, y] = ode15s(func, 0:tStep:tFinal, ic, options);
     %y = y';
     
     t = 0:tStep:tFinal;
     y = bdf_lmb(func, t, ic);
+=======
+    %[t, y] = ode23tb(func, 0:tStep:tFinal, ic, options);
+    %y = y';
+>>>>>>> Stashed changes
     
-    y = reshape(y,[shape,length(t)]);
+    t = 0:tStep:tFinal;
+    y = ab1(func, t, ic);
+    
+    
+    y = squeeze(reshape(y,[shape,length(t)]));
     
 end
