@@ -12,7 +12,7 @@ function plot_log_fourier(H,L)
 
     [X,Y] = meshgrid(kx,ky);
 
-    surf(X,Y,log10(abs(real(HF))/Nx/Ny))
+    surf(X,Y,log10(abs(real(HF'))/Nx/Ny))
     
     shading interp
 end
