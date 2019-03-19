@@ -1,5 +1,5 @@
 function out = is_dewetted(H)
    
-    out = any(any(H < 0));
+    out = any(H < 0,'all');
     
 end
