@@ -1,4 +1,4 @@
-function [y, t] = solver(pdefun, t, x, y0, method, timestepper, options)
+function [y, t] = solver(pdefun, t, x, y0, method, timestepper)
     %SOLVER Computes the numerical solution up to tFinal
     %   Detailed explanation goes here
     

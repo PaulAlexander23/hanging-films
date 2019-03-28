@@ -15,18 +15,18 @@ for n = 1:dim
 end
 
 %% SETUP t
-
-tL = 1;
-tN = 10;
+tL = 100;
+tN = 1000;
 tS = tL/tN;
 t = 0:tS:tL;
 
 %% SETUP y0
-% A = 1e-1;
+A = 2e-1;
+r = 0.05;
 % y0 = 1 + A * (-cos(2*pi/xL(1) * x{1}) + 0*x{2}');
-% y0 = 1 + A * (-cos(2*pi/xL(1) * x{1}) + sin(2*pi/xL(2) * x{2}'));
+y0 = 1 + A * (-r*cos(2*pi/xL(1) * x{1}) - cos(2*pi/xL(2) * x{2}'));
 
-y0 = h0;
+% y0 = h0;
 
 % V = zeros(1,1,25,2);
 % V(1,1,:,:) = combvec(1:5,1:5)';
@@ -35,10 +35,10 @@ y0 = h0;
 % R3 = rand(1,1,25);
 % R4 = rand(1,1,25);
 % y0 = 1 ...
-%     + sum(1e-4 * R1 .* cos(V(1,1,:,1) .* x{1}' + V(1,1,:,2) .* x{2} + 2*pi*R2),3)...
-%     + sum(1e-4 * R3 .* cos(V(1,1,:,1) .* x{1}' - V(1,1,:,2) .* x{2} + 2*pi*R4),3);
+%     + sum(A * R1 .* cos(V(1,1,:,1) .* x{1} + V(1,1,:,2) .* x{2}' + 2*pi*R2),3)...
+%     + sum(A * R3 .* cos(V(1,1,:,1) .* x{1} - V(1,1,:,2) .* x{2}' + 2*pi*R4),3);
 
-% plot_surface(x,y0')
+plot_surface(x,y0')
 
 %% SETUP problem
 params = [1,7*pi/8,1.0,0,0.01]; % delta, theta, Re, We, C
@@ -57,47 +57,42 @@ pdefun = @(t,x,y,method) benney(x,y,params,method,getD);
 
 %% SETUP timestepping method
 
-% options = optimoptions('fsolve',...
-%    'SpecifyObjectiveGradient',true,...
-%    'Display','off');
-% optimmethod = @(fun,x0) fsolve(fun,x0,options);
-optimmethod = @newton;
+options = optimoptions('fsolve',...
+   'SpecifyObjectiveGradient',true,...
+   'Display','off');
+optimmethod = @(fun,x0) fsolve(fun,x0,options);
+% optimmethod = @newton;
 timestepper = @(odefun,t,y0) bdf3(odefun,t,y0,optimmethod);
 
-evnt = @(~,H) is_dewetted(H);
-
-RelTol = 1e-3;
-options = odeset(...
-    ...'Vectorized','on',...
-    ...'BDF','on',... % Backward differentiation formulae
-    'Event',@(t,y) event(t,y),...
-    ...'OutputFcn','odeprint',...
-    'OutputFcn',@outputfunction,...
-    'RelTol',RelTol...
-    ); % Default: 1e-3
+% evnt = @(~,H) is_dewetted(H);
+% 
+% options = odeset(...
+%     ...'Vectorized','on',...
+%     ...'BDF','on',... % Backward differentiation formulae
+%     'Event',@(t,y) event(t,y),...
+%     ...'OutputFcn','odeprint',...
+%     'OutputFcn',@outputfunction,...
+%     'RelTol',1e-3...% Default: 1e-3
+%     ); 
 
 %% Solve
 tic
-[y, t] = solver(pdefun, t, x, y0, method, timestepper, options);
-toc
+[y, t] = solver(pdefun, t, x, y0, method, timestepper);
+timeTaken = toc
 
 %% Plot overview
 
 plot_surface(x,real(y(:,:,end))');
 
 figure
-plot(t, squeeze(sum((y-1).^2 * x{1}(1) * x{2}(1),[1,2])))
+plot_log_fourier(x,real(y(:,:,end))');
 
-%% Plot specific
-
-plot_surface(x,real(y(:,:,3))');
-
-%plot_surface(x,real(y(:,:,end)-y0)');
-
+figure
+plot(t,log10(squeeze(energy(y,xL))));
 
 %% Save
 
-filename = replace(sprintf('data-%g-%g-%g-%g-%g.mat',params),'.','_');
+filename = replace(sprintf('data-theta-%f-Re-%f-We-%f-C-%f-xL-%f-yL-%f-T-%f',[params(2:end),xL,tL]),'.','_');
 save(filename,'x','t','y','params');
 
 %% Functions
