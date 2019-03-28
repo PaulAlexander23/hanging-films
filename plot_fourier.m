@@ -1,18 +1,18 @@
-function plot_fourier(H,L)
+function plot_fourier(x,y)
 
     % Transform into fourier space
-    HF = fft2(H-1);
+    yf = fft2(y-1);
     
-    Nx = size(HF,1)/2;
-    Ny = size(HF,2)/2;
+    Nx = size(yf,1)/2;
+    Ny = size(yf,2)/2;
 
     % Determine k in matlab form
-    kx = [0:Nx-1, 0, 1-Nx:-1]' * 2*pi/L(1);
-    ky = [0:Ny-1, 0, 1-Ny:-1]' * 2*pi/L(2);
+    kx = [0:Nx-1, 0, 1-Nx:-1]' * 2*pi/x{1}(end);
+    ky = [0:Ny-1, 0, 1-Ny:-1]' * 2*pi/x{2}(end);
 
-    [X,Y] = meshgrid(kx,ky);
+    [X,Y] = meshgrid(ky,kx);
 
-    surf(X,Y,real(HF')/Nx/Ny)
+    surf(X,Y,real(yf)/Nx/Ny)
     
     shading interp
 end
