@@ -1,60 +1,27 @@
-function [y, x, t] = solver(F, params, ic, tFinal, xL, xN, evnt, RelTol)
+function [y, t] = solver(pdefun, t, x, y0, method, timestepper, options)
     %SOLVER Computes the numerical solution up to tFinal
     %   Detailed explanation goes here
     
-    if nargin < 12
-        RelTol = 1e-3;
+    shape = size(y0);
+    y0 = reshape(y0, [prod(shape),1]);
+    
+    function [F,J] = func(pdefun,t,x,y,method,shape)
+        if nargout == 1
+            F = reshape(...
+                pdefun(t, x, reshape(y,shape), method),...
+                [prod(shape),1]);
+        elseif nargout == 2
+            [f,j] = pdefun(t, x, reshape(y,shape), method);
+            F = reshape(f, [prod(shape),1]);
+            J = j;
+        end
     end
     
-    dim = length(xL);
-    xS = xL./xN;
-    x = cell(dim,1);
-    for k = 1:dim
-        x{k} = linspace(xS(k), xL(k), xN(k))';
-    end
-    tStep = 0.125/100;
-    
-    shape = size(ic);
-    ic = reshape(ic, [prod(shape),1]);
-    
-    func = @(t,y) reshape(- F(reshape(y,shape), xL, params), [prod(shape),1]);
-    
-    function [value, isterminal, direction] = event(t,y)
-        Y = reshape(y,shape);
-        value = 2*evnt(t,Y) - 1;
-        isterminal = 1; % Terminal
-        direction = 0; % Any approach direction
-    end
+    y = timestepper(@(t,y) func(pdefun,t,x,y,method,shape),t,y0);
 
-    function [status] = outputfunction(t,y,flags)
-        %whos;
-        status = 0;
+    if isstruct(y)
+        t = y.x;
+        y = y.y;
     end
-
-    options = odeset(...
-        ...'Vectorized','on',...
-        ...'BDF','on',... % Backward differentiation formulae
-        ...'Event', @(t,y) event(t,y),...
-        ...'OutputFcn','odeprint',...
-        ...'OutputFcn',@outputfunction,...
-        'RelTol',RelTol...
-        ); % Default: 1e-3
-    
-<<<<<<< Updated upstream
-    %[t, y] = ode15s(func, 0:tStep:tFinal, ic, options);
-    %y = y';
-    
-    t = 0:tStep:tFinal;
-    y = bdf_lmb(func, t, ic);
-=======
-    %[t, y] = ode23tb(func, 0:tStep:tFinal, ic, options);
-    %y = y';
->>>>>>> Stashed changes
-    
-    t = 0:tStep:tFinal;
-    y = ab1(func, t, ic);
-    
-    
     y = squeeze(reshape(y,[shape,length(t)]));
-    
 end
