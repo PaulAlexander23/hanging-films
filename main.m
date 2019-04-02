@@ -90,6 +90,32 @@ plot_log_fourier(x,real(y(:,:,end))');
 figure
 plot(t,log10(squeeze(energy(y,xL))));
 
+figure
+plot(t,squeeze(min(y,[],[1,2])));
+
+[temp,xI] = min(y);
+[miny,yI] = min(temp);
+xI = xI(yI);
+
+plot(t,squeeze(x{1}(xI)),t,squeeze(x{2}(yI)));
+
+%% Construct other variables
+y_snapshot = y0;
+% y_snapshot = y(:,:,end);
+
+p = construct_pressure(x,y_snapshot,params,method);
+
+[z,u,v,w] = construct_velocity(x,y_snapshot,params,method);
+
+slice = 1;
+
+surf(repmat(x{1},1,size(z(:,slice,:),3)),squeeze(u(:,slice,:)),squeeze(z(:,slice,:)));
+figure
+surf(repmat(x{1},1,size(z(:,slice,:),3)),squeeze(v(:,slice,:)),squeeze(z(:,slice,:)));
+figure
+surf(repmat(x{1},1,size(z(:,slice,:),3)),squeeze(w(:,slice,:)),squeeze(z(:,slice,:)));
+figure
+quiver(squeeze(w(:,slice,:))',squeeze(v(:,slice,:))');
 %% Save
 
 filename = replace(sprintf('data-theta-%f-Re-%f-We-%f-C-%f-xL-%f-yL-%f-T-%f',[params(2:end),xL,tL]),'.','_');
