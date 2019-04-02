@@ -116,6 +116,15 @@ figure
 surf(repmat(x{1},1,size(z(:,slice,:),3)),squeeze(w(:,slice,:)),squeeze(z(:,slice,:)));
 figure
 quiver(squeeze(w(:,slice,:))',squeeze(v(:,slice,:))');
+
+%% Animate
+
+addpath('../plotting/')
+
+F = animate(@(x,y) plot_surface(x,y'),t,x,y);
+
+% movie(F);
+
 %% Save
 
 filename = replace(sprintf('data-theta-%f-Re-%f-We-%f-C-%f-xL-%f-yL-%f-T-%f',[params(2:end),xL,tL]),'.','_');
