@@ -99,6 +99,12 @@ xI = xI(yI);
 
 plot(t,squeeze(x{1}(xI)),t,squeeze(x{2}(yI)));
 
+
+%% H2 norm - Check implemented correctly
+ycell = mat2cell(reshape(y,128^2,409)',ones(409,1));
+
+plot(t,log10(cellfun(@(y) norm_H2(x,y',method),ycell)));
+
 %% Construct other variables
 y_snapshot = y0;
 % y_snapshot = y(:,:,end);
