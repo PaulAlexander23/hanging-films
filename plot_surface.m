@@ -1,5 +1,4 @@
 function plot_surface(x,y)
-    figure
     [X, Y] = meshgrid(x{1},x{2});
     surf(X,Y,y);
     xlabel('x')
