@@ -88,7 +88,7 @@ figure
 plot_log_fourier(x,real(y(:,:,end))');
 
 figure
-plot(t,log10(squeeze(energy(y,xL))));
+plot(t,log10(squeeze(energy(x,y))));
 
 figure
 plot(t,squeeze(min(y,[],[1,2])));
@@ -97,6 +97,7 @@ plot(t,squeeze(min(y,[],[1,2])));
 [miny,yI] = min(temp);
 xI = xI(yI);
 
+figure
 plot(t,squeeze(x{1}(xI)),t,squeeze(x{2}(yI)));
 
 

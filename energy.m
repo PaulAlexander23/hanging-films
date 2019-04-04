@@ -1,10 +1,8 @@
-function E = energy(H,L)
+function E = energy(x, y)
 
-    N = size(H);
-
-    S = L'./N(1:2);
-
-    E = sum(sum((H - 1).^2*prod(S)));
+    dx = cellfun(@(x) x(1), x);
+    
+    E = sum((y - 1).^2*prod(dx),[1,2]);
     
     E = squeeze(E);
 end
