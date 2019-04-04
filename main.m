@@ -7,7 +7,7 @@ addpath("../time-stepping-methods/",...
 %% SETUP x
 dim = 2;
 xL = [32,32];
-xN = [24,40];
+xN = [32,32];
 xS = xL./xN;
 x = cell(dim,1);
 for n = 1:dim
@@ -15,8 +15,8 @@ for n = 1:dim
 end
 
 %% SETUP t
-tL = 100;
-tN = 1000;
+tL = 10;
+tN = 100;
 tS = tL/tN;
 t = 0:tS:tL;
 
@@ -41,7 +41,7 @@ y0 = 1 + A * (-r*cos(2*pi/xL(1) * x{1}) - cos(2*pi/xL(2) * x{2}'));
 plot_surface(x,y0')
 
 %% SETUP problem
-params = [1,7*pi/8,1.0,0,0.01]; % delta, theta, Re, We, C
+params = [1,7*pi/8,1,0.01,0.01]; % delta, theta, Re, We, C
 problemDeg = [1,0;0,1;2,0;0,2]';
 
 % SETUP differentiation method
@@ -62,7 +62,13 @@ options = optimoptions('fsolve',...
    'Display','off');
 optimmethod = @(fun,x0) fsolve(fun,x0,options);
 % optimmethod = @newton;
-timestepper = @(odefun,t,y0) bdf3(odefun,t,y0,optimmethod);
+% timestepper = @(odefun,t,y0) bdf3(odefun,t,y0,optimmethod);
+
+explicitfun = @(t, y) electric_forcing(x,reshape(y,numel(y0),1),params(4));
+timestepper = @(odefun,t,y0) bdf1_semi_implicit(odefun,t,y0,optimmethod,explicitfun);
+
+% odeopt = odeset('BDF',true);
+% timestepper = @(odefun,t,y0) ode15s(odefun,t,y0,odeopt);
 
 % evnt = @(~,H) is_dewetted(H);
 % 
@@ -96,7 +102,6 @@ plot(t,squeeze(min(y,[],[1,2])));
 [temp,xI] = min(y);
 [miny,yI] = min(temp);
 xI = xI(yI);
-
 figure
 plot(t,squeeze(x{1}(xI)),t,squeeze(x{2}(yI)));
 
@@ -134,8 +139,8 @@ F = animate(@(x,y) plot_surface(x,y'),t,x,y);
 
 %% Save
 
-filename = replace(sprintf('data-theta-%f-Re-%f-We-%f-C-%f-xL-%f-yL-%f-T-%f',[params(2:end),xL,tL]),'.','_');
-save(filename,'x','t','y','params');
+% filename = replace(sprintf('data-theta-%f-Re-%f-We-%f-C-%f-xL-%f-yL-%f-T-%f',[params(2:end),xL,tL]),'.','_');
+% save(filename,'x','t','y','params');
 
 %% Functions
 function [value, isterminal, direction] = event(t,y)
