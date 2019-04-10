@@ -1,8 +1,8 @@
-function create(theta,Re,We,C,x_length,y_length,t_final)
+function create(theta,Re,We,C,x_length,y_length,t_final,interface)
     
     dim = 2;
     xL = [x_length,y_length];
-    xN = [32,64];
+    xN = [64,64];
     xS = xL./xN;
     x = cell(dim,1);
     for n = 1:dim
@@ -11,9 +11,7 @@ function create(theta,Re,We,C,x_length,y_length,t_final)
     
     t = [0,t_final];
     
-    A = 2e-1;
-    r = 0.05;
-    y0 = 1 + A * (-r*cos(2*pi/xL(1) * x{1}) - cos(2*pi/xL(2) * x{2}'));
+    y0 = interface(x);
     
     params = [1,theta,Re,We,C]; % delta, theta, Re, We, C
     problemDeg = [1,0;0,1;2,0;0,2]';
@@ -35,7 +33,7 @@ function create(theta,Re,We,C,x_length,y_length,t_final)
     [y, t] = solver(pdefun, t, x, y0, method, timestepper);
     timeTaken = toc
     
-    filename = replace(sprintf('data-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g',[theta,Re,We,C,x_length,y_length,t_final]),'.','_');
+    filename = replace(sprintf('data-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g-interface-%s',theta,Re,We,C,x_length,y_length,t_final,func2str(interface)),'.','_');
     save(filename,'y','params','t','x','timeTaken');
     
     

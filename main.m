@@ -7,7 +7,7 @@ addpath("../time-stepping-methods/",...
 %% SETUP x
 dim = 2;
 xL = [32,32];
-xN = [256,256];
+xN = [64,64];
 xS = xL./xN;
 x = cell(dim,1);
 for n = 1:dim
@@ -21,22 +21,9 @@ tS = tL/tN;
 t = 0:tS:tL;
 
 %% SETUP y0
-A = 2e-1;
-r = 0.05;
-% y0 = 1 + A * (-cos(2*pi/xL(1) * x{1}) + 0*x{2}');
-y0 = 1 + A * (-r*cos(2*pi/xL(1) * x{1}) - cos(2*pi/xL(2) * x{2}'));
 
-% y0 = h0;
-
-% V = zeros(1,1,25,2);
-% V(1,1,:,:) = combvec(1:5,1:5)';
-% R1 = rand(1,1,25);
-% R2 = rand(1,1,25);
-% R3 = rand(1,1,25);
-% R4 = rand(1,1,25);
-% y0 = 1 ...
-%     + sum(A * R1 .* cos(V(1,1,:,1) .* x{1} + V(1,1,:,2) .* x{2}' + 2*pi*R2),3)...
-%     + sum(A * R3 .* cos(V(1,1,:,1) .* x{1} - V(1,1,:,2) .* x{2}' + 2*pi*R4),3);
+interface = @(x) iload(x,'test');
+y0 = irivulet(x);
 
 plot_surface(x,y0')
 
