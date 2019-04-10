@@ -46,40 +46,26 @@ problemDeg = [1,0;0,1;2,0;0,2]';
 
 % SETUP differentiation method
 D = init_fd(x, problemDeg, 2);
-method = @(x,y,deg) diff_fd(x,y,deg,D,problemDeg);
 getD = @(deg) get_fd(deg,D,problemDeg);
-
+method = @(x,y,deg) diff_fd(x,y,deg,D,problemDeg);
 %method = @diff_ps_2d;
 
-%problem = @fbenney;
-%problem = @(x,y,params,method) fbenney2(x,y,params,method,getD);
 pdefun = @(t,x,y,method) benney(x,y,params,method,getD);
 
 %% SETUP timestepping method
 
-options = optimoptions('fsolve',...
-   'SpecifyObjectiveGradient',true,...
-   'Display','off');
-optimmethod = @(fun,x0) fsolve(fun,x0,options);
-% optimmethod = @newton;
-% timestepper = @(odefun,t,y0) bdf3(odefun,t,y0,optimmethod);
+% options = struct( ...
+%     'Jacobian', @(t, y) jbenney(x, y, params, method, getD) ...
+%     );
+% timestepper = @(odefun,t,y0) bdf(odefun,t,y0,options);
 
-explicitfun = @(t, y) electric_forcing(x,reshape(y,numel(y0),1),params(4));
-timestepper = @(odefun,t,y0) bdf1_semi_implicit(odefun,t,y0,optimmethod,explicitfun);
-
-% odeopt = odeset('BDF',true);
-% timestepper = @(odefun,t,y0) ode15s(odefun,t,y0,odeopt);
-
-% evnt = @(~,H) is_dewetted(H);
-% 
-% options = odeset(...
-%     ...'Vectorized','on',...
-%     ...'BDF','on',... % Backward differentiation formulae
-%     'Event',@(t,y) event(t,y),...
-%     ...'OutputFcn','odeprint',...
-%     'OutputFcn',@outputfunction,...
-%     'RelTol',1e-3...% Default: 1e-3
-%     ); 
+odeopt = odeset( ...
+    'Jacobian', @(t, y) jbenney(x, y, params, method, getD), ...
+    'Event', @event_dewetted ...
+    ...'Vectorized','on',...
+    ...'BDF','on',... % Backward differentiation formulae
+    ); 
+timestepper = @(odefun,t,y0) ode15s(odefun,t,y0,odeopt);
 
 %% Solve
 tic
@@ -136,24 +122,3 @@ figure
 F = animate(@(x,y) plot_surface(x,y'),t,x,y);
 
 % movie(F);
-
-%% Save
-
-% filename = replace(sprintf('data-theta-%f-Re-%f-We-%f-C-%f-xL-%f-yL-%f-T-%f',[params(2:end),xL,tL]),'.','_');
-% save(filename,'x','t','y','params');
-
-%% Functions
-function [value, isterminal, direction] = event(t,y)
-    Y = reshape(y,shape);
-    value = 2*evnt(t,Y) - 1;
-    if any(isnan(y),'all')
-        value = 1;
-    end
-    isterminal = 1; % Terminal
-    direction = 0; % Any approach direction
-end
-
-function [status] = outputfunction(t,y,flags)
-    %whos;
-    status = 0;
-end
