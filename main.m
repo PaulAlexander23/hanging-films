@@ -73,7 +73,7 @@ tic
 timeTaken = toc
 
 %% Plot overview
-
+figure
 plot_surface(x,real(y(:,:,end))');
 
 figure
@@ -85,35 +85,53 @@ plot(t,log10(squeeze(energy(x,y))));
 figure
 plot(t,squeeze(min(y,[],[1,2])));
 
-[temp,xI] = min(y);
-[miny,yI] = min(temp);
-xI = xI(yI);
+% Minimum location
+[temp,tempI] = min(y,[],1);
+[miny,yI] = min(temp,[],2);
+xI = zeros(size(yI));
+for m = 1:length(tempI)
+    xI(1,1,m) = tempI(1,yI(m),m);
+end
 figure
-plot(t,squeeze(x{1}(xI)),t,squeeze(x{2}(yI)));
-
+plot(t,squeeze(x{1}(xI)));
+figure
+plot(t,squeeze(x{2}(yI))); 
 
 %% H2 norm - Check implemented correctly
 ycell = mat2cell(reshape(y,numel(y0),length(t))',ones(length(t),1));
-
+figure
 plot(t,log10(cellfun(@(y) norm_H2(x,y',method),ycell)));
 
 %% Construct other variables
-y_snapshot = y0;
-% y_snapshot = y(:,:,end);
+% y_snapshot = y0;
+y_snapshot = y(:,:,end);
 
 p = construct_pressure(x,y_snapshot,params,method);
 
 [z,u,v,w] = construct_velocity(x,y_snapshot,params,method);
 
-slice = 1;
+slice = 32;
 
+figure
 surf(repmat(x{1},1,size(z(:,slice,:),3)),squeeze(u(:,slice,:)),squeeze(z(:,slice,:)));
+shading interp;
+
 figure
 surf(repmat(x{1},1,size(z(:,slice,:),3)),squeeze(v(:,slice,:)),squeeze(z(:,slice,:)));
+shading interp;
+
 figure
 surf(repmat(x{1},1,size(z(:,slice,:),3)),squeeze(w(:,slice,:)),squeeze(z(:,slice,:)));
+shading interp;
+
 figure
-quiver(squeeze(w(:,slice,:))',squeeze(v(:,slice,:))');
+xstep = 1;
+zstep = 10;
+quiver(repmat(x{1}(1:xstep:end),1,floor(size(z,3)/zstep))',...
+    squeeze(z(1:xstep:end,slice,1:zstep:end))',...
+    squeeze(w(1:xstep:end,slice,1:zstep:end))',...
+    squeeze(v(1:xstep:end,slice,1:zstep:end))',...
+    1); % Scaling
 
 %% Animate
 
