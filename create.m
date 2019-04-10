@@ -9,15 +9,7 @@ function create(theta,Re,We,C,x_length,y_length,t_final)
         x{n} = linspace(xS(n),xL(n),xN(n))';
     end
     
-    tL = t_final;
-    Co = 1;
-    ux = 1; uy = 1;
-    tS = Co/(ux/xS(1) + uy/xS(2));
-    if rem(tL,tS) == 0
-        t = 0:tS:tL;
-    else
-        t = [0:tS:tL,tL];
-    end
+    t = [0,t_final];
     
     A = 2e-1;
     r = 0.05;
@@ -31,31 +23,13 @@ function create(theta,Re,We,C,x_length,y_length,t_final)
     getD = @(deg) get_fd(deg,D,problemDeg);
     pdefun = @(t,x,y,method) benney(x,y,params,method,getD);
     
-    % function [value, isterminal, direction] = event(t,y)
-    %     value = 2*is_dewetted(reshape(y,shape)) - 1;
-    %     if any(isnan(y),'all')
-    %         value = 1;
-    %     end
-    %     isterminal = 1; % Terminal
-    %     direction = 0; % Any approach direction
-    % end
-    % 
-    % function [status] = outputfunction(t,y,flags)
-    %     %whos;
-    %     status = 0;
-    % end
-    % 
-    % options = odeset(...
-    %     ...'Vectorized','on',...
-    %     ...'BDF','on',... % Backward differentiation formulae
-    %     'Event',@event,...
-    %     ...'OutputFcn','odeprint',...
-    %     'OutputFcn',@outputfunction...
-    %     ...'RelTol',1e-3... % Default: 1e-3
-    %     );
-    
-    optimmethod = @newton;
-    timestepper = @(odefun,t,y0) bdf3(odefun,t,y0,optimmethod);
+    odeopt = odeset( ...
+        'Jacobian', @(t, y) jbenney(x, y, params, method, getD), ...
+        'Event', @event_dewetted, ...
+        'Vectorized','on' ...
+        ...'BDF','on' ... % Backward differentiation formulae
+        );
+    timestepper = @(odefun,t,y0) ode15s(odefun,t,y0,odeopt);
     
     tic
     [y, t] = solver(pdefun, t, x, y0, method, timestepper);
