@@ -7,7 +7,7 @@ addpath("../time-stepping-methods/",...
 %% SETUP x
 dim = 2;
 xL = [32,32];
-xN = [32,32];
+xN = [256,256];
 xS = xL./xN;
 x = cell(dim,1);
 for n = 1:dim
@@ -107,7 +107,7 @@ plot(t,squeeze(x{1}(xI)),t,squeeze(x{2}(yI)));
 
 
 %% H2 norm - Check implemented correctly
-ycell = mat2cell(reshape(y,128^2,409)',ones(409,1));
+ycell = mat2cell(reshape(y,numel(y0),length(t))',ones(length(t),1));
 
 plot(t,log10(cellfun(@(y) norm_H2(x,y',method),ycell)));
 
@@ -132,7 +132,7 @@ quiver(squeeze(w(:,slice,:))',squeeze(v(:,slice,:))');
 %% Animate
 
 addpath('../plotting/')
-
+figure
 F = animate(@(x,y) plot_surface(x,y'),t,x,y);
 
 % movie(F);
