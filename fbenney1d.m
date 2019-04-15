@@ -7,11 +7,11 @@ function F = fbenney1d(x,y,params,method)
     
     dy = feval(method,x,y,deg);
     
-    P = y * cot(theta) - 1/2 * 1/C * (dy(:,2));
+    P = y * cot(theta) - 1/2 * 1/C * (dy{2});
     
-    Q = (2/3 * y.^3 + 8/15 * Re * delta * y .^ 6 .* dy(:,1))...
-        - 2/3 * delta * y.^3 .* feval(method,x,P,1);
+    Q = (2/3 * y.^3 + 8/15 * Re * delta * y .^ 6 .* dy{1})...
+        - 2/3 * delta * y.^3 .* cell2mat(method(x,P,1));
     
-    F = feval(method,x,Q,1);
+    F = -cell2mat(method(x,Q,1));
     
 end
