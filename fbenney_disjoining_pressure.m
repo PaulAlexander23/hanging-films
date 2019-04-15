@@ -1,5 +1,8 @@
-function F = fbenney(x, y, params, method)
+function F = fbenney_disjoining_pressure(x, y, params, method, a, b)
 
+    if nargin < 5, a = 1e-1; end
+    if nargin < 6, b = 1e-1; end
+    
     delta = params(1);
     theta = params(2);
     Re = params(3);
@@ -10,8 +13,9 @@ function F = fbenney(x, y, params, method)
 
     deg = [1, 0; 0, 1; 2, 0; 0, 2]';
     dy = method(x, y, deg);
-
-    P = y * cot(theta) - 1/2 * 1 / C * (dy{3} + dy{4});
+    
+    Pi = a./(y.^3) .* (1 - b./(y.^3));
+    P = y * cot(theta) - 1/2 * 1 / C * (dy{3} + dy{4}) - Pi;
 
     gradP = method(x, P, [1, 0; 0, 1]');
     gradP = cat(3, gradP{1}, gradP{2});
