@@ -1,7 +1,6 @@
-function y0 = isingle(x)
+function y0 = isingle(x,A)
     
-    A = 1e-2;
-    r = 1;
-    y0 = 1 + A * (-r*cos(2*pi/x{1}(end) * x{1}) - cos(2*pi/x{2}(end) * x{2}'));
+    if nargin < 2, A = 1e-2; end
+    y0 = 1 - A * (cos(2*pi/x{1}(end) * x{1}) + cos(2*pi/x{2}(end) * x{2}'));
     
 end
