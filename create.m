@@ -23,7 +23,7 @@ function create(theta,Re,We,C,x_length,y_length,t_final,interface,xN,yN,AbsTol)
     D = init_fd(x, problemDeg, 4);
     method = @(x,y,deg) diff_fd(x,y,deg,D,problemDeg);
     getD = @(deg) get_fd(deg,D,problemDeg);
-    pdefun = @(t,x,y,method) benney(x,y,params,method,getD);
+    pdefun = @(t,x,y,method) fbenney(x,y,params,method);
     
     odeopt = odeset( ...
         'Jacobian', @(t, y) jbenney(x, y, params, method, getD), ...

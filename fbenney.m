@@ -1,4 +1,4 @@
-function [F, J] = benney(x, y, params, method, getD)
+function F = fbenney(x, y, params, method)
 
     delta = params(1);
     theta = params(2);

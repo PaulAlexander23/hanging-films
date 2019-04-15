@@ -37,7 +37,7 @@ getD = @(deg) get_fd(deg,D,problemDeg);
 method = @(x,y,deg) diff_fd(x,y,deg,D,problemDeg);
 %method = @diff_ps_2d;
 
-pdefun = @(t,x,y,method) benney(x,y,params,method,getD);
+pdefun = @(t,x,y,method) fbenney(x,y,params,method);
 
 %% SETUP timestepping method
 
