@@ -3,8 +3,7 @@ function F = fbenney(x, y, params, method)
     delta = params(1);
     theta = params(2);
     Re = params(3);
-    %We = params(4);
-    C = params(5);
+    C = params(4);
 
     %L = cellfun(@(x) x(end),x);
     e1 = zeros(1, 1, 2);

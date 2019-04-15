@@ -3,8 +3,7 @@ function F = fbenney1d(x,y,params,method)
     delta = params(1);
     theta = params(2);
     Re = params(3);
-    We = params(4);
-    C = params(5);
+    C = params(4);
     
     dy = feval(method,x,y,deg);
     

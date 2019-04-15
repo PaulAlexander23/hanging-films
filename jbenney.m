@@ -2,7 +2,7 @@ function J = jbenney(x, y, params, method, getD)
     
     theta = params(2);
     Re = params(3);
-    C = params(5);
+    C = params(4);
     
     deg = [1, 0; 0, 1; 2, 0; 0, 2]';
     dy = method(x, y, deg);

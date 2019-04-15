@@ -28,7 +28,7 @@ y0 = irivulet(x);
 plot_surface(x,y0')
 
 %% SETUP problem
-params = [1,7*pi/8,1,0.01,0.01]; % delta, theta, Re, We, C
+params = [1,7*pi/8,1,0.01]; % delta, theta, Re, C
 problemDeg = [1,0;0,1;2,0;0,2]';
 
 % SETUP differentiation method
