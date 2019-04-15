@@ -1,4 +1,5 @@
 %DATA_SAVE
 
-filename = replace(sprintf('data-theta-%f-Re-%f-We-%f-C-%f-xL-%f-yL-%f-T-%f',[params(2:end),xL,tL]),'.','_');
-save(filename,'x','t','y','params');
+filename = replace(sprintf('data-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g-interface-%s-xN-%g-yN-%g-AbsTol-%g', ...
+    theta,Re,We,C,x_length,y_length,t_final,func2str(interface),xN(1),xN(2),AbsTol),'.','_');
+save(filename,'y','params','t','x','timeTaken');

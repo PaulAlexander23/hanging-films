@@ -1,8 +1,12 @@
-function create(theta,Re,We,C,x_length,y_length,t_final,interface)
+function create(theta,Re,We,C,x_length,y_length,t_final,interface,xN,yN,AbsTol)
+    
+    if nargin < 9, xN = 64; end
+    if nargin < 10, yN = 64; end
+    if nargin < 11, AbsTol = 1e-6; end
     
     dim = 2;
     xL = [x_length,y_length];
-    xN = [64,64];
+    xN = [xN,yN];
     xS = xL./xN;
     x = cell(dim,1);
     for n = 1:dim
@@ -24,7 +28,8 @@ function create(theta,Re,We,C,x_length,y_length,t_final,interface)
     odeopt = odeset( ...
         'Jacobian', @(t, y) jbenney(x, y, params, method, getD), ...
         'Event', @event_dewetted, ...
-        'Vectorized','on' ...
+        'Vectorized', 'on', ...
+        'AbsTol', AbsTol ...
         ...'BDF','on' ... % Backward differentiation formulae
         );
     timestepper = @(odefun,t,y0) ode15s(odefun,t,y0,odeopt);
@@ -33,8 +38,8 @@ function create(theta,Re,We,C,x_length,y_length,t_final,interface)
     [y, t] = solver(pdefun, t, x, y0, method, timestepper);
     timeTaken = toc
     
-    filename = replace(sprintf('data-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g-interface-%s',theta,Re,We,C,x_length,y_length,t_final,func2str(interface)),'.','_');
+    filename = replace(sprintf('data-theta-%g-Re-%g-We-%g-C-%g-xL-%g-yL-%g-T-%g-interface-%s-xN-%g-yN-%g-AbsTol-%g', ...
+        theta,Re,We,C,x_length,y_length,t_final,func2str(interface),xN(1),xN(2),AbsTol),'.','_');
     save(filename,'y','params','t','x','timeTaken');
-    
     
 end
