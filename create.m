@@ -1,8 +1,8 @@
 function create(theta,Re,C,x_length,y_length,t_final,interface,xN,yN,AbsTol)
     
-    if nargin < 9, xN = 64; end
-    if nargin < 10, yN = 64; end
-    if nargin < 11, AbsTol = 1e-6; end
+    if nargin < 8, xN = 64; end
+    if nargin < 9, yN = 64; end
+    if nargin < 10, AbsTol = 1e-6; end
     
     dim = 2;
     xL = [x_length,y_length];
