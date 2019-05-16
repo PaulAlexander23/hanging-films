@@ -29,15 +29,17 @@ plot_surface(x,y0')
 
 %% SETUP problem
 params = [1,7*pi/8,1,0.01]; % delta, theta, Re, C
-problemDeg = [1,0;0,1;2,0;0,2]';
 
 % SETUP differentiation method
+problemDeg = [1,0;0,1;2,0;0,2]';
 D = init_fd(x, problemDeg, 2);
 getD = @(deg) get_fd(deg,D,problemDeg);
 method = @(x,y,deg) diff_fd(x,y,deg,D,problemDeg);
-%method = @diff_ps_2d;
+% method = @diff_ps_2d;
 
-pdefun = @(t,x,y,method) fbenney(x,y,params,method);
+% pdefun = @(t,x,y,method) fbenney(x,y,params,method);
+pdefun = @(t,x,y,method) fwibl1(x,y,params,method);
+y0 = cat(1, y0, 0*y0);
 
 %% SETUP timestepping method
 
@@ -47,24 +49,30 @@ pdefun = @(t,x,y,method) fbenney(x,y,params,method);
 % timestepper = @(odefun,t,y0) bdf(odefun,t,y0,options);
 
 odeopt = odeset( ...
-    'Jacobian', @(t, y) jbenney(x, y, params, method, getD), ...
+    ...'Jacobian', @(t, y) jbenney(x, y, params, method, getD), ...
     'Event', @event_dewetted ...
     ...'Vectorized','on',...
     ...'BDF','on',... % Backward differentiation formulae
-    ); 
+    );
 timestepper = @(odefun,t,y0) ode15s(odefun,t,y0,odeopt);
+%timestepper = @(odefun,t,y0) ode45(odefun,t,y0,odeopt);
 
 %% Solve
 tic
 [y, t] = solver(pdefun, t, x, y0, method, timestepper);
 timeTaken = toc
 
+%% Crop solution if method is wibl1
+if func2str(pdefun) == '@(t,x,y,method)fwibl1(x,y,params,method)'
+    F = y(end/2+1:end,:,:);
+    y = y(1:end/2,:,:);
+end
 %% Plot overview
 figure
 plot_surface(x,real(y(:,:,end))');
 
 figure
-plot_log_fourier(x,real(y(:,:,end))');
+plot_log_fourier(x,real(y(:,:,end-1))');
 
 figure
 plot(t,log10(squeeze(energy(x,y))));
@@ -82,7 +90,7 @@ end
 figure
 plot(t,squeeze(x{1}(xI)));
 figure
-plot(t,squeeze(x{2}(yI))); 
+plot(t,squeeze(x{2}(yI)));
 
 %% H2 norm - Check implemented correctly
 ycell = mat2cell(reshape(y,numel(y0),length(t))',ones(length(t),1));
@@ -122,8 +130,9 @@ quiver(repmat(x{1}(1:xstep:end),1,floor(size(z,3)/zstep))',...
 
 %% Animate
 
-addpath('../plotting/')
+addpath('~/Repositories/plotting/')
 figure
-F = animate(@(x,y) plot_surface(x,y'),t,x,y);
+% F = animate(@(x,y) plot_surface(x,y'),t,x,y);
+F = animateSmooth(@(x,y) plot_surface(x,y'),t,x,y,t(end)/60);
 
 % movie(F);
