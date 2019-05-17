@@ -8,11 +8,11 @@ function [y, t] = solver(pdefun, t, x, y0, method, timestepper)
     function [F,J] = func(pdefun,t,x,y,method,shape)
         if nargout == 1
             F = reshape(...
-                pdefun(t, x, reshape(y,shape), method),...
-                [prod(shape),1]);
+                pdefun(t, x, reshape(y,[shape,numel(y)/prod(shape)]), method),...
+                [prod(shape),numel(y)/prod(shape)]);
         elseif nargout == 2
-            [f,j] = pdefun(t, x, reshape(y,shape), method);
-            F = reshape(f, [prod(shape),1]);
+            [f,j] = pdefun(t, x, reshape(y,[shape,numel(y)/prod(shape)]), method);
+            F = reshape(f, [prod(shape),numel(y)/prod(shape)]);
             J = j;
         end
     end

@@ -50,8 +50,8 @@ y0 = cat(1, y0, 0*y0);
 
 odeopt = odeset( ...
     ...'Jacobian', @(t, y) jbenney(x, y, params, method, getD), ...
-    'Event', @event_dewetted ...
-    ...'Vectorized','on',...
+    'Event', @event_dewetted,...
+    'Vectorized','on'...
     ...'BDF','on',... % Backward differentiation formulae
     );
 timestepper = @(odefun,t,y0) ode15s(odefun,t,y0,odeopt);
@@ -63,7 +63,7 @@ tic
 timeTaken = toc
 
 %% Crop solution if method is wibl1
-if func2str(pdefun) == '@(t,x,y,method)fwibl1(x,y,params,method)'
+if func2str(pdefun) == "@(t,x,y,method)fwibl1(x,y,params,method)"
     F = y(end/2+1:end,:,:);
     y = y(1:end/2,:,:);
 end
