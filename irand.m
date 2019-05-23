@@ -12,7 +12,8 @@ function y0 = irand(x, A, num)
     
     fy0 = zeros(2*Nx,2*Ny);
     
-    fy0(logical((kx~=0).*(abs(kx)<num+1)),logical((ky~=0).*(abs(ky)<num+1))) = (2*rand(2*num,2*num)-1)*Nx*Ny;
+    fy0(logical((kx~=0).*(abs(kx)<num+1)), ...
+        logical((ky~=0).*(abs(ky)<num+1))) = (2*rand(2*num,2*num)-1)*Nx*Ny;
     
     y0 = real(ifft2(fy0));
     y0 = 1 + A * y0/max(max(abs(y0)));
