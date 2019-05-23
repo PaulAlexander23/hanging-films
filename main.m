@@ -69,6 +69,9 @@ if func2str(pdefun) == "@(t,x,y,method)fwibl1(x,y,params,method)"
 end
 %% Plot overview
 figure
+plot_surface(x,real(y(:,:,1))');
+
+figure
 plot_surface(x,real(y(:,:,end))');
 
 figure
@@ -131,6 +134,7 @@ quiver(repmat(x{1}(1:xstep:end),1,floor(size(z,3)/zstep))',...
 %% Animate
 
 addpath('~/Repositories/plotting/')
+t;
 figure
 % F = animate(@(x,y) plot_surface(x,y'),t,x,y);
 F = animateSmooth(@(x,y) plot_surface(x,y'),t,x,y,t(end)/60);
