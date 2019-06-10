@@ -1,3 +1,5 @@
 ### Numerical solution to the 2d Benney equation with electric fields
 
-Exploring a possible colaboration with Ruben and Demetrios, looking at pseudo spectral numerical solutions to the Benney equation.
+A collaboration with Ruben and Demetrios, looking at numerical solutions to the 2D Benney equation on the underside of a plate.
+
+Run tests in Matlab: runtests('tests')
