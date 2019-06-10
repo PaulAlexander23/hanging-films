@@ -1,0 +1,3 @@
+[submodule "+discretisationMethods"]
+	path = +discretisationMethods
+	url = git@github.com:PaulAlexander23/matlab-discretisation-methods.git
