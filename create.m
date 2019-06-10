@@ -19,9 +19,9 @@ function create(theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTo
     pdeFunction = @(t, x, y, diffMethod) fbenney2d(x, y, params, diffMethod);
 
     odeopt = odeset( ...
-        'Jacobian', @(t, y) jbenney(x, y, params, diffMethod, getDiffMat) ...
+        'Jacobian', @(t, y) jbenney(x, y, params, diffMethod, getDiffMat), ...
         ...'Vectorized', 'on', ...
-        ...'AbsTol', AbsTol ...
+        'AbsTol', AbsTol ...
         ... 'BDF','on' ...
         );
     timeStepper = @(odefun, t, y0) ode15s(odefun, t, y0, odeopt);
@@ -32,15 +32,3 @@ function create(theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTo
 
     saveData(y, params, t, x, timeTaken, tFinal, interface, AbsTol)
 end
-
-function x = setupX(xLength, yLength, xN, yN)
-    xL = [xLength, yLength];
-    xN = [xN, yN];
-    xS = xL ./ xN;
-    dim = 2;
-    x = cell(dim, 1);
-    for n = 1:dim
-        x{n} = linspace(xS(n), xL(n), xN(n))';
-    end
-end
-
