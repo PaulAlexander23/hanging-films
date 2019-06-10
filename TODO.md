@@ -1,9 +1,5 @@
 ## Tasks
 
-- [ ] Update package and import to cluster.
-
-Old:
-
 - [ ] Write scripts to analyse data: Lyapunov exponent
 - [ ] Write linear test
 - [ ] Write volume test

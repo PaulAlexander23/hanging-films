@@ -127,10 +127,33 @@ function testPDESolver1DBenneyEquation(testCase)
 end
 
 function testCreate2DBenneyEquation(testCase)
-    create(1,1,1,2*pi,2*pi,1,@(x)1+0.5*cos(x{1}+x{2}'))
-    load('data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-1-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06.mat','y');
+    filename = 'data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06.mat';
+    if isfile(filename)
+        delete(filename)
+    end
+    addpath('~/Repositories/discretisation-methods/')
+    create(1,1,1,2*pi,2*pi,0.5,@(x)1+0.5*cos(x{1}+x{2}'))
+    load(filename,'y');
     actual = y;
     load('testCreate2DBenneyEquationExpected','expected')
     verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
+    if isfile(filename)
+        delete(filename)
+    end
+end
+
+function testCreateWIBL1GetsToFinalTime(testCase)
+    filename = 'data-wibl1-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-32-yN-32-AbsTol-1e-06.mat';
+    if isfile(filename)
+        delete(filename)
+    end
+    addpath('~/Repositories/discretisation-methods/')
+    createWIBL1(7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 32, 32, 1e-6)
+    load(filename,'t')
+    
+    verifyEqual(testCase, t(end), 1)
+    if isfile(filename)
+        delete(filename)
+    end
 end
