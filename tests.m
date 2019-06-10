@@ -2,6 +2,12 @@ function tests = tests()
     tests = functiontests(localfunctions);
 end
 
+function testSetupX(testCase)
+    actualX = setupX(10,pi,12,11);
+    verifyEqual(testCase, actualX{1}, linspace(10/12,10,12)')
+    verifyEqual(testCase, actualX{2}, linspace(pi/11,pi,11)')
+end
+
 function testMakeFilename(testCase)
     actual = makeFilename('-test',[1,2,3,4],{0.1:0.1:3.3,1:1:10},pi,@interface,1e-6);
     expected = "data-test-theta-2-Re-3-C-4-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06";
