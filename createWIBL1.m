@@ -9,6 +9,7 @@ function createWIBL1(theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     t = [0, tFinal];
 
     y0 = interface(x);
+    y0 = [y0; 0*y0]; % [y0; F_0]
 
     params = [1, theta, Re, C]; % delta, theta, Re, C
     problemDiffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
