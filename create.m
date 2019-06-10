@@ -1,5 +1,5 @@
 function create(theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol)
-
+    import discretisationMethods.*
     if nargin < 8, xN = 64; end
     if nargin < 9, yN = 64; end
     if nargin < 10, AbsTol = 1e-6; end

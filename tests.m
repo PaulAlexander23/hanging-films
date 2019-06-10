@@ -64,7 +64,7 @@ function testPDESolver1DTravellingWaveEquation(testCase)
     t = linspace(0, 1, 11);
     x = {linspace(2*pi/64, 2*pi, 64)'};
     y0 = cos(x{1});
-    addpath('~/Repositories/discretisation-methods/')
+    import discretisationMethods.*
     diffMat = init_fd(x, problemDiffDegrees, 4);
     diffMethod = @(x, y, degree) diff_fd(x, y, degree, diffMat, ...
         problemDiffDegrees);
@@ -83,7 +83,7 @@ function testPDESolver1DHeatEquation(testCase)
     t = linspace(0, 1, 11);
     x = {linspace(2*pi/64, 2*pi, 64)'};
     y0 = cos(x{1});
-    addpath('~/Repositories/discretisation-methods/')
+    import discretisationMethods.*
     diffMat = init_fd(x, 2, 4);
     diffMethod = @(x, y, degree) diff_fd(x, y, degree, diffMat, 2);
     timestepper = @ode45;
@@ -100,7 +100,7 @@ function testPDESolver1DHeatEquationPseudoSpectral(testCase)
     t = linspace(0, 1, 11);
     x = linspace(2*pi/64, 2*pi, 64)';
     y0 = cos(x);
-    addpath('~/Repositories/discretisation-methods/')
+    import discretisationMethods.*
     diffMethod = @(x, y, degree) diff_ps(x, y, degree);
     timestepper = @ode45;
     actual = pdeSolver(@pdefun, t, x, y0, diffMethod, timestepper);
@@ -114,7 +114,7 @@ function testPDESolver1DBenneyEquation(testCase)
     x = {linspace(2*pi/64, 2*pi, 64)'};
     y0 = 1+0.5*cos(x{1});
     problemDiffDegrees = [1, 2];
-    addpath('~/Repositories/discretisation-methods/')
+    import discretisationMethods.*
     diffMat = init_fd(x, problemDiffDegrees, 4);
     diffMethod = @(x, y, degree) diff_fd(x, y, degree, diffMat, problemDiffDegrees);
     params = [1,1,1,1];
@@ -131,7 +131,6 @@ function testCreate2DBenneyEquation(testCase)
     if isfile(filename)
         delete(filename)
     end
-    addpath('~/Repositories/discretisation-methods/')
     create(1,1,1,2*pi,2*pi,0.5,@(x)1+0.5*cos(x{1}+x{2}'))
     load(filename,'y');
     actual = y;
@@ -148,7 +147,6 @@ function testCreateWIBL1GetsToFinalTime(testCase)
     if isfile(filename)
         delete(filename)
     end
-    addpath('~/Repositories/discretisation-methods/')
     createWIBL1(7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 32, 32, 1e-6)
     load(filename,'t')
     
