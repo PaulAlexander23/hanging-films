@@ -155,3 +155,31 @@ function testCreateWIBL1GetsToFinalTime(testCase)
         delete(filename)
     end
 end
+
+function testCreateWIBL1ExplicitGetsToFinalTime(testCase)
+    filename = 'data-wibl1-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-32-yN-32-AbsTol-1e-06.mat';
+    if isfile(filename)
+        delete(filename)
+    end
+    createWIBL1Explicit(7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 32, 32, 1e-6)
+    load(filename,'t')
+    
+    verifyEqual(testCase, t(end), 1)
+    if isfile(filename)
+        delete(filename)
+    end
+end
+
+function testCreateWIBL1PseudoSpectralGetsToFinalTime(testCase)
+    filename = 'data-wibl1-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-32-yN-32-AbsTol-1e-06.mat';
+    if isfile(filename)
+        delete(filename)
+    end
+    createWIBL1PseudoSpectral(7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 32, 32, 1e-6)
+    load(filename,'t')
+    
+    verifyEqual(testCase, t(end), 1)
+    if isfile(filename)
+        delete(filename)
+    end
+end
