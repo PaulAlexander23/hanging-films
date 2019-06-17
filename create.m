@@ -6,7 +6,8 @@ function create(theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTo
 
     x = setupX(xLength, yLength, xN, yN);
 
-    t = [0, tFinal];
+    tStep = 0.2;
+    t = 0:tStep:tFinal;
 
     y0 = interface(x);
 

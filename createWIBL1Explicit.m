@@ -6,7 +6,8 @@ function createWIBL1Explicit(theta, Re, C, xLength, yLength, tFinal, interface, 
     
     x = setupX(xLength, yLength, xN, yN);
     
-    t = [0, tFinal];
+    tStep = 0.2;
+    t = 0:tStep:tFinal;
     
     y0 = interface(x);
     y0 = [y0; 0*y0]; % [y0; F_0]
