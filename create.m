@@ -8,7 +8,10 @@ function create(theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTo
 
     tStep = 0.2;
     t = 0:tStep:tFinal;
-
+    if rem(tFinal, tStep) ~= 0
+        t = [t, tFinal];
+    end
+    
     y0 = interface(x);
 
     params = [1, theta, Re, C]; % delta, theta, Re, C
