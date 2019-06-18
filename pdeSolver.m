@@ -3,14 +3,9 @@ function [y, t] = pdeSolver(pdefun, t, x, y0, diffMethod, timestepper)
     shape = size(y0);
     y0 = reshape(y0, [prod(shape), 1]);
     
-    y = timestepper(@(t, y) callPDEFunctionWithReshape(pdefun, ...
+    [t, y] = timestepper(@(t, y) callPDEFunctionWithReshape(pdefun, ...
         t, x, y, diffMethod, shape), t, y0);
-    
-    if isstruct(y)
-        t = y.x;
-        y = y.y;
-    end
-    
+    y = y';
     y = squeeze(reshape(y, [shape, length(t)]));
 end
 
