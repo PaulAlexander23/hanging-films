@@ -11,11 +11,11 @@ function L = fwibl1(x, Y, params, method)
     deg = [1, 0; 0, 1; 2, 0; 0, 2]';
     dy = method(x, y, deg);
     dF1 = method(x, F1, [1, 0]');
-    P = y * cot(theta) - 1/2 * 1 / C * (dy{3} + dy{4});
+    P = 2 * y * cot(theta) - 1 / C * (dy{3} + dy{4});
 
     dP = method(x, P, [1, 0; 0, 1]');
     
-    F2 = - 2/3 * delta * y.^3 .* dP{2};
+    F2 = - delta * y.^3 .* dP{2} / 3;
     
     Ly = -cell2mat(method(x, F1, [1, 0]')) - ...
         cell2mat(method(x, F2, [0, 1]'));
