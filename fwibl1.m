@@ -19,8 +19,8 @@ function L = fwibl1(x, Y, params, method)
     
     Ly = -cell2mat(method(x, F1, [1, 0]')) - ...
         cell2mat(method(x, F2, [0, 1]'));
-    LF1 = (9 * dy{1} .* F1.^2 - 17 * F1 .* dF1{1}) ./ (7 * y) + ...
-        (10 * y - 15 * F1 ./ y.^2 - y .* dP{1}) / (6 * Re);
+    LF1 = (9 * dy{1} .* F1.^2 ./ y - 17 * F1 .* dF1{1}) ./ (7 * y) + ...
+        (10 * y - 15 * F1 ./ y.^2 - 5 * y .* dP{1}) / (6 * Re);
    
     L = cat(1, Ly, LF1);
 end
