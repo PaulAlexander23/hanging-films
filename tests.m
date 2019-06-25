@@ -44,83 +44,71 @@ function testSaveAndLoadData(testCase)
 end
 
 function testPDESolver1DExponentialDecay(testCase)
-    pdefun = @(t, x, y, diffMethod) - y;
+    addpath discretisationMethods
+    pdefun = @(t, domain, y) - y;
     t = linspace(0, 1, 11);
     x = linspace(2*pi/64, 2*pi, 64)';
-    y0 = cos(x);
-    diffMethod = @(x, y, degree) 0 * y;
+    domain = Domain({x});
+    y0 = cos(domain.x{1});
     timestepper = @ode45;
-    actual = pdeSolver(pdefun, t, x, y0, diffMethod, timestepper);
+    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
     expected = y0 * exp(-t);
     verifyEqual(testCase, actual, expected, 'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
 function testPDESolver1DTravellingWaveEquation(testCase)
-    problemDiffDegrees = 1;
-    function out = pdefun(t, x, y, diffMethod)
-        out = diffMethod(x, y, 1);
-        out = -out{1};
-    end
+    addpath discretisationMethods
+    pdefun = @(t, domain, y) -domain.diff(y, 1);
     t = linspace(0, 1, 11);
-    x = {linspace(2*pi/64, 2*pi, 64)'};
-    y0 = cos(x{1});
-    import discretisationMethods.*
-    diffMat = init_fd(x, problemDiffDegrees, 4);
-    diffMethod = @(x, y, degree) diff_fd(x, y, degree, diffMat, ...
-        problemDiffDegrees);
+    domain = FDDomain({linspace(2*pi/64, 2*pi, 64)'}, 1, 4);
+    y0 = cos(domain.x{1});
     timestepper = @ode45;
-    actual = pdeSolver(@pdefun, t, x, y0, diffMethod, timestepper);
-    expected = cos(x{1}-t);
+    
+    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
+    expected = cos(domain.x{1}-t);
+    
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
 function testPDESolver1DHeatEquation(testCase)
-    function out = pdefun(t, x, y, diffMethod)
-        out = diffMethod(x, y, 2);
-        out = out{1};
-    end
+    addpath discretisationMethods
+    pdefun = @(t, domain, y) domain.diff(y, 2);
     t = linspace(0, 1, 11);
     x = {linspace(2*pi/64, 2*pi, 64)'};
-    y0 = cos(x{1});
-    import discretisationMethods.*
-    diffMat = init_fd(x, 2, 4);
-    diffMethod = @(x, y, degree) diff_fd(x, y, degree, diffMat, 2);
+    domain = FDDomain(x, 2, 4);
+    y0 = cos(domain.x{1});
     timestepper = @ode45;
-    actual = pdeSolver(@pdefun, t, x, y0, diffMethod, timestepper);
+    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
     expected = y0 * exp(-t);
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
 function testPDESolver1DHeatEquationPseudoSpectral(testCase)
-    function out = pdefun(t, x, y, diffMethod)
-        out = diffMethod(x, y, 2);
-    end
+    addpath discretisationMethods
+    pdefun = @(t, domain, y) domain.diff(y, 2);
     t = linspace(0, 1, 11);
-    x = linspace(2*pi/64, 2*pi, 64)';
-    y0 = cos(x);
-    import discretisationMethods.*
-    diffMethod = @(x, y, degree) diff_ps(x, y, degree);
+    x = {linspace(2*pi/64, 2*pi, 64)'};
+    domain = PSDomain(x);
+    y0 = cos(domain.x{1});
     timestepper = @ode45;
-    actual = pdeSolver(@pdefun, t, x, y0, diffMethod, timestepper);
+    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
     expected = y0 * exp(-t);
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
 function testPDESolver1DBenneyEquation(testCase)
+    addpath discretisationMethods
     t = linspace(0, 1, 11);
     x = {linspace(2*pi/64, 2*pi, 64)'};
-    y0 = 1+0.5*cos(x{1});
-    problemDiffDegrees = [1, 2];
-    import discretisationMethods.*
-    diffMat = init_fd(x, problemDiffDegrees, 4);
-    diffMethod = @(x, y, degree) diff_fd(x, y, degree, diffMat, problemDiffDegrees);
+    domain = FDDomain(x, [1, 2],4);
+    y0 = 1+0.5*cos(domain.x{1});
     params = [1,1,1,1];
-    pdefun = @(t, x, y, diffMethod) fbenney1d(x, y, params, diffMethod);
+    pdefun = @(t, domain, y) fbenney1d(domain, y, params);
     timestepper = @ode15s;
-    actual = pdeSolver(pdefun, t, x, y0, diffMethod, timestepper);
+    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
     load('testPDESolver1DBenneyEquationExpected','expected')
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)

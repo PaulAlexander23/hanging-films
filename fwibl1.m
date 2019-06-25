@@ -1,26 +1,22 @@
-function L = fwibl1(x, Y, params, method)
-
+function dYdt = fwibl1(domain, Y, params)
     delta = params(1);
     theta = params(2);
     Re = params(3);
     C = params(4);
 
-    y = Y(1:end/2,:,:);
-    F1 = Y(end/2+1:end,:,:);
-    
-    deg = [1, 0; 0, 1; 2, 0; 0, 2]';
-    dy = method(x, y, deg);
-    dF1 = method(x, F1, [1, 0]');
-    P = 2 * y * cot(theta) - 1 / C * (dy{3} + dy{4});
+    y = Y(1:end/2, :, :);
+    F1 = Y(end/2+1:end, :, :);
 
-    dP = method(x, P, [1, 0; 0, 1]');
-    
-    F2 = - delta * y.^3 .* dP{2} / 3;
-    
-    Ly = -cell2mat(method(x, F1, [1, 0]')) - ...
-        cell2mat(method(x, F2, [0, 1]'));
-    LF1 = (9 * dy{1} .* F1.^2 ./ y - 17 * F1 .* dF1{1}) ./ (7 * y) + ...
-        (10 * y - 15 * F1 ./ y.^2 - 5 * y .* dP{1}) / (6 * Re);
-   
-    L = cat(1, Ly, LF1);
+    P = 2 * y * cot(theta) - 1 / C * (domain.diff(y, [2; 0]) + domain.diff(y, [0; 2]));
+
+    F2 = -delta * y.^3 .* domain.diff(P, [0; 1]) / 3;
+
+    dydt = -domain.diff(F1, [1; 0]) - domain.diff(F2, [0; 1]);
+
+    dF1dt = (9 * domain.diff(y, [1; 0]) .* F1.^2 ./ y - ...
+        17 * F1 .* domain.diff(F1, [1; 0])) ./ (7 * y) + ...
+        (10 * y - 15 * F1 ./ y.^2 - ...
+        5 * y .* domain.diff(P, [1; 0])) / (6 * Re);
+
+    dYdt = cat(1, dydt, dF1dt);
 end
