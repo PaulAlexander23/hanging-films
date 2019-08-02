@@ -51,26 +51,26 @@ end
 
 function testPDESolver1DExponentialDecay(testCase)
     addpath discretisationMethods
-    pdefun = @(t, domain, y) - y;
+    odefun = @(t, y) - y;
     t = linspace(0, 1, 11);
     x = linspace(2*pi/64, 2*pi, 64)';
     domain = Domain({x});
     y0 = cos(domain.x{1});
     timestepper = @ode45;
-    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
+    actual = odeMatrixSolver(odefun, t, y0, timestepper);
     expected = y0 * exp(-t);
     verifyEqual(testCase, actual, expected, 'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
 function testPDESolver1DTravellingWaveEquation(testCase)
     addpath discretisationMethods
-    pdefun = @(t, domain, y) -domain.diff(y, 1);
     t = linspace(0, 1, 11);
     domain = FDDomain({linspace(2*pi/64, 2*pi, 64)'}, 1, 4);
+    odefun = @(t, y) -domain.diff(y, 1);
     y0 = cos(domain.x{1});
     timestepper = @ode45;
     
-    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
+    actual = odeMatrixSolver(odefun, t, y0, timestepper);
     expected = cos(domain.x{1}-t);
     
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
@@ -79,13 +79,13 @@ end
 
 function testPDESolver1DHeatEquation(testCase)
     addpath discretisationMethods
-    pdefun = @(t, domain, y) domain.diff(y, 2);
     t = linspace(0, 1, 11);
     x = {linspace(2*pi/64, 2*pi, 64)'};
     domain = FDDomain(x, 2, 4);
+    odefun = @(t, y) domain.diff(y, 2);
     y0 = cos(domain.x{1});
     timestepper = @ode45;
-    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
+    actual = odeMatrixSolver(odefun, t, y0, timestepper);
     expected = y0 * exp(-t);
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
@@ -93,13 +93,13 @@ end
 
 function testPDESolver1DHeatEquationPseudoSpectral(testCase)
     addpath discretisationMethods
-    pdefun = @(t, domain, y) domain.diff(y, 2);
     t = linspace(0, 1, 11);
     x = {linspace(2*pi/64, 2*pi, 64)'};
     domain = PSDomain(x);
+    odefun = @(t, y) domain.diff(y, 2);
     y0 = cos(domain.x{1});
     timestepper = @ode45;
-    actual = real(ifft(pdeSolver(pdefun, t, domain, fft(y0), timestepper)));
+    actual = real(ifft(odeMatrixSolver(odefun, t, fft(y0), timestepper)));
     expected = y0 * exp(-t);
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
@@ -112,9 +112,9 @@ function testPDESolver1DBenneyEquation(testCase)
     domain = FDDomain(x, [1, 2],4);
     y0 = 1+0.5*cos(domain.x{1});
     params = [1,1,1,1];
-    pdefun = @(t, domain, y) fbenney1d(domain, y, params);
+    odefun = @(t, y) fbenney1d(domain, y, params);
     timestepper = @ode15s;
-    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
+    actual = odeMatrixSolver(odefun, t, y0, timestepper);
     load('testPDESolver1DBenneyEquationExpected','expected')
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
@@ -170,6 +170,51 @@ function testCreateWIBL1PseudoSpectralGetsToFinalTime(testCase)
         delete(filename)
     end
     createWIBL1PseudoSpectral(7/8 * pi, 1, 0.01, 32, 32, 0.2, @icos, 8, 8, 1e-6)
+    load(filename,'t')
+    
+    verifyEqual(testCase, t(end), 0.2)
+    if isfile(filename)
+        delete(filename)
+    end
+end
+
+%%
+function testCreateDataBenney(testCase)
+    filename = 'data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06.mat';
+    if isfile(filename)
+        delete(filename)
+    end
+    createData("benney",1,1,1,2*pi,2*pi,0.5,@(x)1+0.5*cos(x{1}+x{2}'))
+    load(filename,'y');
+    actual = y;
+    load('testCreate2DBenneyEquationExpected','expected')
+    verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
+        'RelTol', 1e-3, 'AbsTol', 1e-6)
+    if isfile(filename)
+        delete(filename)
+    end
+end
+
+function testCreateDataWIBL1(testCase)
+    filename = 'data-wibl1-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06.mat';
+    if isfile(filename)
+        delete(filename)
+    end
+    createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 16, 16, 1e-6)
+    load(filename,'t')
+    
+    verifyEqual(testCase, t(end), 1)
+    if isfile(filename)
+        delete(filename)
+    end
+end
+
+function testCreateDataWIBL1PseudoSpectral(testCase)
+    filename = 'data-wibl1-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-0_2-interface-icos-xN-8-yN-8-AbsTol-1e-06.mat';
+    if isfile(filename)
+        delete(filename)
+    end
+    createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 0.2, @icos, 8, 8, 1e-6, "pseudo-spectral")
     load(filename,'t')
     
     verifyEqual(testCase, t(end), 0.2)

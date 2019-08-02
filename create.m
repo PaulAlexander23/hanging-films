@@ -7,7 +7,7 @@ function create(theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTo
     params = [1, theta, Re, C]; % delta, theta, Re, C
     problemDiffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     domain = FDDomain(setupX(xLength, yLength, xN, yN), problemDiffDegrees, 4);
-    pdeFunction = @(t, domain, y) fbenney2d(domain, y, params);
+    odeFunction = @(t, y) fbenney2d(domain, y, params);
 
     odeopt = odeset( ...
         'Jacobian', @(t, y) jbenney2d(domain, y, params), ...
@@ -18,7 +18,7 @@ function create(theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTo
     timeStepper = @(odefun, t, y0) ode15s(odefun, t, y0, odeopt);
 
     tic
-    [y, t] = pdeSolver(pdeFunction, setupT(tFinal, 0.2), domain, interface(domain.x), timeStepper);
+    [y, t] = odeMatrixSolver(odeFunction, setupT(tFinal, 0.2), interface(domain.x), timeStepper);
     timeTaken = toc;
 
     saveData(y, params, t, domain.x, timeTaken, tFinal, interface, AbsTol)

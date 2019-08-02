@@ -16,7 +16,7 @@ function createWIBL1Explicit(theta, Re, C, xLength, yLength, tFinal, interface, 
     problemDiffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     
     domain = FDDomain(x, problemDiffDegrees, 4);
-    pdeFunction = @(t, domain, y) fwibl1(domain, y, params);
+    odeFunction = @(t, y) fwibl1(domain, y, params);
     
     odeopt = odeset( ...
         ... 'Jacobian', @(t, y) jbenney(x, y, params, method, getD), ...
@@ -27,7 +27,7 @@ function createWIBL1Explicit(theta, Re, C, xLength, yLength, tFinal, interface, 
     timeStepper = @(odefun, t, y0) ode45(odefun, t, y0, odeopt);
     
     tic
-    [y, t] = pdeSolver(pdeFunction, t, domain, y0, timeStepper);
+    [y, t] = odeMatrixSolver(odeFunction, t, y0, timeStepper);
     timeTaken = toc;
     
     % F = y(end/2+1:end, :, :);
