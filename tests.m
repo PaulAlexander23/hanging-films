@@ -99,7 +99,7 @@ function testPDESolver1DHeatEquationPseudoSpectral(testCase)
     domain = PSDomain(x);
     y0 = cos(domain.x{1});
     timestepper = @ode45;
-    actual = pdeSolver(pdefun, t, domain, y0, timestepper);
+    actual = real(ifft(pdeSolver(pdefun, t, domain, fft(y0), timestepper)));
     expected = y0 * exp(-t);
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
