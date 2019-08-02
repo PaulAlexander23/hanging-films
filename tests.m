@@ -15,13 +15,13 @@ function testSetupT(testCase)
 end
 
 function testMakeFilename(testCase)
-    actual = makeFilename('-test',[1,2,3,4],{0.1:0.1:3.3,1:1:10},pi,@interface,1e-6);
-    expected = "data-test-theta-2-Re-3-C-4-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06";
+    actual = makeFilename('-test',[1,2,3,4],{0.1:0.1:3.3,1:1:10},pi,@interface,1e-6,"benney");
+    expected = "data-test-theta-2-Re-3-C-4-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06-model-benney";
     verifyEqual(testCase, actual, expected)
 end
 
 function testSaveAndLoadData(testCase)
-    filename = 'data-test-theta-0_876255-Re-0_488629-C-0_407077-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06.mat';
+    filename = 'data-test-theta-0_876255-Re-0_488629-C-0_407077-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06-model-benney.mat';
     if isfile(filename)
         delete(filename)
     end
@@ -32,11 +32,11 @@ function testSaveAndLoadData(testCase)
     expectedX = {0.1:0.1:3.3,1:1:10};
     expectedTimeTaken = 0.925425280986515;
     saveData(expectedY, expectedParams, expectedT, expectedX, ...
-        expectedTimeTaken, pi, @interface, 1e-6, "-test");
+        expectedTimeTaken, pi, @interface, 1e-6, "benney", "-test");
     
     verifyTrue(testCase,isfile(filename))
     
-    [actualY, actualParams, actualT, actualX, actualTimeTaken] = loadData(expectedParams,expectedX,pi,@interface,1e-6,"-test");
+    [actualY, actualParams, actualT, actualX, actualTimeTaken] = loadData(expectedParams,expectedX,pi,@interface,1e-6,"benney","-test");
     
     verifyEqual(testCase,actualY,expectedY)
     verifyEqual(testCase,actualParams,expectedParams)
@@ -121,7 +121,7 @@ function testPDESolver1DBenneyEquation(testCase)
 end
 
 function testCreateDataBenney(testCase)
-    filename = 'data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06.mat';
+    filename = 'data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06-model-benney.mat';
     if isfile(filename)
         delete(filename)
     end
@@ -137,7 +137,7 @@ function testCreateDataBenney(testCase)
 end
 
 function testCreateDataWIBL1(testCase)
-    filename = 'data-wibl1-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06.mat';
+    filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06-model-wibl1';
     if isfile(filename)
         delete(filename)
     end
@@ -151,7 +151,7 @@ function testCreateDataWIBL1(testCase)
 end
 
 function testCreateDataWIBL1PseudoSpectral(testCase)
-    filename = 'data-wibl1-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-0_2-interface-icos-xN-8-yN-8-AbsTol-1e-06.mat';
+    filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-0_2-interface-icos-xN-8-yN-8-AbsTol-1e-06-model-wibl1';
     if isfile(filename)
         delete(filename)
     end

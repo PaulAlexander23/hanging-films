@@ -41,9 +41,5 @@ function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN
     [y, t] = odeMatrixSolver(odeFunction, t, y0, timeStepper);
     timeTaken = toc;
     
-    if model == "benney"
-        saveData(y, params, t, domain.x, timeTaken, tFinal, interface, AbsTol)
-    elseif model == "wibl1"
-        saveData(y, params, t, domain.x, timeTaken, tFinal, interface, AbsTol, "-wibl1")
-    end
+    saveData(y, params, t, domain.x, timeTaken, tFinal, interface, AbsTol, model)
 end
