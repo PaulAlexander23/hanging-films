@@ -4,7 +4,7 @@ function [y, t] = pdeSolver(pdefun, t, domain, y0, timestepper)
     
     [t, y] = timestepper(@(t, y) callPDEFunctionWithReshape(pdefun, ...
         t, domain, y, shape), t, y0);
-    y = y';
+    y = y.';
     y = squeeze(reshape(y, [shape, length(t)]));
 end
 
