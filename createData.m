@@ -19,27 +19,43 @@ function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN
     if model == "benney"
         y0 = interface(domain.x);
         odeFunction = @(t, y) fbenney2d(domain, y, params);
-        odeopt = odeset( ...
-            'Jacobian', @(t, y) jbenney2d(domain, y, params), ...
-            ...'Vectorized', 'on', ...
-            'AbsTol', AbsTol ...
-            ... 'BDF','on' ...
-            );
     elseif model == "wibl1"
         y0 = interface(x);
-        y0 = [y0; 0*y0]; % [y0; F_0]
+        y0 = [y0; 2/3 + 0*y0]; % [y0; F_0]
         odeFunction = @(t, y) fwibl1(domain, y, params);
-        odeopt = odeset( ...
-            ... 'Vectorized', 'on', ...
-            'AbsTol', AbsTol ...
-            ... 'BDF','on' ...
-            );
     end
     
-    timeStepper = @(odefun, t, y0) ode15s(odefun, t, y0, odeopt);
+    odeopt = odeset( ...
+        'Vectorized', 'on', ...
+        'AbsTol', AbsTol ...
+        );
+    
+    if method == "finite-difference"
+        if model == "benney"
+            odeopt = odeset(odeopt, ...
+                'Jacobian', @(t, y) jbenney2d(domain, y, params) ...
+                );
+        end
+    end
+
+    if method == "pseudo-spectral"
+        if model == "benney"
+            y0 = fft2(y0);
+        elseif model == "wibl1"
+            y0 = [fft2(y0(1:end/2,:)); ...
+                fft2(y0(1+end/2:end,:))];
+        end
+    end
+
+    if method == "finite-difference"
+        timeStepper = @(odefun, t, y0) ode15s(odefun, t, y0, odeopt);
+    elseif method == "pseudo-spectral"
+        timeStepper = @(odefun, t, y0) ode45(odefun, t, y0, odeopt);
+    end
+
     tic
     [y, t] = odeMatrixSolver(odeFunction, t, y0, timeStepper);
     timeTaken = toc;
-    
+
     saveData(y, params, t, domain.x, timeTaken, tFinal, interface, AbsTol, model)
 end

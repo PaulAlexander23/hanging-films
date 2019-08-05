@@ -136,29 +136,51 @@ function testCreateDataBenney(testCase)
     end
 end
 
+function testCreateDataBenneyPseudoSpectral(testCase)
+    filename = 'data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06-model-benney.mat';
+    if isfile(filename)
+        delete(filename)
+    end
+    createData("benney",1,1,1,2*pi,2*pi,0.5,@(x)1+0.5*cos(x{1}+x{2}'), 64, 64, 1e-6, "pseudo-spectral")
+    load(filename,'y');
+    actual = y;
+    load('testCreate2DBenneyEquationExpected','expected')
+    verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
+        'RelTol', 1e-3, 'AbsTol', 1e-6)
+    if isfile(filename)
+        delete(filename)
+    end
+end
+
 function testCreateDataWIBL1(testCase)
     filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06-model-wibl1';
     if isfile(filename)
         delete(filename)
     end
     createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 16, 16, 1e-6)
-    load(filename,'t')
-    
+    load(filename,'t', 'y')
     verifyEqual(testCase, t(end), 1)
+    actual = y;
+    load('testCreateWIBL1EquationExpected','expected');
+    verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
+        'RelTol', 1e-3, 'AbsTol', 1e-6)
     if isfile(filename)
         delete(filename)
     end
 end
 
 function testCreateDataWIBL1PseudoSpectral(testCase)
-    filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-0_2-interface-icos-xN-8-yN-8-AbsTol-1e-06-model-wibl1';
+    filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-8-yN-8-AbsTol-1e-06-model-wibl1';
     if isfile(filename)
         delete(filename)
     end
-    createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 0.2, @icos, 8, 8, 1e-6, "pseudo-spectral")
-    load(filename,'t')
-    
-    verifyEqual(testCase, t(end), 0.2)
+    createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 8, 8, 1e-6, "pseudo-spectral")
+    load(filename,'t','y')
+    verifyEqual(testCase, t(end), 1)
+    actual = y;
+    load('testCreateWIBL1EquationExpected','expected');
+    verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
+        'RelTol', 1e-3, 'AbsTol', 1e-6)
     if isfile(filename)
         delete(filename)
     end
