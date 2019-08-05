@@ -231,11 +231,11 @@ function testCreateDataWIBL1(testCase)
 end
 
 function testCreateDataWIBL1PseudoSpectral(testCase)
-    filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-8-yN-8-AbsTol-1e-06-model-wibl1';
+    filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06-model-wibl1';
     if isfile(filename)
         delete(filename)
     end
-    createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 8, 8, 1e-6, "pseudo-spectral")
+    createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 16, 16, 1e-6, "pseudo-spectral")
     load(filename,'t','y')
     verifyEqual(testCase, t(end), 1)
     actual = y;
