@@ -22,18 +22,31 @@ F = (h(end/2+1:end,:));
 % F = 2/3 * ones(size(F)); % set F1 to zero instead of using numerics.
 
 %% Smoothing
+Nx = length(x{1})/2;
+Ny = length(x{2})/2;
+kx = [0:Nx-1, 0, 1-Nx:-1]';
+ky = [0:Ny-1, 0, 1-Ny:-1]';
+
 fy = fftn(y);
-fy(abs(fy)<1e0) = 0;
+% figure; surf(log10(abs(real(fy))));
+fy(:,abs(ky)>3/4*Ny) = 0;
+fy(abs(kx)>1*Nx,:) = 0;
+fy(abs(fy)<1e-5) = 0;
+% figure; surf(log10(abs(real(fy))));
 y = ifftn(fy, 'symmetric');
 
 fF = fftn(F);
+% figure; surf(log10(abs(real(fF))))
+fF(:,abs(ky)>7/8*Ny) = 0;
+fF(abs(kx)>1*Nx,:) = 0;
 fF(abs(fF)<1e-3) = 0;
+% figure; surf(log10(abs(real(fF))))
 F = ifftn(fF, 'symmetric');
 
 %%
 if method == "pseudo-spectral"
-    y = domain.fftn(h(1:end/2,:));
-    F = domain.fftn(h(end/2+1:end,:));
+    y = domain.fftn(y);
+    F = domain.fftn(F);
 end
 
 %%
@@ -52,7 +65,7 @@ plotSurface(domain, - c * dydx, method);
 %%
 dFdx = domain.diff(F, [1, 0]');
 
-c = apprioximateC(domain, dFdt, dFdx, method);
+% c = apprioximateC(domain, dFdt, dFdx, method);
 residual(domain, c, dFdt, dFdx, method)
 
 plotSurface(domain, dFdt, method);
@@ -80,5 +93,5 @@ function plotSurface(domain, y, method)
     if method == "pseudo-spectral"
         y = domain.ifftn(y);
     end
-    surf(y) 
+    surf(y)
 end
