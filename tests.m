@@ -2,6 +2,7 @@ function tests = tests()
     tests = functiontests(localfunctions);
 end
 
+%% Independent variable setup
 function testSetupX(testCase)
     actual = setupX(10,pi,12,11);
     verifyEqual(testCase, actual{1}, linspace(10/12,10,12)')
@@ -14,6 +15,64 @@ function testSetupT(testCase)
     verifyTrue(testCase, all(abs(diff(actual(1:end-1)) - 0.2)<1e-14));
 end
 
+%% Function evaluation
+
+
+function testFiniteDifferenceFbenney2d(testCase)
+    addpath discretisationMethods
+    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
+    domain = FDDomain(setupX(1,1,2^8,2^8), diffDegrees, 4);
+    y = cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}');
+    params = [1, 7/8*pi, 1, 0.01];
+    
+    actual = fbenney2d(domain, y, params);
+
+    expectedSize = [2^8, 2^8];
+    
+    verifySize(testCase, actual, expectedSize)
+end
+
+function testPseudoSpectralFbenney2d(testCase)
+    addpath discretisationMethods
+    domain = PSDomain(setupX(1,1,2^8,2^8));
+    y = domain.fftn(cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}'));
+    params = [1, 7/8*pi, 1, 0.01];
+    
+    actual = fbenney2d(domain, y, params);
+
+    expectedSize = [2^8, 2^8];
+    
+    verifySize(testCase, actual, expectedSize)
+end
+
+
+function testFiniteDifferenceDealiasingOnWIBL1(testCase)
+    addpath discretisationMethods
+    domain = FDDomain(setupX(1,1,2^6,2^6),[1,0;0,1;2,0;0,2]',4);
+    y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}');
+    f = 2/3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}');
+    Y = [y;f];
+    params = [1, pi/4, 1, 0.01];
+    
+    actual = fwibl1(domain, Y, params);
+
+    verifyTrue(testCase, all(max(actual)<1e5))
+end
+
+function testPseudoSpectralDealiasingOnWIBL1(testCase)
+    addpath discretisationMethods
+    domain = PSDomain(setupX(1,1,2^6,2^6));
+    y = domain.fftn(1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}'));
+    f = domain.fftn(2/3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}'));
+    Y = [y;f];
+    params = [1, pi/4, 1, 0.01];
+    
+    actual = fwibl1(domain, Y, params);
+    
+    verifyTrue(testCase, all(max(actual)<1e5))
+end
+
+%% Data handling
 function testMakeFilename(testCase)
     actual = makeFilename('-test',[1,2,3,4],{0.1:0.1:3.3,1:1:10},pi,@interface,1e-6,"benney");
     expected = "data-test-theta-2-Re-3-C-4-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06-model-benney";
@@ -49,6 +108,7 @@ function testSaveAndLoadData(testCase)
     end
 end
 
+%% odeMatrixSolver
 function testPDESolver1DExponentialDecay(testCase)
     addpath discretisationMethods
     odefun = @(t, y) - y;
@@ -120,6 +180,7 @@ function testPDESolver1DBenneyEquation(testCase)
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
+%% Create Data
 function testCreateDataBenney(testCase)
     filename = 'data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06-model-benney.mat';
     if isfile(filename)
