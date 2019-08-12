@@ -60,4 +60,5 @@ function myfunction(func, a0, b0, fig1, fig2)
     contour(A, B, real(func(A, B, params)),[0, 0]);
     
     fprintf("Critical alpha: %f\nCritical beta: %f\n", aCritical, bCritical)
+    fprintf("Critical wavenumber x: %f\nCritical wavenumber y: %f\n", 2*pi/aCritical, 2*pi/bCritical)
 end
