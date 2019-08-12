@@ -58,8 +58,12 @@ function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN
     timeTaken = toc;
     
     if method == "pseudo-spectral"
-        y = [ifft2(y(1:end/2,:,:), 'symmetric'); ...
-            ifft2(y(1+end/2:end,:,:), 'symmetric')];
+        if model == "benney"
+            y = ifft2(y, 'symmetric');
+        elseif model == "wibl1"
+            y = [ifft2(y(1:end/2,:,:), 'symmetric'); ...
+                ifft2(y(1+end/2:end,:,:), 'symmetric')];
+        end
     end
     
     saveData(y, params, t, domain.x, timeTaken, tFinal, interface, AbsTol, model)
