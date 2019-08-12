@@ -1,7 +1,7 @@
 addpath discretisationMethods
 
-method = "finite-difference";
-% method = "pseudo-spectral";
+% method = "finite-difference";
+method = "pseudo-spectral";
 
 x = setupX(32,32,64,64);
 params = [1, 7 * pi / 8, 1, 0.01]; % delta, theta, Re, C
@@ -49,8 +49,10 @@ if method == "pseudo-spectral"
     F = domain.fftn(F);
 end
 
+h = [y; F];
+
 %%
-dhdt = fwibl1(domain, [y; F], params);
+dhdt = fwibl1(domain, h, params);
 dydt = dhdt(1:end/2,:);
 dFdt = dhdt(end/2+1:end,:);
 
@@ -71,6 +73,13 @@ residual(domain, c, dFdt, dFdx, method)
 plotSurface(domain, dFdt, method);
 plotSurface(domain, - c * dFdx, method);
 
+%%
+
+travellingWaveResidual(domain, h, params)
+% x = fsolve(@(x) , x0);
+
+
+%%
 function c = apprioximateC(domain, dydt, dydx, method)
     if method == "pseudo-spectral"
         dydt = domain.ifftn(dydt);
