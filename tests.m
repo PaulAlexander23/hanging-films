@@ -120,12 +120,27 @@ end
 
 %% Function evaluation
 
+function testFiniteDifferenceFbenney1d(testCase)
+    addpath discretisationMethods
+    N = 2^6;
+    x = {linspace(2*pi/N, 2*pi, N)'};
+    domain = FDDomain(x, [1, 2], 4);
+    y = cos(2*pi*domain.x{1});
+    params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
+    
+    actual = fbenney1d(domain, y, params);
+
+    expectedSize = [N, 1];
+    
+    verifySize(testCase, actual, expectedSize)
+end
+
 function testFiniteDifferenceFbenney2d(testCase)
     addpath discretisationMethods
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     domain = FDDomain(setupX(1,1,2^8,2^8), diffDegrees, 4);
     y = cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}');
-    params = [1, 7/8*pi, 1, 0.01];
+    params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
     
     actual = fbenney2d(domain, y, params);
 
@@ -138,7 +153,7 @@ function testPseudoSpectralFbenney2d(testCase)
     addpath discretisationMethods
     domain = PSDomain(setupX(1,1,2^8,2^8));
     y = domain.fftn(cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}'));
-    params = [1, 7/8*pi, 1, 0.01];
+    params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
     
     actual = fbenney2d(domain, y, params);
 
@@ -155,7 +170,7 @@ function testFiniteDifferenceEqualsPseudoSpectralFbenney2d(testCase)
     y = 1 + cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}');
     y = irand(domain.x);
     
-    params = [1, 7/8*pi, 1, 0.01];
+    params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
     
     actualFD = fbenney2d(domain, y, params);
     actualPS = domainPS.ifftn( ...
@@ -173,7 +188,7 @@ function testFiniteDifferenceEqualsPseudoSpectralFwibl12d(testCase)
     F = 2/3 + 0.1*2/3 * (cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}'));
     Y = [y;F];
     fY = [domainPS.fftn(y);domainPS.fftn(F)];
-    params = [1, 7/8*pi, 1, 0.01];
+    params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
     
     
     
@@ -191,7 +206,7 @@ function testFiniteDifferenceDealiasingOnWIBL1(testCase)
     y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}');
     f = 2/3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}');
     Y = [y;f];
-    params = [1, pi/4, 1, 0.01];
+    params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
     
     actual = fwibl1(domain, Y, params);
 
@@ -204,7 +219,7 @@ function testPseudoSpectralDealiasingOnWIBL1(testCase)
     y = domain.fftn(1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}'));
     f = domain.fftn(2/3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}'));
     Y = [y;f];
-    params = [1, pi/4, 1, 0.01];
+    params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
     
     actual = fwibl1(domain, Y, params);
     
@@ -216,7 +231,7 @@ function testBenneyPSEqualsFD(testCase)
     domain1 = PSDomain(setupX(15, 26, 2^7, 2^7));
     domain2 = FDDomain(setupX(15, 26, 2^7, 2^7), [1,0;0,1;2,0;0,2]', 4);
     y = icos(domain1.x);
-    params = [1, 7 * pi / 8, 5, 0.01];
+    params = struct('theta', 7*pi/8, 'Re', 5, 'C', 0.01);
     
     actual = domain1.ifftn(fbenney2d(domain1, domain1.fftn(y), params));
     expected = fbenney2d(domain2, y, params);
@@ -226,7 +241,8 @@ end
 
 %% Data handling
 function testMakeFilename(testCase)
-    actual = makeFilename('-test',[1,2,3,4],{0.1:0.1:3.3,1:1:10},pi,@interface,1e-6,"benney");
+    params = struct('theta', 2, 'Re', 3, 'C', 4);
+    actual = makeFilename('-test',params,{0.1:0.1:3.3,1:1:10},pi,@interface,1e-6,"benney");
     expected = "data-test-theta-2-Re-3-C-4-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06-model-benney";
     verifyEqual(testCase, actual, expected)
 end
@@ -238,7 +254,7 @@ function testSaveAndLoadData(testCase)
     end
     
     expectedY = rand(100);
-    expectedParams = [0.9618, 0.876255, 0.488629, 0.407077];
+    expectedParams = struct('theta', 0.876255, 'Re', 0.488629, 'C', 0.407077);
     expectedT = linspace(0,0.126576313737181);
     expectedX = {0.1:0.1:3.3,1:1:10};
     expectedTimeTaken = 0.925425280986515;
@@ -321,9 +337,9 @@ function testPDESolver1DBenneyEquation(testCase)
     addpath discretisationMethods
     t = linspace(0, 1, 11);
     x = {linspace(2*pi/64, 2*pi, 64)'};
-    domain = FDDomain(x, [1, 2],4);
+    domain = FDDomain(x, [1, 2], 4);
     y0 = 1+0.5*cos(domain.x{1});
-    params = [1,1,1,1];
+    params = struct('theta', 1, 'Re', 1, 'C', 1);
     odefun = @(t, y) fbenney1d(domain, y, params);
     timestepper = @ode15s;
     actual = odeMatrixSolver(odefun, t, y0, timestepper);

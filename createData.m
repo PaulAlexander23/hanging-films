@@ -5,7 +5,7 @@ function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN
     if nargin < 11, AbsTol = 1e-6; end
     if nargin < 12, method = "finite-difference"; end
     
-    params = [1, theta, Re, C]; % delta, theta, Re, C
+    params = struct('theta', theta, 'Re', Re, 'C', C); % delta, theta, Re, C
     t = setupT(tFinal, 0.2);
     x = setupX(xLength, yLength, xN, yN);
     
