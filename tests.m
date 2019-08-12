@@ -134,6 +134,26 @@ function testFiniteDifferenceFbenney2d(testCase)
     verifySize(testCase, actual, expectedSize)
 end
 
+function testFiniteDifferenceEqualsPseudoSpectralFbenney2ddsg(testCase)
+    addpath discretisationMethods
+    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
+    domain = FDDomain(setupX(1,1,2^8,2^8), diffDegrees, 4);
+%     domainPS = PSDomain(setupX(1,1,2^8,2^8));
+    y = 1 + cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}');
+    y = irand(domain.x);
+    
+    params = [1, 7/8*pi, 1, 0.01];
+    
+    tic
+    actual = fbenney2d(domain, y, params);
+    toc
+    tic
+    expected = fbenney2dfourier(domain, y, params);
+    toc
+    
+    verifyEqual(testCase, actual, expected, 'RelTol', 1e-12, 'AbsTol', 1e-11)
+end
+
 function testPseudoSpectralFbenney2d(testCase)
     addpath discretisationMethods
     domain = PSDomain(setupX(1,1,2^8,2^8));
