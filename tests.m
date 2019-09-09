@@ -239,6 +239,44 @@ function testBenneyPSEqualsFD(testCase)
     verifyEqual(testCase, actual, expected, 'RelTol', 1e-2, 'AbsTol', 1e-5)
 end
 
+%% Maximum norm evaluation
+
+function test1DFourierMax(testCase)
+    L = 5;
+    N = 2^8;
+    domain = PSDomain({linspace(L/N,L,N)});
+    y = 2*cos(2*pi*domain.x{1});
+    
+    actual = max(abs(domain.fftn(y) * domain.normaliseAmplitude));
+    expected = max(y);
+    
+    verifyEqual(testCase, actual, expected);
+end
+
+function test2DFourierMax(testCase)
+    L = 5;
+    N = 2^8;
+    domain = PSDomain({linspace(L/N,L,N), linspace(L/N,L,N)});
+    y = 2*cos(2*pi*domain.x{1}) + 0 * domain.x{2}';
+    
+    actual = max(max(abs(domain.fftn(y) * domain.normaliseAmplitude)));
+    expected = max(max(y));
+    
+    verifyEqual(testCase, actual, expected);
+end
+
+function test3DFourierMax(testCase)
+    L = 5;
+    N = 2^6;
+    domain = PSDomain({linspace(L/N,L,N), linspace(L/N,L,N), linspace(L/N,L,N)});
+    y = 2*cos(2*pi*domain.x{1}) + 0*domain.x{2}' + zeros(1,1,N).*domain.x{3};
+    
+    actual = max(max(max(abs(domain.fftn(y) * domain.normaliseAmplitude))));
+    expected = max(max(max(y)));
+    
+    verifyEqual(testCase, actual, expected);
+end
+
 %% Data handling
 function testMakeFilename(testCase)
     params = struct('theta', 2, 'Re', 3, 'C', 4);
@@ -330,7 +368,7 @@ function testPDESolver1DHeatEquationPseudoSpectral(testCase)
     actual = real(ifft(odeMatrixSolver(odefun, t, fft(y0), timestepper)));
     expected = y0 * exp(-t);
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
-        'RelTol', 1e-3, 'AbsTol', 1e-6)
+        'RelTol', 1e-3, 'AbsTol', 1e-6/domain.normaliseAmplitude)
 end
 
 function testPDESolver1DBenneyEquation(testCase)

@@ -39,6 +39,8 @@ function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN
     end
     
     if method == "pseudo-spectral"
+        odeopt = odeset(odeopt, ...
+            'AbsTol', AbsTol / domain.normaliseAmplitude);
         if model == "benney"
             y0 = fft2(y0);
         elseif model == "wibl1"
