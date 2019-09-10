@@ -1,27 +1,31 @@
-function [y, t] = odeMatrixSolver(odefun, t, y0, timestepper)
-    shape = size(y0);
-    y0 = reshape(y0, [prod(shape), 1]);
+function [yMatrix, t] = odeMatrixSolver(odefunMatrix, t, y0Matrix, timestepper)
+    shape = size(y0Matrix);
     
-    [t, y] = timestepper( ...
-        @(t, y) pdefunVector(odefun, t, y, shape), ...
-        t, y0);
+    y0Vector = reshapeToVector(y0Matrix, shape);
+    odefunVector = @(t, yVector) vectoriseFunction(odefunMatrix, t, yVector, shape);
     
-    y = y.';
-    y = squeeze(reshape(y, [shape, length(t)]));
+    [t, yVector] = callTimestepper(odefunVector, t, y0Vector, timestepper);
+    
+    yMatrix = reshapeToShape(yVector, shape);
 end
 
-function F = pdefunVector(odefun, t, y, shape)
-    y = reshapeToShape(y, shape);
+function fVector = vectoriseFunction(odefunMatrix, t, yVector, shape)
+    yMatrix = reshapeToShape(yVector, shape);
     
-    f = odefun(t, y);
+    fMatrix = odefunMatrix(t, yMatrix);
     
-    F = reshapeToVector(f, shape);
+    fVector = reshapeToVector(fMatrix, shape);
 end
 
 function Y = reshapeToShape(y, shape)
-    Y = reshape(y, [shape, numel(y) / prod(shape)]);
+    Y = squeeze(reshape(y, [shape, numel(y) / prod(shape)]));
 end
 
 function y = reshapeToVector(Y, shape)
-    y = reshape(Y, prod(shape), []);
+    y = squeeze(reshape(Y, prod(shape), []));
+end
+
+function [t, yVector] = callTimestepper(odefunVector, t, y0Vector, timestepper)
+    [t, yVector] = timestepper(odefunVector, t, y0Vector);
+    yVector = yVector.';
 end
