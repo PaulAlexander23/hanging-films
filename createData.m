@@ -1,12 +1,19 @@
-function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method)
+function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, debug)
     addpath discretisationMethods
     if nargin < 9, xN = 64; end
     if nargin < 10, yN = 64; end
     if nargin < 11, AbsTol = 1e-6; end
     if nargin < 12, method = "finite-difference"; end
+    if nargin < 13, debug = false; end
     
-    params = struct('theta', theta, 'Re', Re, 'C', C); % delta, theta, Re, C
-    t = setupT(tFinal, 0.2);
+    params = struct('theta', theta, 'Re', Re, 'C', C);
+    
+    if ~debug
+        t = setupT(tFinal, 0.2);
+    else
+        t = [0,tFinal];
+    end
+    
     x = setupX(xLength, yLength, xN, yN);
     
     if method == "finite-difference"
@@ -21,14 +28,23 @@ function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN
         odeFunction = @(t, y) fbenney2d(domain, y, params);
     elseif model == "wibl1"
         y0 = interface(x);
-        y0 = [y0; 2/3 + 0*y0]; % [y0; F_0]
+        F0 = 2/3 + 0*y0;
+        y0 = [y0; F0];
         odeFunction = @(t, y) fwibl1(domain, y, params);
     end
     
     odeopt = odeset( ...
-        'Vectorized', 'on', ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
         'AbsTol', AbsTol ...
+        ...'MaxStep', 1e-3, ...
+        ...'InitialStep', 1e-3 ...
         );
+    if debug
+        odeopt = odeset(odeopt, ...
+            'OutputFcn', 'odeprint', ...
+            'OutputSel', 1);
+    end
     
     if method == "finite-difference"
         if model == "benney"
@@ -39,13 +55,11 @@ function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN
     end
     
     if method == "pseudo-spectral"
-        odeopt = odeset(odeopt, ...
-            'AbsTol', AbsTol / domain.normaliseAmplitude);
         if model == "benney"
-            y0 = fft2(y0);
+            y0 = domain.fft(y0);
         elseif model == "wibl1"
-            y0 = [fft2(y0(1:end/2,:)); ...
-                fft2(y0(1+end/2:end,:))];
+            y0 = [domain.fft(y0(1:end/2,:)); ...
+                domain.fft(y0(1+end/2:end,:))];
         end
     end
     
@@ -61,10 +75,10 @@ function createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN
     
     if method == "pseudo-spectral"
         if model == "benney"
-            y = ifft2(y, 'symmetric');
+            y = domain.ifft(y);
         elseif model == "wibl1"
-            y = [ifft2(y(1:end/2,:,:), 'symmetric'); ...
-                ifft2(y(1+end/2:end,:,:), 'symmetric')];
+            y = [domain.ifft(y(1:end/2,:,:)); ...
+                domain.ifft(y(1+end/2:end,:,:))];
         end
     end
     
