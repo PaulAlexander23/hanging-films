@@ -1,10 +1,10 @@
 addpath discretisationMethods
 
-% method = "finite-difference";
-method = "pseudo-spectral";
+method = "finite-difference";
+% method = "pseudo-spectral";
 
 x = setupX(32,32,64,64);
-params = [1, 7 * pi / 8, 1, 0.01]; % delta, theta, Re, C
+params = struct('theta', 7 * pi / 8, 'Re', 1, 'C', 0.01);
 if method == "finite-difference"
     domain = FDDomain(x, [1, 0; 0, 1; 2, 0; 0, 2]', 4);
 elseif method == "pseudo-spectral"
@@ -75,9 +75,16 @@ plotSurface(domain, - c * dFdx, method);
 
 %%
 
-travellingWaveResidual(domain, h, params)
-% x = fsolve(@(x) , x0);
+travellingWaveResidual(domain, h, params, c)
+shape = size(h);
+x0 = [reshape(h, [prod(shape), 1]); c];
+x = fsolve(@(x) [reshape( ...
+    travellingWaveResidual(domain, reshape(x(1:end-1), shape), params, x(end)), ...
+    [prod(shape), 1]); mean(x(1:end-1)) - 1], ...
+    x0);
 
+c = x(end);
+y = reshape(x(1:end-1), shape);
 
 %%
 function c = apprioximateC(domain, dydt, dydx, method)
