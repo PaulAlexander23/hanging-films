@@ -550,88 +550,112 @@ function testPDESolver1DBenneyEquation(testCase)
 end
 
 %% Create Data
-function testMainBenney(testCase)
-    filename = 'data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06-model-benney.mat';
-    if isfile(filename)
-        delete(filename)
-    end
-    main("benney",1,1,1,2*pi,2*pi,0.5,@(x)1+0.5*cos(x{1}+x{2}'))
-    load(filename,'y');
-    actual = y;
+function testCreateDataBenneyFiniteDifference(testCase)
+    model = "benney";
+    domain = createDomain(2*pi, 2*pi, 2^6, 2^6, "finite-difference");
+    params = struct('theta', 1, 'Re', 1, 'C', 1);
+    tFinal = 0.5;
+    interface = @icos;
+    method = "finite-difference";
+    AbsTol = 1e-6;
+    debug = false;
+
+    [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+
+    actual = y(:,:,end);
     load('testCreate2DBenneyEquationExpected','expected')
-    verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
+
+    verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
-    if isfile(filename)
-        delete(filename)
-    end
 end
 
-function testMainBenneyPseudoSpectralIsNotNans(testCase)
-    model = "benney"; theta = 1; Re = 1; C = 1; xLength = 2*pi; yLength = 2*pi; tFinal = 0.5; interface = @(x)1+0.1*(cos(x{1})+cos(x{2}')); xN = 2^5; yN = 2^5; AbsTol = 1e-4; method = "pseudo-spectral";
-    params = struct('theta', theta, 'Re', Re, 'C', C);
-    x = setupX(xLength, yLength, xN, yN);
-    filename = makeFilename("", params, x, tFinal, interface, AbsTol, model);
-    if isfile(filename)
-        delete(filename)
-    end
-    main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method);
-    load(filename,'y');
-    actual = any(isnan(y), [1,2]);
+function testCreateDataBenneyPseudoSpectral(testCase)
+    model = "benney";
+    domain = createDomain(2*pi, 2*pi, 2^6, 2^6, "pseudo-spectral");
+    params = struct('theta', 1, 'Re', 1, 'C', 1);
+    tFinal = 0.002;
+    interface = @icos;
+    method = "pseudo-spectral";
+    AbsTol = 1e-5;
+    debug = false;
+
+    [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+
+    actual = y(:,:,end);
+    load('temp','expected')
     
-    actual
-    
-    verifyTrue(testCase, ~any(actual))
-    if isfile(filename)
-        %         delete(filename)
-    end
+    verifyEqual(testCase, actual, expected, ...
+        'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
-function testMainBenneyPseudoSpectral(testCase)
-    filename = "data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}')-xN-32-yN-32-AbsTol-0_001-model-benney.mat";
-    if isfile(filename)
-        delete(filename)
-    end
-    main("benney",1,1,1,2*pi,2*pi,0.05,@icos, 32, 32, 1e-6, "pseudo-spectral")
-    load(filename,'y');
-    actual = y;
-    load('testCreate2DBenneyEquationExpected','expected')
-    verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
+function testCreateDataWIBL1FiniteDifference(testCase)
+    model = "wibl1";
+    domain = createDomain(2*pi, 2*pi, 2^5, 2^5, "finite-difference");
+    params = struct('theta', 1, 'Re', 1, 'C', 1);
+    tFinal = 0.5;
+    interface = @icos;
+    method = "finite-difference";
+    AbsTol = 1e-6;
+    debug = false;
+
+    [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+
+    actual = y(:,:,end);
+    load('testCreateWIBL1EquationExpected','expected')
+
+    verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
-    if isfile(filename)
-        delete(filename)
-    end
 end
+
+function testCreateDataWIBL1PseudoSpectral(testCase)
+    model = "wibl1";
+    domain = createDomain(2*pi, 2*pi, 2^5, 2^5, "pseudo-spectral");
+    params = struct('theta', 1, 'Re', 1, 'C', 1);
+    tFinal = 0.5;
+    interface = @icos;
+    method = "pseudo-spectral";
+    AbsTol = 1e-6;
+    debug = false;
+
+    [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+
+    actual = y(:,:,end);
+    load('testCreateWIBL1EquationExpected','expected')
+
+    verifyEqual(testCase, actual, expected, ...
+        'RelTol', 2e-3, 'AbsTol', 1e-4)
+end
+
+%% Main
 
 function testMainWIBL1(testCase)
-    filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06-model-wibl1';
+    model = "benney";
+    theta = 1; Re = 1; C = 1;
+    xLength = 2*pi; yLength = 2*pi; xN = 2^6; yN = 2^6;
+    tFinal = 0.5;
+    interface = @icos;
+    method = "finite-difference";
+    AbsTol = 1e-6;
+    debug = false;
+    
+    filename = makeFilename("", ...
+        struct('theta', theta, 'Re', Re, 'C', C), ...
+        setupX(xLength, yLength, xN, yN), ...
+        tFinal,interface,AbsTol,model);
     if isfile(filename)
         delete(filename)
     end
-    main("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 16, 16, 1e-6)
-    load(filename,'t', 'y')
-    verifyEqual(testCase, t(end), 1)
-    actual = y;
-    load('testCreateWIBL1EquationExpected','expected');
-    verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
+    
+    main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, debug)
+    
+    load(filename, 'y')
+    if isfile(filename)
+        delete(filename)
+    end
+    
+    actual = y(:,:,end);
+    load('testCreate2DBenneyEquationExpected','expected');
+    
+    verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
-    if isfile(filename)
-        delete(filename)
-    end
-end
-
-function testMainWIBL1PseudoSpectral(testCase)
-    filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06-model-wibl1';
-    if isfile(filename)
-        delete(filename)
-    end
-    main("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 32, 32, 1e-5, "pseudo-spectral")
-    load(filename,'t','y')
-    verifyEqual(testCase, t(end), 1)
-    actual = y;
-    load('testCreateWIBL1EquationExpected','expected');
-    verifyEqual(testCase, actual(:, :, end), expected(:, :, end), ...
-        'RelTol', 1e-3, 'AbsTol', 1e-3)
-    if isfile(filename)
-        %         delete(filename)
-    end
 end
