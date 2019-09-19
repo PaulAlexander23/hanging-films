@@ -550,12 +550,12 @@ function testPDESolver1DBenneyEquation(testCase)
 end
 
 %% Create Data
-function testCreateDataBenney(testCase)
+function testMainBenney(testCase)
     filename = 'data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}'')-xN-64-yN-64-AbsTol-1e-06-model-benney.mat';
     if isfile(filename)
         delete(filename)
     end
-    createData("benney",1,1,1,2*pi,2*pi,0.5,@(x)1+0.5*cos(x{1}+x{2}'))
+    main("benney",1,1,1,2*pi,2*pi,0.5,@(x)1+0.5*cos(x{1}+x{2}'))
     load(filename,'y');
     actual = y;
     load('testCreate2DBenneyEquationExpected','expected')
@@ -566,7 +566,7 @@ function testCreateDataBenney(testCase)
     end
 end
 
-function testCreateDataBenneyPseudoSpectralIsNotNans(testCase)
+function testMainBenneyPseudoSpectralIsNotNans(testCase)
     model = "benney"; theta = 1; Re = 1; C = 1; xLength = 2*pi; yLength = 2*pi; tFinal = 0.5; interface = @(x)1+0.1*(cos(x{1})+cos(x{2}')); xN = 2^5; yN = 2^5; AbsTol = 1e-4; method = "pseudo-spectral";
     params = struct('theta', theta, 'Re', Re, 'C', C);
     x = setupX(xLength, yLength, xN, yN);
@@ -574,7 +574,7 @@ function testCreateDataBenneyPseudoSpectralIsNotNans(testCase)
     if isfile(filename)
         delete(filename)
     end
-    createData(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method);
+    main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method);
     load(filename,'y');
     actual = any(isnan(y), [1,2]);
     
@@ -586,12 +586,12 @@ function testCreateDataBenneyPseudoSpectralIsNotNans(testCase)
     end
 end
 
-function testCreateDataBenneyPseudoSpectral(testCase)
+function testMainBenneyPseudoSpectral(testCase)
     filename = "data-theta-1-Re-1-C-1-xL-6_28319-yL-6_28319-T-0_5-interface-@(x)1+0_5*cos(x{1}+x{2}')-xN-32-yN-32-AbsTol-0_001-model-benney.mat";
     if isfile(filename)
         delete(filename)
     end
-    createData("benney",1,1,1,2*pi,2*pi,0.05,@icos, 32, 32, 1e-6, "pseudo-spectral")
+    main("benney",1,1,1,2*pi,2*pi,0.05,@icos, 32, 32, 1e-6, "pseudo-spectral")
     load(filename,'y');
     actual = y;
     load('testCreate2DBenneyEquationExpected','expected')
@@ -602,12 +602,12 @@ function testCreateDataBenneyPseudoSpectral(testCase)
     end
 end
 
-function testCreateDataWIBL1(testCase)
+function testMainWIBL1(testCase)
     filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06-model-wibl1';
     if isfile(filename)
         delete(filename)
     end
-    createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 16, 16, 1e-6)
+    main("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 16, 16, 1e-6)
     load(filename,'t', 'y')
     verifyEqual(testCase, t(end), 1)
     actual = y;
@@ -619,12 +619,12 @@ function testCreateDataWIBL1(testCase)
     end
 end
 
-function testCreateDataWIBL1PseudoSpectral(testCase)
+function testMainWIBL1PseudoSpectral(testCase)
     filename = 'data-theta-2_74889-Re-1-C-0_01-xL-32-yL-32-T-1-interface-icos-xN-16-yN-16-AbsTol-1e-06-model-wibl1';
     if isfile(filename)
         delete(filename)
     end
-    createData("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 32, 32, 1e-5, "pseudo-spectral")
+    main("wibl1", 7/8 * pi, 1, 0.01, 32, 32, 1, @icos, 32, 32, 1e-5, "pseudo-spectral")
     load(filename,'t','y')
     verifyEqual(testCase, t(end), 1)
     actual = y;
