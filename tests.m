@@ -216,7 +216,7 @@ function testPseudoSpectralFbenney2dSize(testCase)
     verifySize(testCase, actual, expectedSize)
 end
 
-function testPseudoSpectralFbenney2dResolution(testCase)
+function testPseudoSpectralFbenney2dResolutionDefault(testCase)
     addpath discretisationMethods/
     
     expected = eval(2^10);
@@ -239,6 +239,52 @@ function testPseudoSpectralFbenney2dResolution(testCase)
     end
 end
 
+function testPseudoSpectralFbenney2dResolutionNoAntiAliasing(testCase)
+    addpath discretisationMethods/
+    
+    expected = eval(2^10);
+    error = zeros(5,1);
+    for n = 1:6
+        actual = eval(2^(n+3));
+        error(n) = max(abs(actual-expected), [], [1,2]);
+    end
+    
+%     figure; plot(4:9, log10(error));
+%     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2])));
+    
+    verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e3);
+    function f = eval(N)
+        domain = PSDomain(setupX(1,1,N,N), 1e-13, false, 2/3);
+        params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
+        y = icos(domain.x);
+        f = fbenney2d(domain, domain.fft(y), params);
+        f = domain.zeropad(f, 2^10/N);
+    end
+end
+
+function testPseudoSpectralFbenney2dResolutionNoShortwaveFilter(testCase)
+    addpath discretisationMethods/
+    
+    expected = eval(2^10);
+    error = zeros(5,1);
+    for n = 1:6
+        actual = eval(2^(n+3));
+        error(n) = max(abs(actual-expected), [], [1,2]);
+    end
+    
+%     figure; plot(4:9, log10(error));
+%     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2])));
+    
+    verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e3);
+    function f = eval(N)
+        domain = PSDomain(setupX(1,1,N,N), 1e-13, true, 1);
+        params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
+        y = icos(domain.x);
+        f = fbenney2d(domain, domain.fft(y), params);
+        f = domain.zeropad(f, 2^10/N);
+    end
+end
+
 function testFiniteDifferenceEqualsPseudoSpectralFbenney2d(testCase)
     addpath discretisationMethods
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
@@ -249,14 +295,14 @@ function testFiniteDifferenceEqualsPseudoSpectralFbenney2d(testCase)
     
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
     
-    actualFD = fbenney2d(domain, y, params);
-    actualPS = domainPS.ifft( ...
+    actual = fbenney2d(domain, y, params);
+    expected = domainPS.ifft( ...
         fbenney2d(domainPS, domainPS.fft(y), params));
     
 %     figure; surf(log10(abs(fft2(actualFD - actualPS))))
 %     figure; surf(log10(abs(fft2(actualFD - actualPS))/max(abs(actualFD),[],[1,2])))
     
-    verifyEqual(testCase, actualFD, actualPS, 'RelTol', 1e-1, 'AbsTol', 1e-2)
+    verifyEqual(testCase, actual, expected, 'RelTol', 1e-1, 'AbsTol', 1e-2)
 end
 
 function testFiniteDifferenceEqualsPseudoSpectralFbenney2dDiagonal(testCase)
@@ -268,24 +314,11 @@ function testFiniteDifferenceEqualsPseudoSpectralFbenney2dDiagonal(testCase)
     
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
     
-    actualFD = fbenney2d(domain, y, params);
-    actualPS = domainPS.ifft( ...
+    actual = fbenney2d(domain, y, params);
+    expected = domainPS.ifft( ...
         fbenney2d(domainPS, domainPS.fft(y), params));
     
-    verifyEqual(testCase, actualFD, actualPS, 'RelTol', 1e-2, 'AbsTol', 2e-1)
-end
-
-function testBenneyPSEqualsFD(testCase)
-    addpath discretisationMethods
-    domain1 = PSDomain(setupX(15, 26, 2^7, 2^7));
-    domain2 = FDDomain(setupX(15, 26, 2^7, 2^7), [1,0;0,1;2,0;0,2]', 4);
-    y = icos(domain1.x);
-    params = struct('theta', 7*pi/8, 'Re', 5, 'C', 0.01);
-    
-    actual = domain1.ifft(fbenney2d(domain1, domain1.fft(y), params));
-    expected = fbenney2d(domain2, y, params);
-    
-    verifyEqual(testCase, actual, expected, 'RelTol', 1e-2, 'AbsTol', 1e-5)
+    verifyEqual(testCase, actual, expected, 'RelTol', 1e-2, 'AbsTol', 2e-1)
 end
 
 %% WIBL1 function evaluation
