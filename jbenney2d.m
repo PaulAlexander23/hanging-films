@@ -1,7 +1,7 @@
 function J = jbenney2d(domain, u, params)
-    Dx = domain.getDiffMatrix([1; 0]) ;
-    Dy = domain.getDiffMatrix([0; 1]);
-    Lap = domain.getDiffMatrix([2; 0]) + domain.getDiffMatrix([0; 2]);
+    Dx = domain.diffMat([1; 0]) ;
+    Dy = domain.diffMat([0; 1]);
+    Lap = domain.diffMat([2; 0]) + domain.diffMat([0; 2]);
     Lap_Dx = Dx * Lap;
     Lap_Dy = Dy * Lap;
     
