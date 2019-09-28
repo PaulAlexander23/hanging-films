@@ -5,6 +5,6 @@ function domain = createDomain(xLength, yLength, xN, yN, method)
         problemDiffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
         domain = FDDomain(x, problemDiffDegrees, 4);
     elseif method == "pseudo-spectral"
-        domain = PSDomain(x);
+        domain = PSDomain(x, true, false);
     end
 end

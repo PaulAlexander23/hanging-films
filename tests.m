@@ -180,11 +180,10 @@ function testPseudoSpectralFburgers1dResolution(testCase)
     error = zeros(6,1);
     for n = 1:6
         actual = eval(2^(n+3));
-        size(actual)
         error(n) = max(abs(actual-expected));
     end
     
-    figure; plot(4:9, log10(error));
+%     figure; plot(4:9, log10(error));
     %         figure; plot(log10(abs(actual(1:end/2)))); hold on; plot(log10(abs(expected(1:end/2))));
     %         figure; plot(log10(abs(actual(1:end/2)-expected(1:end/2))));
     
@@ -227,7 +226,7 @@ function testFiniteDifferenceFbenney1dResolution(testCase)
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-    figure; plot(4:9, log10(error));
+%     figure; plot(4:9, log10(error));
     
     verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e-3);
     
@@ -322,10 +321,10 @@ function testPseudoSpectralFbenney2dResolutionDefault(testCase)
     end
 end
 
-function testPseudoSpectralFbenney2dResolutionNoAntiAliasing(testCase)
+function testPseudoSpectralFbenney2dResolutionAntiAliasing(testCase)
     addpath discretisationMethods/
     
-    N = 2.^(5:11);
+    N = 2.^(5:10);
     expected = eval(N(end), N(end));
     error = zeros(length(N),1);
     for n = 1:length(N)
@@ -333,12 +332,12 @@ function testPseudoSpectralFbenney2dResolutionNoAntiAliasing(testCase)
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-    figure; plot(log2(N), log2(error));
+%     figure; plot(log2(N), log2(error));
     %     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2])));
     
     verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e3);
     function f = eval(N, Nmax)
-        domain = PSDomain(setupX(1,1,N,N), nan, false, 2);
+        domain = PSDomain(setupX(1,1,N,N), true);
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
         y = icos(domain.x);
         f = fbenney2d(domain, domain.fft(y), params);
@@ -346,26 +345,27 @@ function testPseudoSpectralFbenney2dResolutionNoAntiAliasing(testCase)
     end
 end
 
-function testPseudoSpectralFbenney2dResolutionNoShortwaveFilter(testCase)
+function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
     addpath discretisationMethods/
     
-    expected = eval(2^10);
-    error = zeros(5,1);
-    for n = 1:6
-        actual = eval(2^(n+3));
+    N = 2.^(5:10);
+    expected = eval(N(end), N(end));
+    error = zeros(length(N),1);
+    for n = 1:length(N)
+        actual = eval(N(n), N(end));
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-    %     figure; plot(4:9, log10(error));
+%     figure; plot(log2(N), log2(error));
     %     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2])));
     
     verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e3);
-    function f = eval(N)
-        domain = PSDomain(setupX(1,1,N,N), 1e-13, true, 1);
+    function f = eval(N, Nmax)
+        domain = PSDomain(setupX(1,1,N,N), true, false);
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
         y = icos(domain.x);
         f = fbenney2d(domain, domain.fft(y), params);
-        f = domain.zeropad(f, 2^10/N);
+        f = domain.zeropad(f, Nmax/N);
     end
 end
 
@@ -484,13 +484,13 @@ function testPseudoSpectralWIBL1Resolution(testCase)
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-    %     figure; plot(4:9, log10(error));
+%     figure; plot(4:9, log10(error));
     %     figure; plot(4:9, log10(error/max(abs(actual),[],[1,2])));
     
     verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 2e3);
     
     function f = eval(N)
-        domain = PSDomain(setupX(1,1,N,N));
+        domain = PSDomain(setupX(1,1,N,N), true, false);
         y = domain.fft(1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}'));
         F1 = domain.fft(2/3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}'));
         Y = [y;F1];
@@ -636,20 +636,20 @@ end
 function testPDESolverBurgers(testCase)
     addpath discretisationMethods/
     addpath ../time-stepping-methods/
-    N = 2^6;
+    N = 2^4;
     x = {linspace(2*pi/N, 2*pi, N)'};
-    domain = PSDomain(x, nan, false, 1);
+    domain = PSDomain(x, true, false);
     y0 = domain.fft(cos(domain.x{1}));
-    params = struct('nu', 0.1);
+    params = struct('nu', 10);
     
     odefun = @(t, y) fburgers(domain, y, params);
     
-    [t, y] = ab1(odefun, 0:1e-3:20, y0);
+    [t, y] = ab1(odefun, 0:1e-5:1, y0);
     
-    plot(t)
-    figure; plot(log10(abs(y(1:end/2,1:10:end))));
-    figure; plot(log10(abs(y(1:end/2,end))));
-    figure; plot(domain.ifft(y(:,end)));
+%     plot(t)
+%     figure; plot(log10(abs(y(1:end/2,1:10:end))));
+%     figure; plot(log10(abs(y(1:end/2,end))));
+%     figure; plot(domain.ifft(y(:,end)));
     verifyEqual(testCase, t(end), 1)
 end
 
@@ -658,19 +658,19 @@ function testPDESolverKDV(testCase)
     addpath ../time-stepping-methods/
     N = 2^8;
     x = {linspace(2*pi/N, 2*pi, N)'};
-    domain = PSDomain(x, nan, false, 1);
+    domain = PSDomain(x, true, false);
     y0 = domain.fft(cos(domain.x{1}));
     params = struct('nu', 1);
     
     odefun = @(t, y) fkdv(domain, y, params);
-    
+    tEnd = 70e-6;
     [t, y] = ab1(odefun, 0:1e-6:70e-6, y0);
     
-    plot(t)
-    figure; plot(log10(abs(y(1:end/2,1:10:end))));
-    figure; plot(log10(abs(y(1:end/2,end))));
-    figure; plot(domain.ifft(y(:,end)));
-    %     verifyEqual(testCase, t(end), 1)
+%     plot(t)
+%     figure; plot(log10(abs(y(1:end/2,1:10:end))));
+%     figure; plot(log10(abs(y(1:end/2,end))));
+%     figure; plot(domain.ifft(y(:,end)));
+    verifyEqual(testCase, t(end), tEnd)
 end
 
 function testSemiImplicitBenney(testCase)
