@@ -22,12 +22,7 @@ function jacobian = jwibl1(domain, y, params)
     dQ2dh = (5/(2 * params.Re)) * (hV^(-2) * dR2dh - 2 * hV^(-3) * R2);
     dQ2dF1 = (5/(2 * params.Re)) * hV^(-2) * dR2dF1;
     
-    jacobian = zeros(2*N, 2*N);
-    jacobian(1:N, 1:N) = dQ1dh;
-    jacobian(1:N, N+1:2*N) = dQ1dF1;
-    jacobian(N+1:2*N, 1:N) = dQ2dh;
-    jacobian(N+1:2*N, N+1:2*N) = dQ2dF1;
-    jacobian = sparse(jacobian);
+    jacobian = [dQ1dh, dQ1dF1; dQ2dh, dQ2dF1];
     
     function sparseVector = toSparseVector(domain, in, N)
         vector = domain.reshapeToVector(in);
