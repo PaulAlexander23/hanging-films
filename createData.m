@@ -60,7 +60,8 @@ function [y, t, timeTaken] = createData(model, domain, params, tFinal, interface
         if debug
             odeopt = odeset(odeopt, ...
                 'OutputFcn', 'odeprint', ...
-                'OutputSel', 1);
+                'OutputSel', 1, ...
+                'Stats', 'on');
         end
         
         if method == "finite-difference"
