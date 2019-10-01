@@ -2,8 +2,6 @@ function tests = testCreateData()
     tests = functiontests(localfunctions);
 end
 
-
-%% Create Data
 function testCreateDataBenneyFiniteDifference(testCase)
     model = "benney";
     domain = createDomain(2*pi, 2*pi, 2^6, 2^6, "finite-difference");
@@ -13,12 +11,12 @@ function testCreateDataBenneyFiniteDifference(testCase)
     method = "finite-difference";
     AbsTol = 1e-6;
     debug = false;
-    
+
     [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
-    
-    actual = y(:,:,end);
-    load('data/testCreate2DBenneyEquationExpected','expected')
-    
+
+    actual = y(:, :, end);
+    load('data/testCreate2DBenneyEquationExpected', 'expected')
+
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
@@ -32,12 +30,12 @@ end
 %     method = "pseudo-spectral";
 %     AbsTol = 1e-5;
 %     debug = true;
-%     
+%
 %     [y, t, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
-%     
+%
 %     figure; plot(t)
 %     figure; surf(log10(abs(domain.fft(y(:,:,end)))));
-%     
+%
 %     save("temp5")
 %     %     actual = y(:,:,end);
 %     %     load('temp','expected')
@@ -55,12 +53,12 @@ function testCreateDataWIBL1FiniteDifference(testCase)
     method = "finite-difference";
     AbsTol = 1e-6;
     debug = false;
-    
+
     [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
-    
-    actual = y(:,:,end);
-    load('data/testCreateWIBL1EquationExpected','expected')
-    
+
+    actual = y(:, :, end);
+    load('data/testCreateWIBL1EquationExpected', 'expected')
+
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
@@ -74,12 +72,12 @@ function testCreateDataWIBL1PseudoSpectral(testCase)
     method = "pseudo-spectral";
     AbsTol = 1e-6;
     debug = false;
-    
+
     [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
-    
-    actual = y(:,:,end);
-    load('data/testCreateWIBL1EquationExpected','expected')
-    
+
+    actual = y(:, :, end);
+    load('data/testCreateWIBL1EquationExpected', 'expected')
+
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-1, 'AbsTol', 1e-1)
 end
