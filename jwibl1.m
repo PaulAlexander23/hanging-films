@@ -1,6 +1,6 @@
 function jacobian = jwibl1(domain, y, params)
-    h = y(1:end/2, :, :);
-    F1 = y(end/2+1:end, :, :);
+    h = domain.reshapeToDomain(y(1:end/2, :, :));
+    F1 = domain.reshapeToDomain(y(end/2+1:end, :, :));
     
     N = numel(h(:,:,1));
     sv = @(in) toSparseVector(domain, in, N);
