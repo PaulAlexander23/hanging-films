@@ -2,7 +2,6 @@ function tests = testFunctionEvalution()
     tests = functiontests(localfunctions);
 end
 
-
 %% Burgers function evaluation
 function testFiniteDifferenceFburgersSize(testCase)
     addpath discretisationMethods
@@ -28,7 +27,7 @@ function testFiniteDifferenceFburgers1dResolution(testCase)
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-    figure; plot(4:9, log10(error));
+    %     figure; plot(4:9, log10(error));
     
     verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e-4);
     
@@ -68,7 +67,7 @@ function testPseudoSpectralFburgers1dResolution(testCase)
         error(n) = max(abs(actual-expected));
     end
     
-%     figure; plot(4:9, log10(error));
+    %     figure; plot(4:9, log10(error));
     %         figure; plot(log10(abs(actual(1:end/2)))); hold on; plot(log10(abs(expected(1:end/2))));
     %         figure; plot(log10(abs(actual(1:end/2)-expected(1:end/2))));
     
@@ -111,7 +110,7 @@ function testFiniteDifferenceFbenney1dResolution(testCase)
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-%     figure; plot(4:9, log10(error));
+    %     figure; plot(4:9, log10(error));
     
     verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e-3);
     
@@ -151,7 +150,7 @@ function testFiniteDifferenceFbenney2dResolution(testCase)
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-    figure; plot(4:9, log10(error));
+    %     figure; plot(4:9, log10(error));
     %         figure; plot(4:9, log10(error/max(abs(actual),[],[1,2])));
     
     verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e1);
@@ -209,18 +208,20 @@ end
 function testPseudoSpectralFbenney2dResolutionAntiAliasing(testCase)
     addpath discretisationMethods/
     
-    N = 2.^(5:10);
+    N = 2.^(5:8);
     expected = eval(N(end), N(end));
-    error = zeros(length(N),1);
+    abserror = zeros(length(N),1);
+    relerror = zeros(length(N),1);
     for n = 1:length(N)
         actual = eval(N(n), N(end));
-        error(n) = max(abs(actual-expected), [], [1,2]);
+        abserror(n) = max(abs(actual-expected), [], [1,2]);
+        relerror(n) = max(abs(actual-expected)./abs(expected), [], [1,2]);
     end
     
-%     figure; plot(log2(N), log2(error));
-    %     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2])));
+    %     figure; plot(log2(N), log10(relerror));
+    %     figure; plot(log2(N), log10(error./max(abs(actual),[],[1,2])));
     
-    verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e3);
+    verifyEqual(testCase, abserror(end), zeros(1,1), 'AbsTol', 1e3);
     function f = eval(N, Nmax)
         domain = PSDomain(setupX(1,1,N,N), true);
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
@@ -233,7 +234,7 @@ end
 function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
     addpath discretisationMethods/
     
-    N = 2.^(5:10);
+    N = 2.^(5:8);
     expected = eval(N(end), N(end));
     error = zeros(length(N),1);
     for n = 1:length(N)
@@ -241,10 +242,10 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-%     figure; plot(log2(N), log2(error));
+    %     figure; plot(log2(N), log2(error));
     %     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2])));
     
-    verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 1e3);
+    verifyEqual(testCase, error(end), zeros(1,1), 'AbsTol', 1e3);
     function f = eval(N, Nmax)
         domain = PSDomain(setupX(1,1,N,N), true, false);
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
@@ -362,17 +363,17 @@ function testPseudoSpectralWIBL1Resolution(testCase)
     addpath discretisationMethods
     
     
-    expected = eval(2^10);
-    error = zeros(5,1);
-    for n = 1:6
+    expected = eval(2^8);
+    error = zeros(3,1);
+    for n = 1:4
         actual = eval(2^(n+3));
         error(n) = max(abs(actual-expected), [], [1,2]);
     end
     
-%     figure; plot(4:9, log10(error));
+    %     figure; plot(4:9, log10(error));
     %     figure; plot(4:9, log10(error/max(abs(actual),[],[1,2])));
     
-    verifyEqual(testCase, error(6), zeros(1,1), 'AbsTol', 2e3);
+    verifyEqual(testCase, error(end), zeros(1,1), 'AbsTol', 5e3);
     
     function f = eval(N)
         domain = PSDomain(setupX(1,1,N,N), true, false);

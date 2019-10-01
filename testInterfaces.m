@@ -78,7 +78,7 @@ end
 function testInterfaceLoad(testCase)
     x = setupX(1,1,2^8,2^8);
     
-    actual = iload(x, 'testInterfaceLoad');
+    actual = iload(x, 'data/testInterfaceLoad');
     expected = icos(x);
     verifyEqual(testCase, actual, expected);
 end
@@ -87,7 +87,7 @@ function testInterfaceLoadWithPert(testCase)
     x = setupX(1,1,2^8,2^8);
     alpha = 0.2;
     
-    actual = iloadWithPert(x, 'testInterfaceLoad', alpha);
+    actual = iloadWithPert(x, 'data/testInterfaceLoad', alpha);
     expected = icos(x) + ipert(x, alpha) - 1;
     verifyEqual(testCase, actual, expected);
 end
@@ -96,7 +96,7 @@ function testInterfaceLoadWithRand(testCase)
     x = setupX(1,1,2^8,2^8);
     alpha = 0.2;
     
-    actual = iloadWithRand(x, 'testInterfaceLoad', alpha);
+    actual = iloadWithRand(x, 'data/testInterfaceLoad', alpha);
     disturbance = actual - icos(x);
     verifyTrue(testCase, max(max(abs(disturbance))) <= alpha + 1e-13);
     verifyEqual(testCase,sum(abs(fft2(disturbance))>1e-10,[1,2]), ...

@@ -6,7 +6,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     if nargin < 12, method = "finite-difference"; end
     if nargin < 13, debug = false; end
     
-    params = struct('theta', theta, 'Re', Re, 'C', C);
+    params = paramsToStruct(theta, Re, C);
     domain = createDomain(xLength, yLength, xN, yN, method);
     
     [y, t, timeTaken] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);

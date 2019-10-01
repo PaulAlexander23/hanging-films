@@ -28,7 +28,7 @@ function testMainWIBL1(testCase)
     end
     
     actual = y(:,:,end);
-    load('testCreate2DBenneyEquationExpected','expected');
+    load('data/testCreate2DBenneyEquationExpected','expected');
     
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)

@@ -69,7 +69,7 @@ function testPDESolver1DBenneyEquation(testCase)
     odefun = @(t, y) fbenney1d(domain, y, params);
     timestepper = @ode15s;
     actual = odeMatrixSolver(odefun, t, y0, timestepper);
-    load('testPDESolver1DBenneyEquationExpected','expected')
+    load('data/testPDESolver1DBenneyEquationExpected','expected')
     verifyEqual(testCase, actual(:, end), expected(:, end), ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
@@ -82,16 +82,17 @@ function testPDESolverBurgers(testCase)
     domain = PSDomain(x, true, false);
     y0 = domain.fft(cos(domain.x{1}));
     params = struct('nu', 10);
-    
+    tFinal = 1e-4;
     odefun = @(t, y) fburgers(domain, y, params);
     
-    [t, y] = ab1(odefun, 0:1e-5:1, y0);
+    [t, y] = ab1(odefun, 0:1e-5:tFinal, y0);
     
 %     plot(t)
 %     figure; plot(log10(abs(y(1:end/2,1:10:end))));
 %     figure; plot(log10(abs(y(1:end/2,end))));
 %     figure; plot(domain.ifft(y(:,end)));
-    verifyEqual(testCase, t(end), 1)
+
+    verifyEqual(testCase, t(end), tFinal)
 end
 
 function testPDESolverKDV(testCase)
@@ -112,31 +113,4 @@ function testPDESolverKDV(testCase)
 %     figure; plot(log10(abs(y(1:end/2,end))));
 %     figure; plot(domain.ifft(y(:,end)));
     verifyEqual(testCase, t(end), tEnd)
-end
-
-function testSemiImplicitBenney(testCase)
-    addpath discretisationMethods/
-    addpath ../time-stepping-methods/
-    N = 2^6;
-    x = {linspace(2*pi/N, 2*pi, N)'; linspace(2*pi/N, 2*pi, N)'};
-    domain = FDDomain(x, [1,0;2,0;3,0;4,0;0,1;0,2;0,3;0,4;2,1;1,2;2,2]', ...
-        2);
-    %     domain = PSDomain(x, nan, false, 1);
-    y0 = icos(domain.x);
-    t = linspace(0, 0.1, 20);
-    params = struct("theta", 7*pi/8, "Re", 1, "C", 0.01);
-    
-    y0 = domain.reshapeToVector(y0);
-    odefunLinear = @(t) -fbenney2dLinear(domain, params);
-    odefunNonlinear = @(t, y) domain.reshapeToVector( ...
-        fbenney2d(domain, domain.reshapeToDomain(y), params)) - ...
-        fbenney2dLinear(domain, params) * domain.reshapeToVector(y);
-    
-    options = struct("Linear", odefunLinear);
-    
-    y = ab3cn(odefunNonlinear, t, y0, options);
-    y = domain.reshapeToDomain(y);
-    
-    
-    save("temp5")
 end
