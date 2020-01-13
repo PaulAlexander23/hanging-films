@@ -21,6 +21,8 @@ function testParamsToStruct(testCase)
 end
 
 function testCreateDomainFiniteDifference(testCase)
+    addpath("discretisationMethods/");
+    
     xLength = 32;
     yLength = 32;
     xN = 32;
@@ -34,6 +36,8 @@ function testCreateDomainFiniteDifference(testCase)
 end
 
 function testCreateDomainPseudoSpectral(testCase)
+    addpath("discretisationMethods/");
+    
     xLength = 32;
     yLength = 32;
     xN = 32;

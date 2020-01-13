@@ -3,6 +3,8 @@ function tests = testCreateData()
 end
 
 function testCreateDataBenneyFiniteDifference(testCase)
+    addpath("discretisationMethods/")
+    
     model = "benney";
     domain = createDomain(2*pi, 2*pi, 2^6, 2^6, "finite-difference");
     params = struct('theta', 1, 'Re', 1, 'C', 1);
@@ -45,6 +47,8 @@ end
 % end
 
 function testCreateDataWIBL1FiniteDifference(testCase)
+    addpath("discretisationMethods/")
+    
     model = "wibl1";
     domain = createDomain(2*pi, 2*pi, 2^5, 2^5, "finite-difference");
     params = struct('theta', 1, 'Re', 1, 'C', 1);
@@ -64,6 +68,8 @@ function testCreateDataWIBL1FiniteDifference(testCase)
 end
 
 function testCreateDataWIBL1PseudoSpectral(testCase)
+    addpath("discretisationMethods/")
+    
     model = "wibl1";
     domain = createDomain(2*pi, 2*pi, 2^5, 2^5, "pseudo-spectral");
     params = struct('theta', 1, 'Re', 1, 'C', 1);
