@@ -9,7 +9,8 @@ function testSetupX(testCase)
 end
 
 function testSetupTimePoints(testCase)
-    actual = setupTimePoints(10, 0.2);
+    timePointsArguments = struct('tStep', 0.2, 'tFinal', 10);
+    actual = setupTimePoints(timePointsArguments);
     verifyEqual(testCase, actual(end), 10);
     verifyTrue(testCase, all(abs(diff(actual(1:end-1))-0.2) < 1e-14));
 end

@@ -9,7 +9,9 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     params = paramsToStruct(theta, Re, C);
     domain = createDomain(xLength, yLength, xN, yN, method);
     
-    [y, t, timeTaken] = solveIVP(model, domain, params, tFinal, interface, method, AbsTol, debug);
+    timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
     
-    saveData(y, params, t, domain.x, timeTaken, tFinal, interface, AbsTol, model)
+    [y, t, timeTaken] = solveIVP(model, domain, params, timePointsArguments, interface, method, AbsTol, debug);
+    
+    saveData(y, params, t, domain.x, timeTaken, timePointsArguments.tFinal, interface, AbsTol, model)
 end

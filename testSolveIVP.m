@@ -13,8 +13,9 @@ function testSolveIVPBenneyFiniteDifference(testCase)
     method = "finite-difference";
     AbsTol = 1e-6;
     debug = false;
-
-    [y, ~, ~] = solveIVP(model, domain, params, tFinal, interface, method, AbsTol, debug);
+    timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
+    
+    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, AbsTol, debug);
 
     actual = y(:, :, end);
     load('data/testCreate2DBenneyEquationExpected', 'expected')
@@ -57,8 +58,9 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
     method = "finite-difference";
     AbsTol = 1e-6;
     debug = false;
-
-    [y, ~, ~] = solveIVP(model, domain, params, tFinal, interface, method, AbsTol, debug);
+    timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
+    
+    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, AbsTol, debug);
 
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
@@ -78,8 +80,9 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
     method = "pseudo-spectral";
     AbsTol = 1e-6;
     debug = false;
+    timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
 
-    [y, ~, ~] = solveIVP(model, domain, params, tFinal, interface, method, AbsTol, debug);
+    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, AbsTol, debug);
 
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
