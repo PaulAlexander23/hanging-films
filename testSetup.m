@@ -8,8 +8,8 @@ function testSetupX(testCase)
     verifyEqual(testCase, actual{2}, linspace(pi/11, pi, 11)')
 end
 
-function testSetupT(testCase)
-    actual = setupT(10, 0.2);
+function testSetupTimePoints(testCase)
+    actual = setupTimePoints(10, 0.2);
     verifyEqual(testCase, actual(end), 10);
     verifyTrue(testCase, all(abs(diff(actual(1:end-1))-0.2) < 1e-14));
 end

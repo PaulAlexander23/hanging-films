@@ -1,8 +1,8 @@
-function tests = testCreateData()
+function tests = testSolveIVP()
     tests = functiontests(localfunctions);
 end
 
-function testCreateDataBenneyFiniteDifference(testCase)
+function testSolveIVPBenneyFiniteDifference(testCase)
     addpath("discretisationMethods/")
     
     model = "benney";
@@ -14,7 +14,7 @@ function testCreateDataBenneyFiniteDifference(testCase)
     AbsTol = 1e-6;
     debug = false;
 
-    [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+    [y, ~, ~] = solveIVP(model, domain, params, tFinal, interface, method, AbsTol, debug);
 
     actual = y(:, :, end);
     load('data/testCreate2DBenneyEquationExpected', 'expected')
@@ -23,7 +23,7 @@ function testCreateDataBenneyFiniteDifference(testCase)
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
-% function testCreateDataBenneyPseudoSpectral(testCase)
+% function testSolveIVPBenneyPseudoSpectral(testCase)
 %     model = "benney";
 %     domain = createDomain(2*pi, 2*pi, 96, 48, "pseudo-spectral");
 %     params = struct('theta', 1, 'Re', 1, 'C', 1);
@@ -33,7 +33,7 @@ end
 %     AbsTol = 1e-5;
 %     debug = true;
 %
-%     [y, t, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+%     [y, t, ~] = solveIVP(model, domain, params, tFinal, interface, method, AbsTol, debug);
 %
 %     figure; plot(t)
 %     figure; surf(log10(abs(domain.fft(y(:,:,end)))));
@@ -46,7 +46,7 @@ end
 %     %         'RelTol', 1e-3, 'AbsTol', 1e-6)
 % end
 
-function testCreateDataWIBL1FiniteDifference(testCase)
+function testSolveIVPWIBL1FiniteDifference(testCase)
     addpath("discretisationMethods/")
     
     model = "wibl1";
@@ -58,7 +58,7 @@ function testCreateDataWIBL1FiniteDifference(testCase)
     AbsTol = 1e-6;
     debug = false;
 
-    [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+    [y, ~, ~] = solveIVP(model, domain, params, tFinal, interface, method, AbsTol, debug);
 
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
@@ -67,7 +67,7 @@ function testCreateDataWIBL1FiniteDifference(testCase)
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
-function testCreateDataWIBL1PseudoSpectral(testCase)
+function testSolveIVPWIBL1PseudoSpectral(testCase)
     addpath("discretisationMethods/")
     
     model = "wibl1";
@@ -79,7 +79,7 @@ function testCreateDataWIBL1PseudoSpectral(testCase)
     AbsTol = 1e-6;
     debug = false;
 
-    [y, ~, ~] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+    [y, ~, ~] = solveIVP(model, domain, params, tFinal, interface, method, AbsTol, debug);
 
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
