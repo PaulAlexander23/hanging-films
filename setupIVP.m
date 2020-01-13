@@ -1,15 +1,17 @@
-function [odeFunction, y0, odeopt] = setupIVP(model, domain, params, interface, method)
+function [domain, odeFunction, y0, odeopt] = setupIVP(args)
     
-    odeFunction = setupODEFunction(model, domain, params);
+    domain = setupDomain(args.domainArguments);
+    
+    odeFunction = setupODEFunction(args.model, domain, args.params);
     
     odeopt = odeset();
-    if method == "finite-difference"
-        if model == "benney"
+    if args.method == "finite-difference"
+        if args.model == "benney"
             odeopt = odeset(odeopt, ...
-                'Jacobian', @(t, y) jbenney2d(domain, y, params) ...
+                'Jacobian', @(t, y) jbenney2d(domain, y, args.params) ...
                 );
         end
     end
     
-    y0 = setupInitialCondition(model, domain, interface, method);
+    y0 = setupInitialCondition(args.model, domain, args.interface, args.method);
 end

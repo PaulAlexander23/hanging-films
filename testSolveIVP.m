@@ -6,13 +6,16 @@ function testSolveIVPBenneyFiniteDifference(testCase)
     addpath("discretisationMethods/")
     
     model = "benney";
-    domain = createDomain(2*pi, 2*pi, 2^6, 2^6, "finite-difference");
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
     interface = @icos;
     method = "finite-difference";
     AbsTol = 1e-6;
     debug = false;
+    
+    domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^6, ...
+        'yN', 2^6, 'method', method);
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,'method',method,'model',model,'interface',interface);
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
     odeoptDefault = odeset( ...
         ...'Vectorized', 'on', ...
@@ -23,7 +26,7 @@ function testSolveIVPBenneyFiniteDifference(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, timeStepperArguments, debug);
+    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments, debug);
     
     actual = y(:, :, end);
     load('data/testCreate2DBenneyEquationExpected', 'expected')
@@ -59,13 +62,16 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
     addpath("discretisationMethods/")
     
     model = "wibl1";
-    domain = createDomain(2*pi, 2*pi, 2^5, 2^5, "finite-difference");
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
     interface = @icos;
     method = "finite-difference";
     AbsTol = 1e-6;
     debug = false;
+    
+    domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...
+        'yN', 2^5, 'method', method);
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,'method',method,'model',model,'interface',interface);
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
     odeoptDefault = odeset( ...
         ...'Vectorized', 'on', ...
@@ -76,7 +82,7 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, timeStepperArguments, debug);
+    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments, debug);
     
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
@@ -89,13 +95,16 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
     addpath("discretisationMethods/")
     
     model = "wibl1";
-    domain = createDomain(2*pi, 2*pi, 2^5, 2^5, "pseudo-spectral");
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
     interface = @icos;
     method = "pseudo-spectral";
     AbsTol = 1e-6;
     debug = false;
+    
+    domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...
+        'yN', 2^5, 'method', method);
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,'method',method,'model',model,'interface',interface);
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
     odeoptDefault = odeset( ...
         ...'Vectorized', 'on', ...
@@ -106,7 +115,7 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, timeStepperArguments, debug);
+    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments, debug);
     
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
