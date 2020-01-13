@@ -1,10 +1,6 @@
-function timeStepper = setupTimeStepper(method, model, domain, params, AbsTol, debug)
+function timeStepper = setupTimeStepper(args, odeoptIVP, debug)
     
-    odeopt = setupTimeStepperOptions(method, model, domain, params, AbsTol, debug);
+    odeopt = setupTimeStepperOptions(args.odeopt, odeoptIVP, debug);
     
-    if method == "finite-difference"
-        timeStepper = @(odefun, t, y0) ode15s(odefun, t, y0, odeopt);
-    elseif method == "pseudo-spectral"
-        timeStepper = @(odefun, t, y0) ode15s(odefun, t, y0, odeopt);
-    end
+    timeStepper = @(odefun, t, y0) args.timeStepper(odefun, t, y0, odeopt);
 end

@@ -14,12 +14,20 @@ function testSolveIVPBenneyFiniteDifference(testCase)
     AbsTol = 1e-6;
     debug = false;
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
+    odeoptDefault = odeset( ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
+        'AbsTol', AbsTol ...
+        ...'MaxStep', 5e-6 ...
+        ...'InitialStep', 1e-3 ...
+        );
+    timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, AbsTol, debug);
-
+    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, timeStepperArguments, debug);
+    
     actual = y(:, :, end);
     load('data/testCreate2DBenneyEquationExpected', 'expected')
-
+    
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
@@ -59,12 +67,20 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
     AbsTol = 1e-6;
     debug = false;
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
+    odeoptDefault = odeset( ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
+        'AbsTol', AbsTol ...
+        ...'MaxStep', 5e-6 ...
+        ...'InitialStep', 1e-3 ...
+        );
+    timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, AbsTol, debug);
-
+    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, timeStepperArguments, debug);
+    
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
-
+    
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
@@ -81,12 +97,20 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
     AbsTol = 1e-6;
     debug = false;
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
-
-    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, AbsTol, debug);
-
+    odeoptDefault = odeset( ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
+        'AbsTol', AbsTol ...
+        ...'MaxStep', 5e-6 ...
+        ...'InitialStep', 1e-3 ...
+        );
+    timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
+    
+    [y, ~, ~] = solveIVP(model, domain, params, timePointsArguments, interface, method, timeStepperArguments, debug);
+    
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
-
+    
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-1, 'AbsTol', 1e-1)
 end
