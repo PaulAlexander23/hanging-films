@@ -6,8 +6,11 @@ function domain = setupDomain(args)
 
     if args.method == "finite-difference"
         problemDiffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
-        domain = FDDomain(x, problemDiffDegrees, 4);
+        accuracy = 4;
+        domain = FDDomain(x, problemDiffDegrees, accuracy);
     elseif args.method == "pseudo-spectral"
-        domain = PSDomain(x, true, false);
+        AA = true;
+        complex = false;
+        domain = PSDomain(x, AA, complex);
     end
 end

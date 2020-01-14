@@ -4,7 +4,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     if nargin < 11, AbsTol = 1e-6; end
     if nargin < 12, method = "finite-difference"; end
     
-    params = paramsToStruct(theta, Re, C);
+    params = struct('theta', theta, 'Re', Re, 'C', C);
     
     domainArguments = struct('xLength', xLength, 'yLength', yLength, 'xN', xN, ...
         'yN', yN, 'method', method);
