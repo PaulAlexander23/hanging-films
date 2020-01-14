@@ -25,9 +25,9 @@ function testSolveIVPBenneyFiniteDifference(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
+    solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
-    actual = y(:, :, end);
+    actual = solution.y(:, :, end);
     load('data/testCreate2DBenneyEquationExpected', 'expected')
     
     verifyEqual(testCase, actual, expected, ...
@@ -80,9 +80,9 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
+    solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
-    actual = y(:, :, end);
+    actual = solution.y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
     
     verifyEqual(testCase, actual, expected, ...
@@ -112,9 +112,9 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
+    solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
-    actual = y(:, :, end);
+    actual = solution.y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
     
     verifyEqual(testCase, actual, expected, ...

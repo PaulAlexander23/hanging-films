@@ -1,7 +1,9 @@
-function saveData(y, params, t, x, timeTaken, tFinal, interface, AbsTol, model, prefix)
-    if nargin < 10, prefix = ""; end
+function saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments)
+    filename = makeFilename("data", ivpArguments, timePointsArguments, ...
+        timeStepperArguments);
     
-    filename = makeFilename(prefix, params, x, tFinal, interface, AbsTol, model);
+    filename = ensureUnique(filename);
     
-    save(filename, 'y', 'params', 't', 'x', 'timeTaken');
+    save(filename + '.mat', 'solution', 'ivpArguments', 'timePointsArguments', ...
+        'timeStepperArguments');
 end

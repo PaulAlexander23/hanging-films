@@ -3,7 +3,8 @@ function tests = testSetupIVPodeopt()
 end
 
 function testPseudoSpectral(testCase)
-    args = struct("method", "pseudo-spectral");
+    domainArguments = struct("method", "pseudo-spectral");
+    args = struct("domainArguments", domainArguments);
     domain = 0;
     
     actual = setupIVPodeopt(args, domain);
@@ -13,7 +14,8 @@ function testPseudoSpectral(testCase)
 end
 
 function testFiniteDifferenceWIBL1(testCase)
-    args = struct("method", "finite-difference", "model", "wibl1");
+    domainArguments = struct("method", "finite-difference");
+    args = struct("domainArguments", domainArguments, "model", "wibl1");
     domain = 0;
     
     actual = setupIVPodeopt(args, domain);
@@ -23,7 +25,8 @@ function testFiniteDifferenceWIBL1(testCase)
 end
 
 function testFiniteDifferenceBenney(testCase)
-    args = struct("method", "finite-difference", "model", "benney");
+    domainArguments = struct("method", "finite-difference");
+    args = struct("domainArguments", domainArguments, "model", "benney");
     domain = 0;
     
     actual = setupIVPodeopt(args, domain);

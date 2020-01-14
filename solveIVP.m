@@ -1,4 +1,4 @@
-function [domain, y, t, timeTaken] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments)
+function solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments)
     
     [domain, odeFunction, y0, odeoptIVP] = setupIVP(ivpArguments);
     
@@ -8,5 +8,8 @@ function [domain, y, t, timeTaken] = solveIVP(ivpArguments, timePointsArguments,
     
     [y, t, timeTaken] = iterateTimeStepper(odeFunction, t, y0, timeStepper);
 
-    y = postprocess(ivpArguments.method, ivpArguments.model, domain, y);
+    y = postprocess(ivpArguments.domainArguments.method, ivpArguments.model, domain, y);
+    
+    solution = struct('domain', domain, 't', t, 'y', y, ...
+        'timeTaken', timeTaken);
 end

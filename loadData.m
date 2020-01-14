@@ -1,7 +1,10 @@
-function [y, params, t, x, timeTaken] = loadData(params, x, tFinal, interface, AbsTol, model, prefix)
-    if nargin < 6, prefix = ""; end
+function solution = loadData(ivpArguments, timePointsArguments, timeStepperArguments, suffix)
+    if nargin < 4
+        suffix = "";
+    end
     
-    filename = makeFilename(prefix, params, x, tFinal, interface, AbsTol, model);
+    filename = makeFilename("data", ivpArguments, timePointsArguments, ...
+        timeStepperArguments) + suffix;
     
-    load(filename, 'y', 'params', 't', 'x', 'timeTaken');
+    load(filename + '.mat', 'solution');
 end

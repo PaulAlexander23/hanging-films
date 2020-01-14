@@ -10,7 +10,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         'yN', yN, 'method', method);
     
     ivpArguments = struct('domainArguments',domainArguments,'params',params,...
-        'method',method,'model',model,'interface',interface);
+        'model',model,'interface',interface);
     
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
     
@@ -28,7 +28,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [domain, y, t, timeTaken] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
+    solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
-    saveData(y, params, t, domain.x, timeTaken, timePointsArguments.tFinal, interface, AbsTol, model)
+    saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments);
 end
