@@ -11,7 +11,6 @@ function testSolveIVPBenneyFiniteDifference(testCase)
     interface = @icos;
     method = "finite-difference";
     AbsTol = 1e-6;
-    debug = false;
     
     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^6, ...
         'yN', 2^6, 'method', method);
@@ -26,7 +25,7 @@ function testSolveIVPBenneyFiniteDifference(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments, debug);
+    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
     actual = y(:, :, end);
     load('data/testCreate2DBenneyEquationExpected', 'expected')
@@ -67,7 +66,6 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
     interface = @icos;
     method = "finite-difference";
     AbsTol = 1e-6;
-    debug = false;
     
     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...
         'yN', 2^5, 'method', method);
@@ -82,7 +80,7 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments, debug);
+    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
@@ -100,7 +98,6 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
     interface = @icos;
     method = "pseudo-spectral";
     AbsTol = 1e-6;
-    debug = false;
     
     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...
         'yN', 2^5, 'method', method);
@@ -115,7 +112,7 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments, debug);
+    [~,y, ~, ~] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
     actual = y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')

@@ -1,10 +1,8 @@
-function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, debug)
-    addpath discretisationMethods
+function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method)
     if nargin < 9, xN = 64; end
     if nargin < 10, yN = 64; end
     if nargin < 11, AbsTol = 1e-6; end
     if nargin < 12, method = "finite-difference"; end
-    if nargin < 13, debug = false; end
     
     params = paramsToStruct(theta, Re, C);
     
@@ -16,6 +14,11 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
     
+    odeoptDebug = odeset(...
+            'OutputFcn', 'odeprint', ...
+            'OutputSel', 1, ...
+            'Stats', 'on');
+    
     odeoptDefault = odeset( ...
         ...'Vectorized', 'on', ...
         ...'BDF','on', ...
@@ -25,7 +28,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         );
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
-    [domain, y, t, timeTaken] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments, debug);
+    [domain, y, t, timeTaken] = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
     saveData(y, params, t, domain.x, timeTaken, timePointsArguments.tFinal, interface, AbsTol, model)
 end

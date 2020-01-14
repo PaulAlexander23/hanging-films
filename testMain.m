@@ -15,7 +15,6 @@ function testMainWIBL1(testCase)
     interface = @icos;
     method = "finite-difference";
     AbsTol = 1e-6;
-    debug = false;
 
     filename = makeFilename("", ...
         struct('theta', theta, 'Re', Re, 'C', C), ...
@@ -25,7 +24,7 @@ function testMainWIBL1(testCase)
         delete(filename)
     end
 
-    main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, debug)
+    main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method)
 
     load(filename, 'y')
     if isfile(filename)
