@@ -1,15 +1,48 @@
-function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, debug)
-    addpath discretisationMethods
+function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, timeStepper)
     if nargin < 9, xN = 64; end
     if nargin < 10, yN = 64; end
     if nargin < 11, AbsTol = 1e-6; end
     if nargin < 12, method = "finite-difference"; end
-    if nargin < 13, debug = false; end
+    if nargin < 13, timeStepper = @ode15s; end
     
-    params = paramsToStruct(theta, Re, C);
-    domain = createDomain(xLength, yLength, xN, yN, method);
+    [ivpArguments, timePointsArguments, timeStepperArguments]...
+            = parseArguments(theta, Re, C, xLength, yLength, xN, yN, method, ...
+            model, interface, tFinal, AbsTol, timeStepper);
     
-    [y, t, timeTaken] = createData(model, domain, params, tFinal, interface, method, AbsTol, debug);
+    solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
-    saveData(y, params, t, domain.x, timeTaken, tFinal, interface, AbsTol, model)
+    saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments);
+    
+    function [ivpArguments, timePointsArguments, timeStepperArguments]...
+            = parseArguments(theta, Re, C, xLength, yLength, xN, yN, method, ...
+            model, interface, tFinal, AbsTol, timeStepper)
+        params = struct('theta', theta, 'Re', Re, 'C', C);
+    
+        domainArguments = struct('xLength', xLength, 'yLength', yLength, 'xN', xN, ...
+            'yN', yN, 'method', method);
+        
+        ivpArguments = struct('domainArguments',domainArguments,'params',params,...
+            'model',model,'interface',interface);
+        
+        timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
+        
+        odeoptDefault = odeset( ...
+            ...'Vectorized', 'on', ...
+            ...'BDF','on', ...
+            'OutputFcn', 'odeprint',...
+            'OutputSel', 1,...
+            'Events', @myEventsFcn,...
+            'AbsTol', AbsTol, ...
+            'MaxStep', 5e-6 ...
+            ...'InitialStep', 1e-3 ...
+            );
+        
+        timeStepperArguments = struct('timeStepper', timeStepper, 'odeopt', odeoptDefault);
+    end
+    
+    function [value, isterminal, direction] = myEventsFcn(t, y)
+        value = ~any(isnan(y));
+        isterminal = 1;
+        direction = 0;
+    end
 end

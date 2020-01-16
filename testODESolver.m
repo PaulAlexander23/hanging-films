@@ -85,8 +85,8 @@ function testPDESolverBurgers(testCase)
     tFinal = 1e-4;
     odefun = @(t, y) fburgers(domain, y, params);
 
-    [t, y] = ab1(odefun, 0:1e-5:tFinal, y0);
-
+    y = ab1(odefun, 0:1e-5:tFinal, y0);
+    t = 0:1e-5:tFinal;
     %     plot(t)
     %     figure; plot(log10(abs(y(1:end/2,1:10:end))));
     %     figure; plot(log10(abs(y(1:end/2,end))));
@@ -105,12 +105,12 @@ function testPDESolverKDV(testCase)
     params = struct('nu', 1);
 
     odefun = @(t, y) fkdv(domain, y, params);
-    tEnd = 70e-6;
-    [t, y] = ab1(odefun, 0:1e-6:70e-6, y0);
-
+    tFinal = 70e-6;
+    y = ab1(odefun, 0:1e-6:tFinal, y0);
+    t = 0:1e-5:tFinal;
     %     plot(t)
     %     figure; plot(log10(abs(y(1:end/2,1:10:end))));
     %     figure; plot(log10(abs(y(1:end/2,end))));
     %     figure; plot(domain.ifft(y(:,end)));
-    verifyEqual(testCase, t(end), tEnd)
+    verifyEqual(testCase, t(end), tFinal)
 end

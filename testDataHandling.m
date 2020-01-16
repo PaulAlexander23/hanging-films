@@ -2,38 +2,82 @@ function tests = testDataHandling()
     tests = functiontests(localfunctions);
 end
 
+function testStruct2str(testCase)
+    subStruct = struct('sub',1);
+    testStruct = struct('a', 1, 'b', true, 'c', 's', 'd', "t", 'e', 0.1, ...
+        'f', [], 'g', @icos, 'h', subStruct);
+    
+    actual = struct2str(testStruct);
+    expected = "-a-1-b-1-c-s-d-t-e-0.1-g-icos-sub-1";
+    
+    verifyEqual(testCase, actual, expected);
+end
+
+function testEnsureUnique(testCase)
+    filename = "testTemp";
+    save(filename)
+    
+    actual = ensureUnique(filename);
+    expected = "testTemp-1";
+    
+    verifyEqual(testCase, actual, expected);
+    
+    delete(filename + ".mat");
+end
+
 function testMakeFilename(testCase)
-    params = struct('theta', 2, 'Re', 3, 'C', 4);
-    actual = makeFilename('-test', params, {0.1:0.1:3.3, 1:1:10}, pi, @interface, 1e-6, "benney");
-    expected = "data-test-theta-2-Re-3-C-4-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06-model-benney";
+    
+    method = "finite-difference";
+    params = struct('theta', 1, 'Re', 2, 'C', 3);
+    
+    domainArguments = struct('xLength', 2, 'yLength', 3, 'xN', 16, ...
+        'yN', 32, 'method', method);
+    
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,...
+        'model', "benney", 'interface', @icos);
+    timePointsArguments = struct('tStep', 0.2, 'tFinal', 10);
+    odeoptDefault = odeset( ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
+        'AbsTol', 1e-3 ...
+        ...'MaxStep', 5e-6 ...
+        ...'InitialStep', 1e-3 ...
+        );
+    timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
+    
+    actual = makeFilename("test", ivpArguments, timePointsArguments, timeStepperArguments);
+    expected = "test-xLength-2-yLength-3-xN-16-yN-32-method-finite-difference-theta-1-Re-2-C-3-model-benney-interface-icos-tStep-0.2-tFinal-10-timeStepper-ode15s-AbsTol-0.001";
+    
     verifyEqual(testCase, actual, expected)
 end
 
 function testSaveAndLoadData(testCase)
-    filename = 'data-test-theta-0_876255-Re-0_488629-C-0_407077-xL-3_3-yL-10-T-3_14159-interface-interface-xN-33-yN-10-AbsTol-1e-06-model-benney.mat';
-    if isfile(filename)
-        delete(filename)
-    end
-
-    expectedY = rand(100);
-    expectedParams = struct('theta', 0.876255, 'Re', 0.488629, 'C', 0.407077);
-    expectedT = linspace(0, 0.126576313737181);
-    expectedX = {0.1:0.1:3.3, 1:1:10};
-    expectedTimeTaken = 0.925425280986515;
-    saveData(expectedY, expectedParams, expectedT, expectedX, ...
-        expectedTimeTaken, pi, @interface, 1e-6, "benney", "-test");
-
-    verifyTrue(testCase, isfile(filename))
-
-    [actualY, actualParams, actualT, actualX, actualTimeTaken] = loadData(expectedParams, expectedX, pi, @interface, 1e-6, "benney", "-test");
-
-    verifyEqual(testCase, actualY, expectedY)
-    verifyEqual(testCase, actualParams, expectedParams)
-    verifyEqual(testCase, actualT, expectedT)
-    verifyEqual(testCase, actualX, expectedX)
-    verifyEqual(testCase, actualTimeTaken, expectedTimeTaken)
-
-    if isfile(filename)
-        delete(filename)
-    end
+    method = "finite-difference";
+    params = struct('theta', 1, 'Re', 2, 'C', 3);
+    
+    domainArguments = struct('xLength', 2, 'yLength', 3, 'xN', 16, ...
+        'yN', 32, 'method', method);
+    
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,...
+        'model', "benney", 'interface', @icos);
+    timePointsArguments = struct('tStep', 0.2, 'tFinal', 10);
+    odeoptDefault = odeset( ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
+        'AbsTol', 1e-3 ...
+        ...'MaxStep', 5e-6 ...
+        ...'InitialStep', 1e-3 ...
+        );
+    timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
+    
+    expected = 1;
+    
+    saveData(expected, ivpArguments, timePointsArguments, timeStepperArguments);
+    
+    actual = loadData(ivpArguments, timePointsArguments, timeStepperArguments);
+    
+    verifyEqual(testCase, actual, expected);
+    
+    filename = makeFilename("data", ivpArguments, timePointsArguments, timeStepperArguments);
+    delete(filename + '.mat');
 end
