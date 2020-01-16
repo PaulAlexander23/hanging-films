@@ -1,6 +1,6 @@
 function domain = setupDomain(args)
     
-    addpath("discretisationMethods/");
+    addpath('discretisationMethods/');
     
     x = setupX(args.xLength, args.yLength, args.xN, args.yN);
 

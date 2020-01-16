@@ -41,7 +41,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     end
     
     function [value, isterminal, direction] = myEventsFcn(t, y)
-        value = ~any(isnan(y));
+        value = double(~any(isnan(y)));
         isterminal = 1;
         direction = 0;
     end
