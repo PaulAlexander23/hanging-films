@@ -3,7 +3,7 @@ function tests = testMain()
 end
 
 function testMainWIBL1(testCase)
-    model = "benney";
+    model = 'benney';
     theta = 1;
     Re = 1;
     C = 1;
@@ -13,12 +13,12 @@ function testMainWIBL1(testCase)
     yN = 2^6;
     tFinal = 0.5;
     interface = @icos;
-    method = "finite-difference";
+    method = 'finite-difference';
     AbsTol = 1e-6;
 
-    filename = "data-xLength-6.2832-yLength-6.2832-xN-64-yN-64-method-finite-difference-theta-1-Re-1-C-1-model-benney-interface-icos-tStep-0.2-tFinal-0.5.mat";
+    filename = 'data-xLength-6.28319-yLength-6.28319-xN-64-yN-64-method-finite-difference-theta-1-Re-1-C-1-model-benney-interface-icos-tStep-0.2-tFinal-0.5.mat';
 
-    if isfile(filename)
+    if exist(filename,'file')
         delete(filename)
     end
 
@@ -31,7 +31,7 @@ function testMainWIBL1(testCase)
 
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
-    if isfile(filename)
+    if exist(filename,'file')
         delete(filename)
     end
 end

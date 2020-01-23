@@ -24,7 +24,7 @@ function testFiniteDifferenceFburgers1dResolution(testCase)
     error = zeros(5, 1);
     for n = 1:6
         actual = eval(2^(n + 3));
-        error(n) = max(abs(actual-expected), [], [1, 2]);
+        error(n) = max(max(abs(actual-expected)));
     end
 
     %     figure; plot(4:9, log10(error));
@@ -107,7 +107,7 @@ function testFiniteDifferenceFbenney1dResolution(testCase)
     error = zeros(5, 1);
     for n = 1:6
         actual = eval(2^(n + 3));
-        error(n) = max(abs(actual-expected), [], [1, 2]);
+        error(n) = max(max(abs(actual-expected)));
     end
 
     %     figure; plot(4:9, log10(error));
@@ -147,7 +147,7 @@ function testFiniteDifferenceFbenney2dResolution(testCase)
     error = zeros(5, 1);
     for n = 1:6
         actual = eval(2^(n + 3));
-        error(n) = max(abs(actual-expected), [], [1, 2]);
+        error(n) = max(max(abs(actual-expected)));
     end
 
     %     figure; plot(4:9, log10(error));
@@ -189,7 +189,7 @@ function testPseudoSpectralFbenney2dResolutionDefault(testCase)
     error = zeros(5, 1);
     for n = 1:6
         actual = eval(2^(n + 3));
-        error(n) = max(abs(actual-expected), [], [1, 2]);
+        error(n) = max(max(abs(actual-expected)));
     end
 
     %     figure; plot(4:9, log10(error));
@@ -214,8 +214,8 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasing(testCase)
     relerror = zeros(length(N), 1);
     for n = 1:length(N)
         actual = eval(N(n), N(end));
-        abserror(n) = max(abs(actual-expected), [], [1, 2]);
-        relerror(n) = max(abs(actual-expected)./abs(expected), [], [1, 2]);
+        abserror(n) = max(max(abs(actual-expected)));
+        relerror(n) = max(max(abs(actual-expected)./abs(expected)));
     end
 
     %     figure; plot(log2(N), log10(relerror));
@@ -239,7 +239,7 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
     error = zeros(length(N), 1);
     for n = 1:length(N)
         actual = eval(N(n), N(end));
-        error(n) = max(abs(actual-expected), [], [1, 2]);
+        error(n) = max(max(abs(actual-expected)));
     end
 
     %     figure; plot(log2(N), log2(error));
@@ -315,7 +315,7 @@ function testFiniteDifferenceWIBL1Resolution(testCase)
     error = zeros(5, 1);
     for n = 1:6
         actual = eval(2^(n + 3));
-        error(n) = max(abs(actual-expected), [], [1, 2]);
+        error(n) = max(max(abs(actual-expected)));
     end
 
     %     figure; plot(4:9, log10(error));
@@ -368,7 +368,7 @@ function testPseudoSpectralWIBL1Resolution(testCase)
     error = zeros(3, 1);
     for n = 1:4
         actual = eval(2^(n + 3));
-        error(n) = max(abs(actual-expected), [], [1, 2]);
+        error(n) = max(max(abs(actual-expected)));
     end
 
     %     figure; plot(4:9, log10(error));

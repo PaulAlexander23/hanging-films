@@ -1,7 +1,7 @@
 function filename = ensureUnique(filename)
     n = 0;
     suffix = "";
-    while isfile(filename + suffix + ".mat")
+    while exist(filename + suffix + ".mat", 'file')
         n = n + 1;
         suffix = "-" + num2str(n);
     end

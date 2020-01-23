@@ -71,7 +71,7 @@ function testInterfaceRand(testCase)
 
     actual = irand(x, A, numberOfModes);
     verifyTrue(testCase, max(max(abs(actual-1))) <= A);
-    verifyEqual(testCase, sum(abs(fft2(actual-1)) > 1e-10, [1, 2]), ...
+    verifyEqual(testCase, sum(sum(abs(fft2(actual-1)) > 1e-10)), ...
         (numberOfModes * 2)^2);
 end
 
@@ -99,6 +99,6 @@ function testInterfaceLoadWithRand(testCase)
     actual = iloadWithRand(x, 'data/testInterfaceLoad', alpha);
     disturbance = actual - icos(x);
     verifyTrue(testCase, max(max(abs(disturbance))) <= alpha+1e-13);
-    verifyEqual(testCase, sum(abs(fft2(disturbance)) > 1e-10, [1, 2]), ...
+    verifyEqual(testCase, sum(sum(abs(fft2(disturbance)) > 1e-10)), ...
         (5 * 2)^2);
 end

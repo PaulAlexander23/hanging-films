@@ -3,13 +3,13 @@ function tests = testSolveIVP()
 end
 
 function testSolveIVPBenneyFiniteDifference(testCase)
-    addpath("discretisationMethods/")
+    addpath('discretisationMethods/')
     
-    model = "benney";
+    model = 'benney';
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
     interface = @icos;
-    method = "finite-difference";
+    method = 'finite-difference';
     AbsTol = 1e-6;
     
     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^6, ...
@@ -35,12 +35,12 @@ function testSolveIVPBenneyFiniteDifference(testCase)
 end
 
 % function testSolveIVPBenneyPseudoSpectral(testCase)
-%     model = "benney";
-%     domain = createDomain(2*pi, 2*pi, 96, 48, "pseudo-spectral");
+%     model = 'benney';
+%     domain = createDomain(2*pi, 2*pi, 96, 48, 'pseudo-spectral');
 %     params = struct('theta', 1, 'Re', 1, 'C', 1);
 %     tFinal = 0.02;
 %     interface = @icos;
-%     method = "pseudo-spectral";
+%     method = 'pseudo-spectral';
 %     AbsTol = 1e-5;
 %     debug = true;
 %
@@ -49,7 +49,7 @@ end
 %     figure; plot(t)
 %     figure; surf(log10(abs(domain.fft(y(:,:,end)))));
 %
-%     save("temp5")
+%     save('temp5')
 %     %     actual = y(:,:,end);
 %     %     load('temp','expected')
 %     %
@@ -58,13 +58,13 @@ end
 % end
 
 function testSolveIVPWIBL1FiniteDifference(testCase)
-    addpath("discretisationMethods/")
+    addpath('discretisationMethods/')
     
-    model = "wibl1";
+    model = 'wibl1';
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
     interface = @icos;
-    method = "finite-difference";
+    method = 'finite-difference';
     AbsTol = 1e-6;
     
     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...
@@ -90,13 +90,13 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
 end
 
 function testSolveIVPWIBL1PseudoSpectral(testCase)
-    addpath("discretisationMethods/")
+    addpath('discretisationMethods/')
     
-    model = "wibl1";
+    model = 'wibl1';
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
     interface = @icos;
-    method = "pseudo-spectral";
+    method = 'pseudo-spectral';
     AbsTol = 1e-6;
     
     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...

@@ -7,13 +7,14 @@ function str = struct2str(struct)
         value = values{i};
         if ~isempty(value)
             
-            if isa(value, 'function_handle')
-                value = func2str(value);
-            end
             if isa(value, 'struct')
                 str = str + struct2str(value);
+            elseif isa(value, 'string') || isa(value, 'char')
+                str = str + sprintf("-%s-%s", fields{i}, value);
+            elseif isa(value, 'function_handle')
+                 str = str + sprintf("-%s-%s", fields{i}, func2str(value));
             else
-                str = str + sprintf("-%s-%s", fields{i}, num2str(value));
+                str = str + sprintf("-%s-%g", fields{i}, value);
             end
         end
     end

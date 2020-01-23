@@ -22,7 +22,7 @@ function testEnsureUnique(testCase)
     
     verifyEqual(testCase, actual, expected);
     
-    delete(filename + ".mat");
+    delete(char(filename + ".mat"));
 end
 
 function testMakeFilename(testCase)
@@ -79,5 +79,5 @@ function testSaveAndLoadData(testCase)
     verifyEqual(testCase, actual, expected);
     
     filename = makeFilename("data", ivpArguments, timePointsArguments, timeStepperArguments);
-    delete(filename + '.mat');
+    delete(char(filename + '.mat'));
 end
