@@ -130,7 +130,7 @@ function testFiniteDifferenceFbenney2dSize(testCase)
     addpath discretisationMethods
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     domain = FDDomain(setupX(1, 1, 2^8, 2^8), diffDegrees, 4);
-    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2}');
+    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
     actual = fbenney2d(domain, y, params);
@@ -158,7 +158,7 @@ function testFiniteDifferenceFbenney2dResolution(testCase)
     function f = eval(N)
         diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
         domain = FDDomain(setupX(1, 1, N, N), diffDegrees, 4);
-        y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2}');
+        y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
         f = fbenney2d(domain, y, params);
@@ -281,7 +281,7 @@ function testFiniteDifferenceEqualsPseudoSpectralFbenney2dDiagonal(testCase)
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     domain = FDDomain(setupX(1, 1, 2^8, 2^8), diffDegrees, 4);
     domainPS = PSDomain(setupX(1, 1, 2^8, 2^8));
-    y = 1 + 0.5 * cos(2*pi*domain.x{1}+2*pi*domain.x{2}');
+    y = 1 + 0.5 * cos(2*pi*domain.x{1}+2*pi*domain.x{2});
 
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
@@ -297,8 +297,8 @@ function testFiniteDifferenceWIBL1Size(testCase)
     addpath discretisationMethods
 
     domain = FDDomain(setupX(1, 1, 2^6, 2^6), [1, 0; 0, 1; 2, 0; 0, 2]', 4);
-    y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}');
-    f = 2 / 3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}');
+    y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
+    f = 2 / 3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
     Y = [y; f];
     params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
@@ -326,8 +326,8 @@ function testFiniteDifferenceWIBL1Resolution(testCase)
     function f = eval(N)
         diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
         domain = FDDomain(setupX(1, 1, N, N), diffDegrees, 4);
-        y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}');
-        F1 = 2 / 3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2}');
+        y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
+        F1 = 2 / 3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
         Y = [y; F1];
         params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
@@ -349,8 +349,8 @@ end
 function testPseudoSpectralWIBL1Size(testCase)
     addpath discretisationMethods
     domain = PSDomain(setupX(1, 1, 2^6, 2^6));
-    y = domain.fft(1+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}'));
-    f = domain.fft(2/3+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}'));
+    y = domain.fft(1+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}));
+    f = domain.fft(2/3+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}));
     Y = [y; f];
     params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
@@ -378,8 +378,8 @@ function testPseudoSpectralWIBL1Resolution(testCase)
 
     function f = eval(N)
         domain = PSDomain(setupX(1, 1, N, N), true, false);
-        y = domain.fft(1+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}'));
-        F1 = domain.fft(2/3+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}'));
+        y = domain.fft(1+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}));
+        F1 = domain.fft(2/3+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}));
         Y = [y; F1];
         params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
@@ -397,8 +397,8 @@ function testFiniteDifferenceEqualsPseudoSpectralFwibl12d(testCase)
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     domain = FDDomain(setupX(1, 1, 2^8, 2^8), diffDegrees, 4);
     domainPS = PSDomain(setupX(1, 1, 2^8, 2^8));
-    y = 1 + 0.1 * (cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}'));
-    F = 2 / 3 + 0.1 * 2 / 3 * (cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}'));
+    y = 1 + 0.1 * (cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}));
+    F = 2 / 3 + 0.1 * 2 / 3 * (cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}));
     Y = [y; F];
     fY = [domainPS.fft(y); domainPS.fft(F)];
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);

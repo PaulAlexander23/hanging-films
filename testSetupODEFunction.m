@@ -13,7 +13,7 @@ function test2DBenneyFiniteDifference(testCase)
     expected = @(t, y) fbenney2d(domain, y, params);
     
     testT = 1;
-    testY = 1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2})');
+    testY = 1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2}));
     
     verifyEqual(testCase, actual(testT, testY), expected(testT, testY));
 end
@@ -29,7 +29,7 @@ function test2DBenneyPseudoSpectral(testCase)
     expected = @(t, y) fbenney2d(domain, y, params);
     
     testT = 1;
-    testY = domain.fft(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2})'));
+    testY = domain.fft(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2})));
 
     verifyEqual(testCase, actual(testT, testY), expected(testT, testY));
 end
@@ -45,7 +45,7 @@ function testWIBL1FiniteDifference(testCase)
     expected = @(t, y) fwibl1(domain, y, params);
     
     testT = 1;
-    testY = repmat(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2})'),2,1);
+    testY = repmat(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2})),2,1);
     
     verifyEqual(testCase, actual(testT, testY), expected(testT, testY));
 end
@@ -61,7 +61,7 @@ function testWIBL1PseudoSpectral(testCase)
     expected = @(t, y) fwibl1(domain, y, params);
     
     testT = 1;
-    testY = repmat(domain.fft(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2})')),2,1);
+    testY = repmat(domain.fft(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2}))),2,1);
     
     verifyEqual(testCase, actual(testT, testY), expected(testT, testY));
 end

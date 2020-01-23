@@ -7,7 +7,7 @@ function testBenneyJacobian(testCase)
 
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
     domain = FDDomain(setupX(1, 1, 32, 32), diffDegrees, 4);
-    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2}');
+    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
     yVector = domain.reshapeToVector(y);
@@ -43,7 +43,7 @@ function testWIBL1Jacobian(testCase)
 
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
     domain = FDDomain(setupX(1, 1, 32, 32), diffDegrees, 4);
-    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2}');
+    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
     y = [y; 2 / 3 * y];

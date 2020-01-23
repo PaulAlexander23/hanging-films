@@ -46,7 +46,7 @@ function testMakeFilename(testCase)
     timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
     
     actual = makeFilename("test", ivpArguments, timePointsArguments, timeStepperArguments);
-    expected = "test-xLength-2-yLength-3-xN-16-yN-32-method-finite-difference-theta-1-Re-2-C-3-model-benney-interface-icos-tStep-0.2-tFinal-10-timeStepper-ode15s-AbsTol-0.001";
+    expected = "test-xLength-2-yLength-3-xN-16-yN-32-method-finite-difference-theta-1-Re-2-C-3-model-benney-interface-icos-tStep-0.2-tFinal-10";
     
     verifyEqual(testCase, actual, expected)
 end

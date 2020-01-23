@@ -16,7 +16,7 @@ function testMainWIBL1(testCase)
     method = "finite-difference";
     AbsTol = 1e-6;
 
-    filename = "data-xLength-6.2832-yLength-6.2832-xN-64-yN-64-method-finite-difference-theta-1-Re-1-C-1-model-benney-interface-icos-tStep-0.2-tFinal-0.5-timeStepper-ode15s-AbsTol-1e-06.mat";
+    filename = "data-xLength-6.2832-yLength-6.2832-xN-64-yN-64-method-finite-difference-theta-1-Re-1-C-1-model-benney-interface-icos-tStep-0.2-tFinal-0.5.mat";
 
     if isfile(filename)
         delete(filename)

@@ -7,17 +7,17 @@ function testInterfaceCos(testCase)
 
     actual = icos(x);
     expected = 1 - 0.25 * cos(2*pi/x{1}(end)*x{1}) - ...
-        0.25 * cos(2*pi/x{2}(end)*x{2}');
+        0.25 * cos(2*pi/x{2}(end)*x{2});
     verifyEqual(testCase, actual, expected);
 
     actual = icos(x, 0.5);
     expected = 1 - 0.5 * cos(2*pi/x{1}(end)*x{1}) - ...
-        0.25 * cos(2*pi/x{2}(end)*x{2}');
+        0.25 * cos(2*pi/x{2}(end)*x{2});
     verifyEqual(testCase, actual, expected);
 
     actual = icos(x, 0.5, 0.5);
     expected = 1 - 0.5 * cos(2*pi/x{1}(end)*x{1}) - ...
-        0.5 * cos(2*pi/x{2}(end)*x{2}');
+        0.5 * cos(2*pi/x{2}(end)*x{2});
     verifyEqual(testCase, actual, expected);
 end
 
@@ -26,7 +26,7 @@ function testInterfaceSingle(testCase)
     A = 1e-2;
 
     actual = isingle(x, A);
-    expected = 1 - A * (cos(2*pi/x{1}(end)*x{1}) + cos(2*pi/x{2}(end)*x{2}'));
+    expected = 1 - A * (cos(2*pi/x{1}(end)*x{1}) + cos(2*pi/x{2}(end)*x{2}));
     verifyEqual(testCase, actual, expected)
 end
 
@@ -36,7 +36,7 @@ function testInterfaceRivulet(testCase)
     r = 0.05;
 
     actual = irivulet(x, A, r);
-    expected = 1 + A * (-r * cos(2*pi/x{1}(end)*x{1}) - cos(2*pi/x{2}(end)*x{2}'));
+    expected = 1 + A * (-r * cos(2*pi/x{1}(end)*x{1}) - cos(2*pi/x{2}(end)*x{2}));
     verifyEqual(testCase, actual, expected);
 end
 
@@ -44,7 +44,7 @@ function testInterfaceDoubleX(testCase)
     x = setupX(1, 1, 2^8, 2^8);
 
     actual = idoublex(x);
-    expected = 1 + 0.2 * (-0.05 * cos(4*pi/x{1}(end)*x{1}) - cos(2*pi/x{2}(end)*x{2}'));
+    expected = 1 + 0.2 * (-0.05 * cos(4*pi/x{1}(end)*x{1}) - cos(2*pi/x{2}(end)*x{2}));
     verifyEqual(testCase, actual, expected);
 end
 
@@ -52,7 +52,7 @@ function testInterfaceDoubleY(testCase)
     x = setupX(1, 1, 2^8, 2^8);
 
     actual = idoubley(x);
-    expected = 1 + 0.2 * (-0.05 * cos(2*pi/x{1}(end)*x{1}) - cos(4*pi/x{2}(end)*x{2}'));
+    expected = 1 + 0.2 * (-0.05 * cos(2*pi/x{1}(end)*x{1}) - cos(4*pi/x{2}(end)*x{2}));
     verifyEqual(testCase, actual, expected);
 end
 
@@ -60,7 +60,7 @@ function testInterfacePert(testCase)
     x = setupX(1, 1, 2^8, 2^8);
 
     actual = ipert(x);
-    expected = 1 + 1e-2 * exp(-1e-1*((x{1} - x{1}(end) / 2).^2 + (x{2}' - x{2}(end) / 2).^2));
+    expected = 1 + 1e-2 * exp(-1e-1*((x{1} - x{1}(end) / 2).^2 + (x{2} - x{2}(end) / 2).^2));
     verifyEqual(testCase, actual, expected);
 end
 
@@ -77,7 +77,7 @@ end
 
 function testInterfaceLoad(testCase)
     x = setupX(1, 1, 2^8, 2^8);
-
+    
     actual = iload(x, 'data/testInterfaceLoad');
     expected = icos(x);
     verifyEqual(testCase, actual, expected);

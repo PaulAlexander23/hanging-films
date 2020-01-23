@@ -2,9 +2,7 @@ function x = setupX(xLength, yLength, xN, yN)
     xL = [xLength, yLength];
     xN = [xN, yN];
     xS = xL ./ xN;
-    dim = 2;
-    x = cell(dim, 1);
-    for n = 1:dim
-        x{n} = linspace(xS(n), xL(n), xN(n))';
-    end
+    
+    x{1} = linspace(xS(1), xL(1), xN(1))';
+    x{2} = linspace(xS(2), xL(2), xN(2));
 end
