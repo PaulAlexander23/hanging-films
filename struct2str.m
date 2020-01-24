@@ -12,7 +12,13 @@ function str = struct2str(struct)
             elseif isa(value, 'string') || isa(value, 'char')
                 str = str + sprintf("-%s-%s", fields{i}, value);
             elseif isa(value, 'function_handle')
-                 str = str + sprintf("-%s-%s", fields{i}, func2str(value));
+                funcStr = func2str(value);
+                
+                while contains(funcStr, '/')
+                    funcStr = extractAfter(funcStr,'/');
+                end
+                
+                str = str + sprintf("-%s-%s", fields{i}, funcStr);
             else
                 str = str + sprintf("-%s-%g", fields{i}, value);
             end

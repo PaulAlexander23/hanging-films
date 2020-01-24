@@ -23,7 +23,9 @@ function testSolveIVPBenneyFiniteDifference(testCase)
         ...'MaxStep', 5e-6 ...
         ...'InitialStep', 1e-3 ...
         );
-    timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
+    odeoptOutput = odeset();
+    timeStepperArguments = struct('timeStepper', @ode15s, ...
+        'odeopt', odeoptDefault, 'outputOpt', odeoptOutput);
     
     solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
@@ -78,7 +80,9 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
         ...'MaxStep', 5e-6 ...
         ...'InitialStep', 1e-3 ...
         );
-    timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
+    odeoptOutput = odeset();
+    timeStepperArguments = struct('timeStepper', @ode15s, ...
+        'odeopt', odeoptDefault, 'outputOpt', odeoptOutput);
     
     solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
@@ -110,7 +114,9 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
         ...'MaxStep', 5e-6 ...
         ...'InitialStep', 1e-3 ...
         );
-    timeStepperArguments = struct('timeStepper', @ode15s, 'odeopt', odeoptDefault);
+    odeoptOutput = odeset();
+    timeStepperArguments = struct('timeStepper', @ode15s, ...
+        'odeopt', odeoptDefault, 'outputOpt', odeoptOutput);
     
     solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
     
