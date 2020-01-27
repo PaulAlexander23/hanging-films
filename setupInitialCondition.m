@@ -1,11 +1,6 @@
 function y0 = setupInitialCondition(model, domain, interface, method)
-    if model == "benney"
-        y0 = interface(domain.x);
-    elseif model == "wibl1"
-        y0 = interface(domain.x);
-        F0 = 2/3 + 0*y0;
-        y0 = [y0; F0];
-    end
+    
+    y0 = interface(domain.x);
     
     if method == "pseudo-spectral"
         if model == "benney"

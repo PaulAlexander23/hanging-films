@@ -65,7 +65,7 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
     model = 'wibl1';
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
-    interface = @icos;
+    interface = @(x)icosWIBL1(x,0.25,0.25,0,0);
     method = 'finite-difference';
     AbsTol = 1e-6;
     
@@ -99,7 +99,7 @@ function testSolveIVPWIBL1PseudoSpectral(testCase)
     model = 'wibl1';
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
-    interface = @icos;
+    interface = @(x)icosWIBL1(x,0.25,0.25,0,0);
     method = 'pseudo-spectral';
     AbsTol = 1e-6;
     

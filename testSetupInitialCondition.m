@@ -29,13 +29,13 @@ function testCosWIBL1(testCase)
     args = struct('xLength', 1, 'yLength', 2, ...
         'xN', 4, 'yN', 8, 'method', "finite-difference");
     domain = setupDomain(args);
-    interface = @icos;
+    interface = @icosWIBL1;
     method = "finite-difference";
     
     actual = setupInitialCondition(model, domain, interface, method);
-    expected = [interface(domain.x); ...
-        2/3 + 0*interface(domain.x)];
-    verifyEqual(testCase, actual, expected);
+    expected = [icos(domain.x); ...
+        icos(domain.x) - 1/3];
+    verifyEqual(testCase, actual, expected, 'AbsTol', 2*eps);
     
     args = struct('xLength', 1, 'yLength', 2, ...
         'xN', 4, 'yN', 8, 'method', "pseudo-spectral");
@@ -43,9 +43,9 @@ function testCosWIBL1(testCase)
     method = "pseudo-spectral";
     
     actual = setupInitialCondition(model, domain, interface, method);
-    expected = [domain.fft(interface(domain.x)); ...
-        domain.fft(2/3 + 0 * interface(domain.x))];
-    verifyEqual(testCase, actual, expected);
+    expected = [domain.fft(icos(domain.x)); ...
+        domain.fft(icos(domain.x) - 1/3)];
+    verifyEqual(testCase, actual, expected, 'AbsTol', 2*eps);
 end
 
 function testPertBenney(testCase)
@@ -75,13 +75,13 @@ function testPertWIBL1(testCase)
     args = struct('xLength', 1, 'yLength', 2, ...
         'xN', 4, 'yN', 8, 'method', "finite-difference");
     domain = setupDomain(args);
-    interface = @ipert;
+    interface = @ipertWIBL1;
     method = "finite-difference";
     
     actual = setupInitialCondition(model, domain, interface, method);
-    expected = [interface(domain.x); ...
-        2/3 + 0*interface(domain.x)];
-    verifyEqual(testCase, actual, expected);
+    expected = [ipert(domain.x); ...
+        -1/3 + ipert(domain.x)];
+    verifyEqual(testCase, actual, expected, 'AbsTol', 2*eps);
     
     args = struct('xLength', 1, 'yLength', 2, ...
         'xN', 4, 'yN', 8, 'method', "pseudo-spectral");
@@ -89,9 +89,9 @@ function testPertWIBL1(testCase)
     method = "pseudo-spectral";
     
     actual = setupInitialCondition(model, domain, interface, method);
-    expected = [domain.fft(interface(domain.x)); ...
-        domain.fft(2/3 + 0 * interface(domain.x))];
-    verifyEqual(testCase, actual, expected);
+    expected = [domain.fft(ipert(domain.x)); ...
+        domain.fft(-1/3 + ipert(domain.x))];
+    verifyEqual(testCase, actual, expected, 'AbsTol', 2*eps);
 end
 
 function testLoadBenney(testCase)
@@ -137,12 +137,12 @@ function testLoadWIBL1(testCase)
     args = struct('xLength', 1, 'yLength', 2, ...
         'xN', 256, 'yN', 256, 'method', "finite-difference");
     domain = setupDomain(args);
-    interface = @(y) iload(y, "data/testInterfaceLoad.mat");
+    interface = @(y) iload(y, "data/testInterfaceLoadWIBL1.mat");
     method = "finite-difference";
     
     actual = setupInitialCondition(model, domain, interface, method);
-    expected = [interface(domain.x); ...
-        2/3 + 0*interface(domain.x)];
+    expected = [icos(domain.x); ...
+        -1/3 + icos(domain.x)];
     verifyEqual(testCase, actual, expected);
     
     args = struct('xLength', 1, 'yLength', 2, ...
@@ -151,7 +151,7 @@ function testLoadWIBL1(testCase)
     method = "pseudo-spectral";
     
     actual = setupInitialCondition(model, domain, interface, method);
-    expected = [domain.fft(interface(domain.x)); ...
-        domain.fft(2/3 + 0 * interface(domain.x))];
+    expected = [domain.fft(icos(domain.x)); ...
+        domain.fft(-1/3 + icos(domain.x))];
     verifyEqual(testCase, actual, expected);
 end
