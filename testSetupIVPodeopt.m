@@ -21,6 +21,8 @@ function testFiniteDifferenceWIBL1(testCase)
     actual = setupIVPodeopt(args, domain);
     expected = odeset();
     
+    verifyEqual(testCase, func2str(actual.Jacobian), '@(t,y)jwibl1(domain,y,args.params)')
+    actual.Jacobian = [];
     verifyEqual(testCase, actual, expected);
 end
 
