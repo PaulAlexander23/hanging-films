@@ -34,7 +34,7 @@ function testCosWIBL1(testCase)
     
     actual = setupInitialCondition(model, domain, interface, method);
     expected = [icos(domain.x); ...
-        icos(domain.x) - 1/3];
+        0*domain.x{1} + 0*domain.x{2}+2/3];
     verifyEqual(testCase, actual, expected, 'AbsTol', 2*eps);
     
     args = struct('xLength', 1, 'yLength', 2, ...
@@ -44,7 +44,7 @@ function testCosWIBL1(testCase)
     
     actual = setupInitialCondition(model, domain, interface, method);
     expected = [domain.fft(icos(domain.x)); ...
-        domain.fft(icos(domain.x) - 1/3)];
+        domain.fft(0*domain.x{1} + 0*domain.x{2}+2/3)];
     verifyEqual(testCase, actual, expected, 'AbsTol', 2*eps);
 end
 
