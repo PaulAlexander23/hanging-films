@@ -7,8 +7,8 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     if nargin < 14
         timeout = -1;
     else
-        graceTime = seconds(duration('00:05:00'));
-        timeout = seconds(duration(timeout)) - graceTime;
+        graceTime = seconds(durationR2018('00:05:00'));
+        timeout = seconds(durationR2018(timeout)) - graceTime;
     end
     
     [ivpArguments, timePointsArguments, timeStepperArguments]...
@@ -55,5 +55,9 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         value = double(~any(isnan(y)));
         isterminal = 1;
         direction = 0;
+    end
+
+    function secondsOut = durationR2018(stringIn)
+        secondsOut = duration(cell2mat(cellfun(@str2num,split(char(stringIn),':'),'UniformOutput',false)'));
     end
 end
