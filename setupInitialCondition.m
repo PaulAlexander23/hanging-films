@@ -10,4 +10,6 @@ function y0 = setupInitialCondition(model, domain, interface, method)
                 domain.fft(y0(1+end/2:end,:))];
         end
     end
+
+    y0 = domain.reshapeToVector(y0);
 end
