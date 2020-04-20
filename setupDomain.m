@@ -10,7 +10,7 @@ function domain = setupDomain(args)
         domain = FDDomain(x, problemDiffDegrees, accuracy);
     elseif args.method == "pseudo-spectral"
         AA = true;
-        complex = false;
+        complex = true;
         domain = PSDomain(x, AA, complex);
     end
 end
