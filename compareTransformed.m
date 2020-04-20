@@ -30,13 +30,13 @@ solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
 %%
 
 t = solution.t;
-y0 = diffusionTransformation(solution.y(:,:,1));
 
 domain = setupDomain(domainArguments);
 
-% odeFunction = @(t, y) fbenney2dTransformedP(domain, y, params);
-odeFunction = @(t, y) fbenney2dExplicit(domain, y, params) + ...
-    fbenney2dImplicit(domain, y, params);
+y0 = domain.reshapeToVector(diffusionTransformation(solution.y(:,:,1)));
+odeFunction = @fbenney2dTransformedP;
+odeFunction = matFuncToVecFunc(odeFunction);
+odeFunction = @(t, y) odeFunction(domain, y, params);
 
 odeoptIVP = odeset(...odeopt ...
 ...    ,'Jacobian', @(t, y) jbenney2d(domain, y, args.params) ...
@@ -47,6 +47,7 @@ timeStepper = setupTimeStepper(timeStepperArguments, odeoptIVP);
 [y, t, timeTaken] = iterateTimeStepper(odeFunction, t, y0, timeStepper);
 
 y = inverseDiffusionTransformation(y);
+y = domain.reshapeToDomain(permute(y, [1, 3, 2]));
 
 transformedSolution = struct('domain', domain, 't', t, 'y', y, ...
     'timeTaken', timeTaken);
