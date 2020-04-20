@@ -14,8 +14,10 @@ function test2DBenneyFiniteDifference(testCase)
     
     testT = 1;
     testY = 1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2}));
-    
-    verifyEqual(testCase, actual(testT, testY), expected(testT, testY));
+
+    verifyEqual(testCase, ...
+        actual(testT, domain.reshapeToVector(testY)), ...
+        domain.reshapeToVector(expected(testT, testY)));
 end
 
 function test2DBenneyPseudoSpectral(testCase)
@@ -31,7 +33,9 @@ function test2DBenneyPseudoSpectral(testCase)
     testT = 1;
     testY = domain.fft(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2})));
 
-    verifyEqual(testCase, actual(testT, testY), expected(testT, testY));
+    verifyEqual(testCase, ...
+        actual(testT, domain.reshapeToVector(testY)), ...
+        domain.reshapeToVector(expected(testT, testY)));
 end
 
 function testWIBL1FiniteDifference(testCase)
@@ -47,7 +51,9 @@ function testWIBL1FiniteDifference(testCase)
     testT = 1;
     testY = repmat(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2})),2,1);
     
-    verifyEqual(testCase, actual(testT, testY), expected(testT, testY));
+    verifyEqual(testCase, ...
+        actual(testT, domain.reshapeToVector(testY)), ...
+        domain.reshapeToVector(expected(testT, testY)));
 end
 
 function testWIBL1PseudoSpectral(testCase)
@@ -63,5 +69,7 @@ function testWIBL1PseudoSpectral(testCase)
     testT = 1;
     testY = repmat(domain.fft(1 + 0.1 * (cos(domain.x{1}) + cos(domain.x{2}))),2,1);
     
-    verifyEqual(testCase, actual(testT, testY), expected(testT, testY));
+    verifyEqual(testCase, ...
+        actual(testT, domain.reshapeToVector(testY)), ...
+        domain.reshapeToVector(expected(testT, testY)));
 end

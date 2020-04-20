@@ -1,7 +1,10 @@
 function odeFunction = setupODEFunction(model, domain, params)
     if model == "benney"
-        odeFunction = @(t, y) fbenney2d(domain, y, params);
+        f = @fbenney2d;
     elseif model == "wibl1"
-        odeFunction = @(t, y) fwibl1(domain, y, params);
+        f = @fwibl1;
     end
+
+    odeFunctionVector = matFuncToVecFunc(f);
+    odeFunction = @(t, y) odeFunctionVector(domain, y, params);
 end

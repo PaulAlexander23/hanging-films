@@ -81,7 +81,8 @@ function testPseudoSpectralFburgers1dResolution(testCase)
 
         f = fburgers(domain, y, params);
 
-        f = domain.zeropad(f, 2^10/N);
+        f = domain.ifft(f);
+        f = interp1(domain.x{1}, f, linspace(2*pi/2^10, 2*pi, 2^10)');
     end
 end
 
@@ -201,7 +202,10 @@ function testPseudoSpectralFbenney2dResolutionDefault(testCase)
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
         y = icos(domain.x);
         f = fbenney2d(domain, domain.fft(y), params);
-        f = domain.zeropad(f, 2^10/N);
+        f = domain.ifft(f);
+        f = interp2(domain.x{1}, domain.x{2}, ...
+            f, ...
+            linspace(2*pi/2^10, 2*pi, 2^10)', linspace(2*pi/2^10, 2*pi, 2^10)');
     end
 end
 
@@ -227,7 +231,10 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasing(testCase)
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
         y = icos(domain.x);
         f = fbenney2d(domain, domain.fft(y), params);
-        f = domain.zeropad(f, Nmax/N);
+        f = domain.ifft(f);
+        f = interp2(domain.x{1}, domain.x{2}, ...
+            f, ...
+            linspace(2*pi/2^10, 2*pi, 2^10)', linspace(2*pi/2^10, 2*pi, 2^10)');
     end
 end
 
@@ -251,7 +258,10 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
         y = icos(domain.x);
         f = fbenney2d(domain, domain.fft(y), params);
-        f = domain.zeropad(f, Nmax/N);
+        f = domain.ifft(f);
+        f = interp2(domain.x{1}, domain.x{2}, ...
+            f, ...
+            linspace(2*pi/2^10, 2*pi, 2^10)', linspace(2*pi/2^10, 2*pi, 2^10)');
     end
 end
 
@@ -385,8 +395,13 @@ function testPseudoSpectralWIBL1Resolution(testCase)
 
         f = fwibl1(domain, Y, params);
 
-        newy = domain.zeropad(f(1:end/2, :), 2^10/N);
-        newF1 = domain.zeropad(f(end/2+1:end, :), 2^10/N);
+        f = domain.ifft(f);
+        newy  = interp2(domain.x{1}, domain.x{2}, ...
+            f(1:end/2, :), ...
+            linspace(2*pi/2^10, 2*pi, 2^10)', linspace(2*pi/2^10, 2*pi, 2^10)');
+        newF1= interp2(domain.x{1}, domain.x{2}, ...
+            f(end/2+1:end, :), ...
+            linspace(2*pi/2^10, 2*pi, 2^10)', linspace(2*pi/2^10, 2*pi, 2^10)');
 
         f = [newy; newF1];
     end

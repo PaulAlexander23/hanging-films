@@ -1,7 +1,8 @@
 function [y, t, timeTaken] = iterateTimeStepper(odeFunction, t, y0, timeStepper)
     
     tic
-    [y, t] = odeMatrixSolver(odeFunction, t, y0, timeStepper);
+    [t, y] = timeStepper(odeFunction, t, y0);
     timeTaken = toc;
-    
+
+    y = y';
 end

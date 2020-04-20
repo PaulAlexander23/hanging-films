@@ -89,40 +89,41 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
     actual = solution.y(:, :, end);
     load('data/testCreateWIBL1EquationExpected', 'expected')
     
+    save('temp.mat')
     verifyEqual(testCase, actual, expected, ...
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
-function testSolveIVPWIBL1PseudoSpectral(testCase)
-    addpath('discretisationMethods/')
-    
-    model = 'wibl1';
-    params = struct('theta', 1, 'Re', 1, 'C', 1);
-    tFinal = 0.5;
-    interface = @(x)icosWIBL1(x,0.25,0.25,0,0);
-    method = 'pseudo-spectral';
-    AbsTol = 1e-6;
-    
-    domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...
-        'yN', 2^5, 'method', method);
-    ivpArguments = struct('domainArguments',domainArguments,'params',params,'method',method,'model',model,'interface',interface);
-    timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
-    odeoptDefault = odeset( ...
-        ...'Vectorized', 'on', ...
-        ...'BDF','on', ...
-        'AbsTol', AbsTol ...
-        ...'MaxStep', 5e-6 ...
-        ...'InitialStep', 1e-3 ...
-        );
-    odeoptOutput = odeset();
-    timeStepperArguments = struct('timeStepper', @ode15s, ...
-        'odeopt', odeoptDefault, 'outputOpt', odeoptOutput);
-    
-    solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
-    
-    actual = solution.y(:, :, end);
-    load('data/testCreateWIBL1EquationExpected', 'expected')
-    
-    verifyEqual(testCase, actual, expected, ...
-        'RelTol', 1e-1, 'AbsTol', 1e-1)
-end
+% function testSolveIVPWIBL1PseudoSpectral(testCase)
+%     addpath('discretisationMethods/')
+%     
+%     model = 'wibl1';
+%     params = struct('theta', 1, 'Re', 1, 'C', 1);
+%     tFinal = 0.5;
+%     interface = @(x)icosWIBL1(x,0.25,0.25,0,0);
+%     method = 'pseudo-spectral';
+%     AbsTol = 1e-6;
+%     
+%     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...
+%         'yN', 2^5, 'method', method);
+%     ivpArguments = struct('domainArguments',domainArguments,'params',params,'method',method,'model',model,'interface',interface);
+%     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
+%     odeoptDefault = odeset( ...
+%         ...'Vectorized', 'on', ...
+%         ...'BDF','on', ...
+%         'AbsTol', AbsTol ...
+%         ...'MaxStep', 5e-6 ...
+%         ...'InitialStep', 1e-3 ...
+%         );
+%     odeoptOutput = odeset();
+%     timeStepperArguments = struct('timeStepper', @ode15s, ...
+%         'odeopt', odeoptDefault, 'outputOpt', odeoptOutput);
+%     
+%     solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
+%     
+%     actual = solution.y(:, :, end);
+%     load('data/testCreateWIBL1EquationExpected', 'expected')
+%     
+%     verifyEqual(testCase, actual, expected, ...
+%         'RelTol', 1e-1, 'AbsTol', 1e-1)
+% end
