@@ -1,6 +1,7 @@
 function mainSemiImplicit(icFilename)
 
     addpath('discretisationMethods');
+    addpath('timeSteppingMethods');
 
     xL = 32; yL = 32; xN = 64; yN = 64;
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
