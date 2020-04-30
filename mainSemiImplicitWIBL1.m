@@ -7,11 +7,11 @@ function mainSemiImplicitWIBL1(icFilename)
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 2);
     Re = replace(icFilename, 'ics/', '');
-    Re = replace(Re, 'ic-benney-1d-Re-', '');
-    Re = replace(Re, 'ic-benney-2d-Re-', '');
+    Re = replace(Re, 'ic-WIBL1-2D-Re-', '');
+    Re = replace(Re, 'ic-WIBL1-3D-Re-', '');
     Re = replace(Re, '.mat', '');
     Re = replace(Re, '_', '.');
-    Re = str2num(Re);
+    Re = str2num(Re)
     
     params = struct('theta', 7*pi/8, 'Re', Re, 'C', 0.01);
 
