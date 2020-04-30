@@ -140,7 +140,7 @@ end
 
 function testSemiImplicitEvolution(testCase)
     addpath('discretisationMethods');
-    addpath('~/Repositories/time-stepping-methods');
+    addpath('timeSteppingMethods');
 
     xL = 32; yL = 32; xN = 32; yN = 32;
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
@@ -180,7 +180,7 @@ end
 
 function testSemiImplicit1DbenneyWave(testCase)
     addpath('discretisationMethods');
-    addpath('~/Repositories/time-stepping-methods');
+    addpath('timeSteppingMethods');
 
     xL = 32; yL = 32; xN = 64; yN = 64;
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
@@ -221,7 +221,7 @@ end
 
 function testSemiImplicit2DbenneyWave(testCase)
     addpath('discretisationMethods');
-    addpath('~/Repositories/time-stepping-methods');
+    addpath('timeSteppingMethods');
 
     xL = 32; yL = 32; xN = 64; yN = 64;
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
