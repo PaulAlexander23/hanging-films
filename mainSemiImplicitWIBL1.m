@@ -6,12 +6,19 @@ function mainSemiImplicitWIBL1(icFilename)
     xL = 32; yL = 32; xN = 64; yN = 64;
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 2);
-    params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
+    Re = replace(icFilename, 'ics/', '');
+    Re = replace(Re, 'ic-benney-1d-Re-', '');
+    Re = replace(Re, 'ic-benney-2d-Re-', '');
+    Re = replace(Re, '.mat', '');
+    Re = replace(Re, '_', '.');
+    Re = str2num(Re);
     
+    params = struct('theta', 7*pi/8, 'Re', Re, 'C', 0.01);
+
     fwibl1ExplicitVec = matFuncToVecFunc(@fwibl1Explicit);
     explicitOdefun = @(t, y) fwibl1ExplicitVec(domain, y, params);
 
-    t = linspace(0, 1,  20)';
+    t = linspace(0, 250,  5000)';
 
     load(icFilename, 'h');
     y0 = domain.reshapeToVector(h);
@@ -28,7 +35,9 @@ function mainSemiImplicitWIBL1(icFilename)
     y = permute(y, [1, 3, 2]);
     y = domain.reshapeToDomain(y);
 
-    save(replace(icFilename, 'ic', 'data'), 't', 'y', 'timeTaken', 'params', 'x')
+    filename = replace(replace(icFilename, 'ics/', ''), 'ic', 'data');
+
+    save(filename, 't', 'x', 'y', 'params', 'timeTaken')
 
     function [F, J] = implicitOdefun(~, y, domain, params)
         [f, J] = fwibl1Implicit(domain, domain.reshapeToDomain(y),params);
