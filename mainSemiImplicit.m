@@ -37,7 +37,7 @@ function mainSemiImplicit(icFilename)
 
     filename = replace(replace(icFilename, 'ics/', ''), 'ic', 'data');
 
-    save(filename, 't', 'x', 'y', 'params', 'timeTaken')
+    save(filename, 't', 'x', 'y', 'params', 'timeTaken', '-v7.3')
 
     function [F, J] = implicitOdefun(~, y, domain, params)
         [f, J] = fbenney2dImplicit(domain, domain.reshapeToDomain(y),params);

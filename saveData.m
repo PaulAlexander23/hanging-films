@@ -9,5 +9,5 @@ function saveData(solution, ivpArguments, timePointsArguments, timeStepperArgume
     filename = ensureUnique(filename);
     
     save(filename + '.mat', 'solution', 'ivpArguments', 'timePointsArguments', ...
-        'timeStepperArguments');
+        'timeStepperArguments', '-v7.3');
 end
