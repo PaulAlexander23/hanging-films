@@ -1,13 +1,4 @@
 function f = fbenney2dExplicit(domain, h, params)
-    % P = 2 * cot(params.theta) * h;
-
-    % F1 = 2 / 3 * domain.multiply(h, h, [2, 1]) - ...
-    %     1 / 3 * domain.multiply(h, domain.diff(P, [1; 0]), [3, 1]) + ...
-    %     8 * params.Re / 15 * domain.multiply(h, domain.diff(h, [1; 0]), [6, 1]);
-    % F2 = - 1 / 3 * domain.multiply(h, domain.diff(P, [0; 1]), [3, 1]);
-
-    % f = - domain.diff(F1, [1; 0]) - domain.diff(F2, [0; 1]);
-
     z = h.^4 / 4;
 
     dzdx = domain.diff(z, [1; 0]); 
