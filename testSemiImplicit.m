@@ -133,7 +133,7 @@ function testSemiImplicitEvolution(testCase)
     timeStepper = @bdf1si;
 
     options = struct('optimmethod', @(fun, x0) fsolve(fun, x0, ...
-        optimoptions('fsolve', 'Display', 'iter', 'SpecifyObjectiveGradient', true)));
+        optimoptions('fsolve', 'Display', 'off', 'SpecifyObjectiveGradient', true)));
 
     tic
     [~, y] = timeStepper(explicitOdefun, @(t, y) implicitOdefun(t, y, domain, params), t, y0, options);
