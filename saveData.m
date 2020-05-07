@@ -1,6 +1,5 @@
 function saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments)
-    filename = makeFilename("data", ivpArguments, timePointsArguments, ...
-        timeStepperArguments);
+    filename = makeFilename("data", ivpArguments, timePointsArguments);
 
     if strlength(filename) > 255
         filename = extractBefore(filename, 256);

@@ -38,6 +38,44 @@ function testSolveIVPBenneyFiniteDifference(testCase)
         'RelTol', 1e-3, 'AbsTol', 1e-6)
 end
 
+function testSolveIVPBenneyFiniteDifferenceSemiImplicit(testCase)
+    addpath('discretisationMethods/')
+    addpath('timeSteppingMethods/')
+    
+    odefun = struct('explicit', @fbenney2dExplicit, 'implicit', @fbenney2dImplicit);
+    odejac = @jbenney2dImplicit;
+    params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
+    tFinal = 0.002;
+    interface = @(x)icos(x,0.1,0.1);
+    method = 'finite-difference';
+    AbsTol = 1e-6;
+    
+    domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^6, ...
+        'yN', 2^6, 'method', method);
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,...
+        'method',method,'odefun',odefun,'odejac',odejac,'interface',interface);
+    timePointsArguments = struct('tStep', 0.001, 'tFinal', tFinal);
+    odeoptDefault = odeset( ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
+        'AbsTol', AbsTol ...
+        ...'MaxStep', 5e-6 ...
+        ...'InitialStep', 1e-3 ...
+        );
+    odeoptDefault.optimoptions = optimoptions('fsolve', 'Display', 'off', 'SpecifyObjectiveGradient', true);
+    timeStepperArguments = struct('timeStepper', @bdf1si, ...
+        'odeopt', odeoptDefault);
+    
+    solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
+    
+    actual = solution.y(:, :, end);
+    save('temp.mat')
+    load('data/testCreate2DBenneyEquationSemiImplicitExpected', 'expected')
+    
+    verifyEqual(testCase, actual, expected, ...
+        'RelTol', 1e-3, 'AbsTol', 1e-6)
+end
+
 % function testSolveIVPBenneyPseudoSpectral(testCase)
 %     model = 'benney';
 %     domain = createDomain(2*pi, 2*pi, 96, 48, 'pseudo-spectral');

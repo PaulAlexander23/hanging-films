@@ -106,7 +106,7 @@ function testSemiImplicitJacobian(testCase)
     y0 = domain.reshapeToVector(y);
 
     expected = jacobianNumerical(implicitOdefun, y0);
-    [~, actual] = fwibl1Implicit(domain, y0, params);
+    actual = jwibl1Implicit(domain, y0, params);
     
     verifyEqual(testCase, actual, expected, 'RelTol', 1.5e-1, 'AbsTol', 1e-7);
 
@@ -134,6 +134,9 @@ function testSemiImplicitEvolution(testCase)
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
     
     explicitOdefun = @(t, y) fwibl1Explicit(domain, y, params);
+    implicitOdefun = @(t, y) fwibl1Implicit(domain, y, params);
+    odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
+    odejac = @(t, y) jwibl1Implicit(domain, y, params);
 
     t = linspace(0, 1,  10)';
 
@@ -141,19 +144,19 @@ function testSemiImplicitEvolution(testCase)
 
     timeStepper = @bdf1si;
 
-    options = struct('optimmethod', @(fun, x0) fsolve(fun, x0, ...
-        optimoptions('fsolve', 'Display', 'off', 'SpecifyObjectiveGradient', true)));
+    myoptimoptions = optimoptions('fsolve', ...
+        'Display', 'off', ...
+        'SpecifyObjectiveGradient', true);
+    options = struct('optimmethod', @fsolve, ...
+        'optimoptions', myoptimoptions, ...
+        'Jacobian', odejac);
 
     tic
-    [~, y] = timeStepper(explicitOdefun, @(t, y) implicitOdefun(t, y, domain, params), t, y0, options);
+    [~, y] = timeStepper(odefun, t, y0, options);
     timeTaken = toc;
     y = y';
     y = reshape(y, [size(y,1), 1, size(y,2)]);
     y = domain.reshapeToDomain(y);
 
     verifySize(testCase, y, [2*xN, yN, length(t)]);
-
-    function [F, J] = implicitOdefun(t, y, domain, params)
-        [F, J] = fwibl1Implicit(domain, y,params);
-    end
 end

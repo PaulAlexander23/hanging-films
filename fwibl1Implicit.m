@@ -1,4 +1,4 @@
-function [dydt, J] = fwibl1Implicit(domain, y, params)
+function dydt = fwibl1Implicit(domain, y, params)
     y = domain.reshapeToDomain(y);
 
     h = y(1:end/2, :, :);
@@ -19,28 +19,4 @@ function [dydt, J] = fwibl1Implicit(domain, y, params)
     dydt = cat(1, dydt, dF1dt);
 
     dydt = domain.reshapeToVector(dydt);
-
-    if nargout == 2
-        sd = @(v) spdiags(v,0,length(v),length(v));
-        Dx = domain.diffMat([1; 0]);
-        Dy = domain.diffMat([0; 1]);
-        Dyy = domain.diffMat([0; 2]);
-        
-        DPDh = - 1 / params.C * (domain.diffMat([2; 0]) + domain.diffMat([0; 2]));
-
-        DhtDh = sd(domain.reshapeToVector(h).^2 .* domain.reshapeToVector(Pyy))...
-            * Dy + ...
-            sd(domain.reshapeToVector(h).^3) * DPDh/3 ...
-            * Dyy;
-
-        DhtDF1 = - Dx;
-
-        DF1tDh = -5/(6*params.Re) * (sd(domain.reshapeToVector(Px)) + ...
-            sd(domain.reshapeToVector(h)) * DPDh * Dx);
-        
-        DF1tDF1 = zeros(numel(h));
-
-        J = [DhtDh, DhtDF1; ...
-            DF1tDh, DF1tDF1];
-    end
 end

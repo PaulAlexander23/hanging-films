@@ -1,8 +1,8 @@
-function odeopt = setupTimeStepperOptions(odeoptDefault, outputOpt, odeoptIVP)
+function odeopt = setupTimeStepperOptions(odeoptDefault, odeoptIVP)
     
     odeopt = odeoptDefault;
     
-    odeopt = odeset(outputOpt, odeopt);
-    
-    odeopt = odeset(odeoptIVP, odeopt);
+    if isfield(odeoptIVP, 'Jacobian')
+        odeopt.Jacobian = odeoptIVP.Jacobian;
+    end
 end
