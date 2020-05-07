@@ -1,4 +1,4 @@
-function [domain, odeFunction, y0, odeopt] = setupIVP(args)
+function [domain, odeFunction, y0, ivpOdeopt] = setupIVP(args)
     
     domain = setupDomain(args.domainArguments);
     
@@ -6,5 +6,5 @@ function [domain, odeFunction, y0, odeopt] = setupIVP(args)
     
     y0 = setupInitialCondition(domain, args.interface, args.domainArguments.method);
     
-    odeopt = setupIVPodeopt(args, domain);
+    ivpOdeopt = setupIVPodeopt(args.odejac, domain, args.params, args.domainArguments.method);
 end

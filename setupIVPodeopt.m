@@ -1,9 +1,9 @@
-function odeopt = setupIVPodeopt(args, domain)
+function odeopt = setupIVPodeopt(odejac, domain, params, method)
     odeopt = odeset();
     
-    if args.domainArguments.method == "finite-difference"
+    if method == "finite-difference"
         odeopt = odeset(odeopt ...
-            , 'Jacobian', @(t, y) args.odejac(domain, y, args.params) ...
+            , 'Jacobian', @(t, y) odejac(domain, y, params) ...
             );
     end
 end

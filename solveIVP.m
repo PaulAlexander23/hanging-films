@@ -1,10 +1,10 @@
 function solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments)
     
-    [domain, odeFunction, y0, odeoptIVP] = setupIVP(ivpArguments);
+    [domain, odeFunction, y0, ivpOdeopt] = setupIVP(ivpArguments);
     
     t = setupTimePoints(timePointsArguments);
     
-    timeStepper = setupTimeStepper(timeStepperArguments, odeoptIVP);
+    timeStepper = setupTimeStepper(timeStepperArguments, ivpOdeopt);
     
     [y, t, timeTaken] = iterateTimeStepper(odeFunction, t, y0, timeStepper);
 
