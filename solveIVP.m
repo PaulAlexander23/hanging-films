@@ -8,7 +8,7 @@ function solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArgum
     
     [y, t, timeTaken] = iterateTimeStepper(odeFunction, t, y0, timeStepper);
 
-    y = postprocess(ivpArguments.domainArguments.method, ivpArguments.model, domain, y);
+    y = postprocess(ivpArguments.domainArguments.method, domain, y);
     
     solution = struct('domain', domain, 't', t, 'y', y, ...
         'timeTaken', timeTaken);
