@@ -26,9 +26,10 @@ function testExplicitFunctionEvaluationSize(testCase)
     h = icos(domain.x);
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
+    h = domain.reshapeToVector(h);
     actual = fbenney2dExplicit(domain, h, params);
     
-    verifySize(testCase, actual, [xN, yN]);
+    verifySize(testCase, actual, [xN * yN, 1]);
 end
 
 function testImplicitFunctionEvaluationSize(testCase)
@@ -39,9 +40,10 @@ function testImplicitFunctionEvaluationSize(testCase)
     h = icos(domain.x);
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
+    h = domain.reshapeToVector(h);
     actual = fbenney2dImplicit(domain, h, params);
     
-    verifySize(testCase, actual, [xN, yN]);
+    verifySize(testCase, actual, [xN * yN, 1]);
 end
 
 function testSplitCombinesToMakeFBenney2d(testCase)
@@ -52,6 +54,7 @@ function testSplitCombinesToMakeFBenney2d(testCase)
     h = icos(domain.x);
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
+    h = domain.reshapeToVector(h);
     expected = fbenney2d(domain, h, params);
     actual = fbenney2dExplicit(domain, h, params) + ...
         fbenney2dImplicit(domain, h, params);
@@ -72,10 +75,14 @@ function testSplitFunctionConverges(testCase)
     fineH = icos(fineDomain.x);
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
+    coarseH = coarseDomain.reshapeToVector(coarseH);
+    fineH = fineDomain.reshapeToVector(fineH);
     actual = fbenney2dExplicit(coarseDomain, coarseH, params) + ...
         fbenney2dImplicit(coarseDomain, coarseH, params);
+    actual = coarseDomain.reshapeToDomain(actual);
     expected = fbenney2dExplicit(fineDomain, fineH, params) + ...
         fbenney2dImplicit(fineDomain, fineH, params);
+    expected = fineDomain.reshapeToDomain(expected);
     expected = coarseDomain.interp(fineDomain.x, expected);
 
     verifyEqual(testCase, actual, expected, 'AbsTol', 5e-1, 'RelTol', 2e-2);
@@ -89,14 +96,13 @@ function testSemiImplicitJacobian(testCase)
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 2);
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
-    fbenney2dImplicitVec = matFuncToVecFunc(@fbenney2dImplicit);
-    implicitOdefun = @(y) fbenney2dImplicitVec(domain, y, params);
+    implicitOdefun = @(y) fbenney2dImplicit(domain, y, params);
 
     y = icos(domain.x);
     y0 = domain.reshapeToVector(y);
 
     expected = jacobianNumerical(implicitOdefun, y0);
-    [~, actual] = fbenney2dImplicit(domain, y, params);
+    [~, actual] = fbenney2dImplicit(domain, y0, params);
     
     verifyEqual(testCase, actual, expected, 'RelTol', 2.5e-1);
 
@@ -123,8 +129,7 @@ function testSemiImplicitEvolution(testCase)
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 2);
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
     
-    fbenney2dExplicitVec = matFuncToVecFunc(@fbenney2dExplicit);
-    explicitOdefun = @(t, y) fbenney2dExplicitVec(domain, y, params);
+    explicitOdefun = @(t, y) fbenney2dExplicit(domain, y, params);
 
     t = linspace(0, 0.1,  10)';
 
@@ -144,8 +149,6 @@ function testSemiImplicitEvolution(testCase)
     verifySize(testCase, y, [xN, yN, length(t)]);
 
     function [F, J] = implicitOdefun(~, y, domain, params)
-        [f, J] = fbenney2dImplicit(domain, domain.reshapeToDomain(y),params);
-        
-        F = domain.reshapeToVector(f);
+        [F, J] = fbenney2dImplicit(domain, y,params);
     end
 end

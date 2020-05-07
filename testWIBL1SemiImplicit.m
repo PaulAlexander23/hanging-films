@@ -10,9 +10,10 @@ function testExplicitFunctionEvaluationSize(testCase)
     h = [icos(domain.x);icos(domain.x)];
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
+    h = domain.reshapeToVector(h);
     actual = fwibl1Explicit(domain, h, params);
     
-    verifySize(testCase, actual, [2*xN, yN]);
+    verifySize(testCase, actual, [2*xN * yN, 1]);
 end
 
 function testImplicitFunctionEvaluationSize(testCase)
@@ -23,9 +24,10 @@ function testImplicitFunctionEvaluationSize(testCase)
     h = [icos(domain.x);icos(domain.x)];
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
+    h = domain.reshapeToVector(h);
     actual = fwibl1Implicit(domain, h, params);
     
-    verifySize(testCase, actual, [2*xN, yN]);
+    verifySize(testCase, actual, [2*xN * yN, 1]);
 end
 
 function testSplitCombinesToMakeFWIBL1(testCase)
@@ -35,6 +37,7 @@ function testSplitCombinesToMakeFWIBL1(testCase)
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 2);
     h = [icos(domain.x);2/3*icos(domain.x)];
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 1e-2); 
+    h = domain.reshapeToVector(h);
     expected = fwibl1(domain, h, params);
     actual = fwibl1Explicit(domain, h, params) + ...
         fwibl1Implicit(domain, h, params);
@@ -66,10 +69,14 @@ function testSplitFunctionConverges(testCase)
     fineH = [icos(fineDomain.x);icos(fineDomain.x)];
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
+    coarseH = coarseDomain.reshapeToVector(coarseH);
+    fineH = fineDomain.reshapeToVector(fineH);
     actual = fwibl1Explicit(coarseDomain, coarseH, params) + ...
         fwibl1Implicit(coarseDomain, coarseH, params);
+    actual = coarseDomain.reshapeToDomain(actual);
     expected = fwibl1Explicit(fineDomain, fineH, params) + ...
         fwibl1Implicit(fineDomain, fineH, params);
+    expected = fineDomain.reshapeToDomain(expected);
     expected = [coarseDomain.interp(fineDomain.x, expected(1:end/2,:)); ...
         coarseDomain.interp(fineDomain.x, expected(1+end/2:end,:))];
 
@@ -93,14 +100,13 @@ function testSemiImplicitJacobian(testCase)
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 2);
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
 
-    fwibl1ImplicitVec = matFuncToVecFunc(@fwibl1Implicit);
-    implicitOdefun = @(y) fwibl1ImplicitVec(domain, y, params);
+    implicitOdefun = @(y) fwibl1Implicit(domain, y, params);
 
     y = [icos(domain.x);icos(domain.x)];
     y0 = domain.reshapeToVector(y);
 
     expected = jacobianNumerical(implicitOdefun, y0);
-    [~, actual] = fwibl1Implicit(domain, y, params);
+    [~, actual] = fwibl1Implicit(domain, y0, params);
     
     verifyEqual(testCase, actual, expected, 'RelTol', 1.5e-1, 'AbsTol', 1e-7);
 
@@ -127,8 +133,7 @@ function testSemiImplicitEvolution(testCase)
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 2);
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 0.01);
     
-    fwibl1ExplicitVec = matFuncToVecFunc(@fwibl1Explicit);
-    explicitOdefun = @(t, y) fwibl1ExplicitVec(domain, y, params);
+    explicitOdefun = @(t, y) fwibl1Explicit(domain, y, params);
 
     t = linspace(0, 1,  10)';
 
@@ -149,8 +154,6 @@ function testSemiImplicitEvolution(testCase)
     verifySize(testCase, y, [2*xN, yN, length(t)]);
 
     function [F, J] = implicitOdefun(t, y, domain, params)
-        [f, J] = fwibl1Implicit(domain, domain.reshapeToDomain(y),params);
-        
-        F = domain.reshapeToVector(f);
+        [F, J] = fwibl1Implicit(domain, y,params);
     end
 end

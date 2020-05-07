@@ -1,4 +1,6 @@
 function dydt = fwibl1Explicit(domain, y, params)
+    y = domain.reshapeToDomain(y);
+
     h = y(1:end/2, :, :);
     F1 = y(end/2+1:end, :, :);
     
@@ -20,4 +22,6 @@ function dydt = fwibl1Explicit(domain, y, params)
         5 * domain.multiply(h, domain.diff(P, [1; 0]), [1, 1])) / (6 * params.Re);
 
     dydt = cat(1, dhdt, dF1dt);
+
+    dydt = domain.reshapeToVector(dydt);
 end

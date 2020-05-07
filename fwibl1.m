@@ -1,4 +1,6 @@
 function dYdthat = fwibl1(domain, Yhat, params)
+    Yhat = domain.reshapeToDomain(Yhat);
+
     yhat = Yhat(1:end/2, :, :);
     F1hat = Yhat(end/2+1:end, :, :);
     
@@ -17,4 +19,6 @@ function dYdthat = fwibl1(domain, Yhat, params)
         5 * domain.multiply(yhat, domain.diff(Phat, [1; 0]), [1, 1])) / (6 * params.Re);
 
     dYdthat = cat(1, dydthat, dF1dthat);
+
+    dYdthat = domain.reshapeToVector(dYdthat);
 end

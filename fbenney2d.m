@@ -1,4 +1,6 @@
 function f = fbenney2d(domain, y, params)
+    y = domain.reshapeToDomain(y);
+
     P = 2 * cot(params.theta) * y - ...
         (domain.diff(y, [2; 0]) + domain.diff(y, [0; 2])) / params.C;
 
@@ -10,4 +12,6 @@ function f = fbenney2d(domain, y, params)
 
     f = - domain.diff(F1, [1; 0]) - ...
         domain.diff(F2, [0; 1]);
+
+    f = domain.reshapeToVector(f);
 end

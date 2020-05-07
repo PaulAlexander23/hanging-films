@@ -134,9 +134,10 @@ function testFiniteDifferenceFbenney2dSize(testCase)
     y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
+    y = domain.reshapeToVector(y);
     actual = fbenney2d(domain, y, params);
 
-    expectedSize = [2^8, 2^8];
+    expectedSize = [2^8 * 2^8, 1];
 
     verifySize(testCase, actual, expectedSize)
 end
@@ -162,7 +163,9 @@ function testFiniteDifferenceFbenney2dResolution(testCase)
         y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
+        y = domain.reshapeToVector(y);
         f = fbenney2d(domain, y, params);
+        f = domain.reshapeToDomain(f);
 
         f = interp2(domain.x{1}, domain.x{2}, ...
             f, ...
@@ -176,9 +179,10 @@ function testPseudoSpectralFbenney2dSize(testCase)
     y = icos(domain.x);
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
+    y = domain.reshapeToVector(y);
     actual = fbenney2d(domain, y, params);
 
-    expectedSize = [2^8, 2^8];
+    expectedSize = [2^8 * 2^8, 1];
 
     verifySize(testCase, actual, expectedSize)
 end
@@ -201,7 +205,8 @@ function testPseudoSpectralFbenney2dResolutionDefault(testCase)
         domain = PSDomain(setupX(1, 1, N, N));
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
         y = icos(domain.x);
-        f = fbenney2d(domain, domain.fft(y), params);
+        f = fbenney2d(domain, domain.reshapeToVector(domain.fft(y)), params);
+        f = domain.reshapeToDomain(f);
         f = domain.ifft(f);
         f = interp2(domain.x{1}, domain.x{2}, ...
             f, ...
@@ -230,7 +235,8 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasing(testCase)
         domain = PSDomain(setupX(1, 1, N, N), true);
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
         y = icos(domain.x);
-        f = fbenney2d(domain, domain.fft(y), params);
+        f = fbenney2d(domain, domain.reshapeToVector(domain.fft(y)), params);
+        f = domain.reshapeToDomain(f);
         f = domain.ifft(f);
         f = interp2(domain.x{1}, domain.x{2}, ...
             f, ...
@@ -250,14 +256,14 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
     end
 
     %     figure; plot(log2(N), log2(error));
-    %     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2])));
-
+    %     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2]))); 
     verifyEqual(testCase, error(end), zeros(1, 1), 'AbsTol', 1e3);
     function f = eval(N, Nmax)
         domain = PSDomain(setupX(1, 1, N, N), true, false);
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
         y = icos(domain.x);
-        f = fbenney2d(domain, domain.fft(y), params);
+        f = fbenney2d(domain, domain.reshapeToVector(domain.fft(y)), params);
+        f = domain.reshapeToDomain(f);
         f = domain.ifft(f);
         f = interp2(domain.x{1}, domain.x{2}, ...
             f, ...
@@ -276,9 +282,10 @@ function testFiniteDifferenceEqualsPseudoSpectralFbenney2d(testCase)
 
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
-    actual = fbenney2d(domain, y, params);
+    actual = fbenney2d(domain, domain.reshapeToVector(y), params);
+    actual = domain.reshapeToDomain(actual);
     expected = domainPS.ifft( ...
-        fbenney2d(domainPS, domainPS.fft(y), params));
+        domain.reshapeToDomain(fbenney2d(domainPS, domain.reshapeToVector(domainPS.fft(y)), params)));
 
     %     figure; surf(log10(abs(fft2(actualFD - actualPS))))
     %     figure; surf(log10(abs(fft2(actualFD - actualPS))/max(abs(actualFD),[],[1,2])))
@@ -295,9 +302,10 @@ function testFiniteDifferenceEqualsPseudoSpectralFbenney2dDiagonal(testCase)
 
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
-    actual = fbenney2d(domain, y, params);
+    actual = fbenney2d(domain, domain.reshapeToVector(y), params);
+    actual = domain.reshapeToDomain(actual);
     expected = domainPS.ifft( ...
-        fbenney2d(domainPS, domainPS.fft(y), params));
+        domain.reshapeToDomain(fbenney2d(domainPS, domain.reshapeToVector(domainPS.fft(y)), params)));
 
     verifyEqual(testCase, actual, expected, 'RelTol', 1e-2, 'AbsTol', 2e-1)
 end
@@ -312,8 +320,9 @@ function testFiniteDifferenceWIBL1Size(testCase)
     Y = [y; f];
     params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
+    Y = domain.reshapeToVector(Y);
     actual = fwibl1(domain, Y, params);
-    expectedSize = [2^7, 2^6];
+    expectedSize = [2^7 * 2^6, 1];
 
     verifySize(testCase, actual, expectedSize)
 end
@@ -341,7 +350,9 @@ function testFiniteDifferenceWIBL1Resolution(testCase)
         Y = [y; F1];
         params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
+        Y = domain.reshapeToVector(Y);
         f = fwibl1(domain, Y, params);
+        f = domain.reshapeToDomain(f);
 
         newy = myinterp(domain, f(1:end/2, :));
         newF1 = myinterp(domain, f(end/2+1:end, :));
@@ -364,8 +375,9 @@ function testPseudoSpectralWIBL1Size(testCase)
     Y = [y; f];
     params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
+    Y = domain.reshapeToVector(Y);
     actual = fwibl1(domain, Y, params);
-    expectedSize = [2^7, 2^6];
+    expectedSize = [2^7 * 2^6, 1];
 
     verifySize(testCase, actual, expectedSize)
 end
@@ -393,7 +405,9 @@ function testPseudoSpectralWIBL1Resolution(testCase)
         Y = [y; F1];
         params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
+        Y = domain.reshapeToVector(Y);
         f = fwibl1(domain, Y, params);
+        f = domain.reshapeToDomain(f);
 
         f = domain.ifft(f);
         newy  = interp2(domain.x{1}, domain.x{2}, ...
@@ -418,8 +432,12 @@ function testFiniteDifferenceEqualsPseudoSpectralFwibl12d(testCase)
     fY = [domainPS.fft(y); domainPS.fft(F)];
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
+    Y = domain.reshapeToVector(Y);
     actualFD = fwibl1(domain, Y, params);
+    actualFD = domain.reshapeToDomain(actualFD);
+    fY = domain.reshapeToVector(fY);
     Z = fwibl1(domainPS, fY, params);
+    Z = domain.reshapeToDomain(Z);
     actualPS = [domainPS.ifft(Z(1:end/2, :)); ...
         domainPS.ifft(Z(1+end/2:end, :))];
 

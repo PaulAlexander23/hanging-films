@@ -1,4 +1,6 @@
 function f = fbenney2dExplicit(domain, h, params)
+    h = domain.reshapeToDomain(h);
+
     z = h.^4 / 4;
 
     dzdx = domain.diff(z, [1; 0]); 
@@ -23,4 +25,6 @@ function f = fbenney2dExplicit(domain, h, params)
         + 1 / 4 * dzdy ./ z .* Q;
 
     f = - domain.diff(F1, [1; 0]) - domain.diff(F2, [0; 1]);
+    
+    f = domain.reshapeToVector(f);
 end

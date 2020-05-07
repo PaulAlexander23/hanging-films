@@ -17,7 +17,7 @@ function test2DBenneyFiniteDifference(testCase)
 
     verifyEqual(testCase, ...
         actual(testT, domain.reshapeToVector(testY)), ...
-        domain.reshapeToVector(expected(testT, testY)));
+        expected(testT, domain.reshapeToVector(testY)));
 end
 
 function test2DBenneyPseudoSpectral(testCase)
@@ -35,7 +35,7 @@ function test2DBenneyPseudoSpectral(testCase)
 
     verifyEqual(testCase, ...
         actual(testT, domain.reshapeToVector(testY)), ...
-        domain.reshapeToVector(expected(testT, testY)));
+        expected(testT, domain.reshapeToVector(testY)));
 end
 
 function testWIBL1FiniteDifference(testCase)
@@ -53,7 +53,7 @@ function testWIBL1FiniteDifference(testCase)
     
     verifyEqual(testCase, ...
         actual(testT, domain.reshapeToVector(testY)), ...
-        domain.reshapeToVector(expected(testT, testY)));
+        expected(testT, domain.reshapeToVector(testY)));
 end
 
 function testWIBL1PseudoSpectral(testCase)
@@ -71,5 +71,5 @@ function testWIBL1PseudoSpectral(testCase)
     
     verifyEqual(testCase, ...
         actual(testT, domain.reshapeToVector(testY)), ...
-        domain.reshapeToVector(expected(testT, testY)));
+        expected(testT, domain.reshapeToVector(testY)));
 end

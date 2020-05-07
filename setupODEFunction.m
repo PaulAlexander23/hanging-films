@@ -5,6 +5,5 @@ function odeFunction = setupODEFunction(model, domain, params)
         f = @fwibl1;
     end
 
-    odeFunctionVector = matFuncToVecFunc(f);
-    odeFunction = @(t, y) odeFunctionVector(domain, y, params);
+    odeFunction = @(t, y) f(domain, y, params);
 end

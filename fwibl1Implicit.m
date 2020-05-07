@@ -1,4 +1,6 @@
 function [dydt, J] = fwibl1Implicit(domain, y, params)
+    y = domain.reshapeToDomain(y);
+
     h = y(1:end/2, :, :);
     F1 = y(end/2+1:end, :, :);
     
@@ -15,6 +17,8 @@ function [dydt, J] = fwibl1Implicit(domain, y, params)
         (6 * params.Re);
 
     dydt = cat(1, dydt, dF1dt);
+
+    dydt = domain.reshapeToVector(dydt);
 
     if nargout == 2
         sd = @(v) spdiags(v,0,length(v),length(v));

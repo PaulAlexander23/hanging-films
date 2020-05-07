@@ -1,3 +1,2 @@
-Use vectors rather than matrices.
 Add ability to switch between implicit/explicit methods and semi-implicit methods.
 Clean tests.

@@ -12,7 +12,7 @@ function testBenneyJacobian(testCase)
 
     yVector = domain.reshapeToVector(y);
 
-    F = @(u) Fbenney(domain, u, params);
+    F = @(u)fbenney2d(domain,u,params);
 
     expected = jacobianNumerical(F, yVector);
     actual = jbenney2d(domain, yVector, params);
@@ -50,7 +50,7 @@ function testWIBL1Jacobian(testCase)
     yVector = [domain.reshapeToVector(y(1:end/2, :, :)); ...
         domain.reshapeToVector(y(1+end/2:end, :, :))];
 
-    F = @(u) FWIBL1(domain, u, params);
+    F = @(u)fwibl1(domain, u, params);
 
     expected = jacobianNumerical(F, yVector);
     actual = jwibl1(domain, yVector, params);
