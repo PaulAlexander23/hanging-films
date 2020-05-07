@@ -1,33 +1,57 @@
-function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, timeStepper, timeout)
+function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, timeStepper, timeStep, timeout)
     if nargin < 9, xN = 64; end
     if nargin < 10, yN = 64; end
     if nargin < 11, AbsTol = 1e-6; end
     if nargin < 12, method = 'finite-difference'; end
     if nargin < 13, timeStepper = @ode15s; end
-    if nargin < 14
+    if nargin < 14, timeStep = 0.2; end
+    if nargin < 15
         timeout = -1;
     else
         graceTime = seconds(durationR2018('00:05:00'));
         timeout = seconds(durationR2018(timeout)) - graceTime;
     end
+    addpath('timeSteppingMethods/')
+    boolSemiImplicit = isSemiImplicit(timeStepper);
 
     params = struct('theta', theta, 'Re', Re, 'C', C);
 
     domainArguments = struct('xLength', xLength, 'yLength', yLength, 'xN', xN, ...
         'yN', yN, 'method', method);
 
-    if model == "benney"
-        odefun = @fbenney2d;
-        odejac = @jbenney2d;
-    elseif model == "wibl1"
-        odefun = @fwibl1;
-        odejac = @jwibl1;
+    if ~boolSemiImplicit
+        if model == "benney"
+            odefun = @fbenney2d;
+            odejac = @jbenney2d;
+        elseif model == "wibl1"
+            odefun = @fwibl1;
+            odejac = @jwibl1;
+        end
+    else
+        if model == "benney"
+            explicitOdefun = @fbenney2dExplicit;
+            implicitOdefun = @fbenney2dImplicit;
+            odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
+            odejac = @jbenney2dImplicit;
+        elseif model == "wibl1"
+            explicitOdefun = @fwibl1Explicit;
+            implicitOdefun = @fwibl1Implicit;
+            odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
+            odejac = @jwibl1Implicit;
+        end
     end
-
     ivpArguments = struct('domainArguments',domainArguments,'params',params,...
         'odefun',odefun,'odejac',odejac,'interface',interface);
 
-    timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
+    timePointsArguments = struct('tStep', timeStep, 'tFinal', tFinal);
+
+
+    myoptimoptions = optimoptions('fsolve', ...
+        'Display', 'off');
+
+    if method == "finite-difference"
+        myoptimoptions.SpecifyObjectiveGradient = true;
+    end
 
     timerID = tic;
     odeoptDefault = odeset( ...
@@ -35,19 +59,15 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         ...'BDF','on', ...
         'Events', @eventNan,...
         'AbsTol', AbsTol, ...
-        'Events', @(~, ~) eTimeout(timerID, timeout), ...
+        'Events', @(~, ~) eTimeout(timerID, timeout) ...
         ...'MaxStep', 5e-6 ...
         ...'InitialStep', 1e-3 ...
-        'OutputFcn', 'odeprint',...
-        'OutputSel', 1 ...
+        ...'OutputFcn', 'odeprint',...
+        ...'OutputSel', 1 ...
         );
-
-    odeoptDefault.optimoptions = optimoptions('fsolve', ...
-        'Display', 'off', ...
-        'SpecifyObjectiveGradient', true);
+    odeoptDefault.optimoptions = myoptimoptions;
 
     timeStepperArguments = struct('timeStepper', timeStepper, ...
-        'semiImplicit', isSemiImplicit(timeStepper), ...
         'odeopt', odeoptDefault);
 
     solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
