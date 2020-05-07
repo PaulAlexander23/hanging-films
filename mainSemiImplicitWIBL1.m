@@ -18,15 +18,15 @@ function mainSemiImplicitWIBL1(icFilename)
     fwibl1ExplicitVec = matFuncToVecFunc(@fwibl1Explicit);
     explicitOdefun = @(t, y) fwibl1ExplicitVec(domain, y, params);
 
-    t = linspace(0, 250,  5000)';
+    t = linspace(0, 300,  40000)';
 
     load(icFilename, 'h');
     y0 = domain.reshapeToVector(h);
 
-    timeStepper = @bdf2si;
+    timeStepper = @bdf1si;
 
     options = struct('optimmethod', @(fun, x0) fsolve(fun, x0, ...
-        optimoptions('fsolve', 'Display', 'iter', 'SpecifyObjectiveGradient', true)));
+        optimoptions('fsolve', 'Display', 'off', 'SpecifyObjectiveGradient', true)));
 
     tic
     [~, y] = timeStepper(explicitOdefun, @(t, y) implicitOdefun(t, y, domain, params), t, y0, options);
@@ -37,7 +37,7 @@ function mainSemiImplicitWIBL1(icFilename)
 
     filename = replace(replace(icFilename, 'ics/', ''), 'ic', 'data');
 
-    save(filename, 't', 'x', 'y', 'params', 'timeTaken')
+    save(filename, 't', 'x', 'y', 'params', 'timeTaken', '-v7.3')
 
     function [F, J] = implicitOdefun(~, y, domain, params)
         [f, J] = fwibl1Implicit(domain, domain.reshapeToDomain(y),params);
