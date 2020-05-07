@@ -16,8 +16,16 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     domainArguments = struct('xLength', xLength, 'yLength', yLength, 'xN', xN, ...
         'yN', yN, 'method', method);
 
+    if model == "benney"
+        odefun = @fbenney2d;
+        odejac = @jbenney2d;
+    elseif model == "wibl1"
+        odefun = @fwibl1;
+        odejac = @jwibl1;
+    end
+
     ivpArguments = struct('domainArguments',domainArguments,'params',params,...
-        'model',model,'interface',interface);
+        'odefun',odefun,'odejac',odejac,'interface',interface);
 
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
 

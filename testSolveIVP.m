@@ -5,7 +5,8 @@ end
 function testSolveIVPBenneyFiniteDifference(testCase)
     addpath('discretisationMethods/')
     
-    model = 'benney';
+    odefun = @fbenney2d;
+    odejac = @jbenney2d;
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
     interface = @icos;
@@ -14,7 +15,8 @@ function testSolveIVPBenneyFiniteDifference(testCase)
     
     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^6, ...
         'yN', 2^6, 'method', method);
-    ivpArguments = struct('domainArguments',domainArguments,'params',params,'method',method,'model',model,'interface',interface);
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,...
+        'method',method,'odefun',odefun,'odejac',odejac,'interface',interface);
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
     odeoptDefault = odeset( ...
         ...'Vectorized', 'on', ...
@@ -62,7 +64,8 @@ end
 function testSolveIVPWIBL1FiniteDifference(testCase)
     addpath('discretisationMethods/')
     
-    model = 'wibl1';
+    odefun = @fwibl1;
+    odejac = @jwibl1;
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;
     interface = @(x)icosWIBL1(x,0.25,0.25,0,0);
@@ -71,7 +74,8 @@ function testSolveIVPWIBL1FiniteDifference(testCase)
     
     domainArguments = struct('xLength', 2*pi, 'yLength', 2*pi, 'xN', 2^5, ...
         'yN', 2^5, 'method', method);
-    ivpArguments = struct('domainArguments',domainArguments,'params',params,'method',method,'model',model,'interface',interface);
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,...
+        'method',method,'odefun',odefun,'odejac',odejac,'interface',interface);
     timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
     odeoptDefault = odeset( ...
         ...'Vectorized', 'on', ...
