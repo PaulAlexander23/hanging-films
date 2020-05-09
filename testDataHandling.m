@@ -59,6 +59,40 @@ function testMakeFilename(testCase)
     verifyEqual(testCase, actual, expected)
 end
 
+function testSaveFilenameLength(testCase)
+    method = "finite-difference";
+    interface = @(x)iloadWithCos(x, 'ics/ic-benney-1d-Re-1_00.mat', 0, 0.1);
+    params = struct('theta', 1, 'Re', 2, 'C', 3);
+    
+    domainArguments = struct('xLength', 2, 'yLength', 3, 'xN', 16, ...
+        'yN', 32, 'method', method);
+    
+    explicitOdefun = @fbenney2dExplicit;
+    implicitOdefun = @fbenney2dImplicit;
+    odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
+    odejac = @jbenney2dImplicit;
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,...
+        'odefun',odefun,'odejac',odejac,'interface',interface);
+
+    timePointsArguments = struct('tStep', 0.2, 'tFinal', 10);
+    odeoptDefault = odeset( ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
+        'AbsTol', 1e-3, ...
+        ...'MaxStep', 5e-6 ...
+        ...'InitialStep', 1e-3 ...
+        'OutputFcn', 'odeprint',...
+        'OutputSel', 1 ...
+        );
+    timeStepperArguments = struct('timeStepper', @ode15s, ...
+        'odeopt', odeoptDefault);
+    
+    expected = 1;
+    
+    saveData(expected, ivpArguments, timePointsArguments, timeStepperArguments);
+
+end
+
 function testSaveAndLoadData(testCase)
     method = "finite-difference";
     params = struct('theta', 1, 'Re', 2, 'C', 3);
