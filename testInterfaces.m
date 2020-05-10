@@ -102,3 +102,37 @@ function testInterfaceLoadWithRand(testCase)
     verifyEqual(testCase, sum(sum(abs(fft2(disturbance)) > 1e-10)), ...
         (5 * 2)^2);
 end
+
+function testInterfaceLoadWithCos(testCase)
+    x = setupX(1, 1, 2^8, 2^8);
+    a = 0.2;
+    b = 0.2;
+
+    actual = iloadWithCos(x, 'data/testInterfaceLoad', a, b);
+    expected = icos(x) + icos(x, a, b) - 1;
+    verifyEqual(testCase, actual, expected);
+end
+
+function testInterfaceLoadAmplifyMode(testCase)
+    x = setupX(1, 1, 2^8, 2^8);
+    amplitude = 1;
+    xMode = 1;
+    yMode = 0;
+    
+    expected = icos(x, 0.5, 0.25);
+    actual = iloadAmplifyMode(x, 'data/testInterfaceLoad.mat', amplitude, xMode, yMode);
+
+    verifyEqual(testCase, actual, expected, 'AbsTol', 4*eps)
+end
+
+function testInterfaceLoadAmplifyModeWIBL1(testCase)
+    x = setupX(1, 1, 2^8, 2^8);
+    amplitude = 1;
+    xMode = 1;
+    yMode = 0;
+    
+    expected = [icos(x, 0.5, 0.25);icos(x,0.5,0.25) - 1/3];
+    actual = iloadAmplifyModeWIBL1(x, 'data/testInterfaceLoadWIBL1.mat', amplitude, xMode, yMode);
+
+    verifyEqual(testCase, actual, expected, 'AbsTol', 4*eps)
+end
