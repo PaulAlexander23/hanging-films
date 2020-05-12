@@ -1,2 +1,3 @@
-Add ability to switch between implicit/explicit methods and semi-implicit methods.
+Save the solution only at a specified frequency to limit file size.
+Add continuation.
 Clean tests.
