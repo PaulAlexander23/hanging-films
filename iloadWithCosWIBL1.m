@@ -1,4 +1,4 @@
-function y0 = iloadWithCos(x, filename, a, b, c, d)
+function y0 = iloadWithCosWIBL1(x, filename, a, b, c, d)
     if nargin < 3, a = 0.25; end
     if nargin < 4, b = 0.25; end
     if nargin < 5, c = 0.0; end
@@ -6,5 +6,5 @@ function y0 = iloadWithCos(x, filename, a, b, c, d)
 
     load(filename,'h');
 
-    y0 = h + [icos(x, a, b); icos(x, c, d) - 1/3];
+    y0 = h + [icos(x, a, b) - 1; icos(x, c, d) - 1];
 end

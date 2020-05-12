@@ -78,7 +78,7 @@ end
 function testInterfaceLoad(testCase)
     x = setupX(1, 1, 2^8, 2^8);
     
-    actual = iload(x, 'data/testInterfaceLoad');
+    actual = iload(x, 'data/testInterfaceLoad.mat');
     expected = icos(x);
     verifyEqual(testCase, actual, expected);
 end
@@ -87,7 +87,7 @@ function testInterfaceLoadWithPert(testCase)
     x = setupX(1, 1, 2^8, 2^8);
     alpha = 0.2;
 
-    actual = iloadWithPert(x, 'data/testInterfaceLoad', alpha);
+    actual = iloadWithPert(x, 'data/testInterfaceLoad.mat', alpha);
     expected = icos(x) + ipert(x, alpha) - 1;
     verifyEqual(testCase, actual, expected);
 end
@@ -96,7 +96,7 @@ function testInterfaceLoadWithRand(testCase)
     x = setupX(1, 1, 2^8, 2^8);
     alpha = 0.2;
 
-    actual = iloadWithRand(x, 'data/testInterfaceLoad', alpha);
+    actual = iloadWithRand(x, 'data/testInterfaceLoad.mat', alpha);
     disturbance = actual - icos(x);
     verifyTrue(testCase, max(max(abs(disturbance))) <= alpha+1e-13);
     verifyEqual(testCase, sum(sum(abs(fft2(disturbance)) > 1e-10)), ...
@@ -108,9 +108,24 @@ function testInterfaceLoadWithCos(testCase)
     a = 0.2;
     b = 0.2;
 
-    actual = iloadWithCos(x, 'data/testInterfaceLoad', a, b);
+    actual = iloadWithCos(x, 'data/testInterfaceLoad.mat', a, b);
     expected = icos(x) + icos(x, a, b) - 1;
     verifyEqual(testCase, actual, expected);
+end
+
+function testInterfaceLoadWithCosWIBL1(testCase)
+    x = setupX(1, 1, 2^8, 2^8);
+    a = 0.1;
+    b = 0.2;
+    c = 0.3;
+    d = 0.4;
+
+    actual = iloadWithCosWIBL1(x, 'data/testInterfaceLoadWIBL1.mat', ...
+        a, b, c, d);
+    expected = [icos(x, 0.25, 0.25) + icos(x, a, b) - 1; ...
+        icos(x, 0.25, 0.25) - 1/3 + icos(x, c, d) - 1];
+
+    verifyEqual(testCase, actual, expected, 'AbsTol', eps);
 end
 
 function testInterfaceLoadAmplifyMode(testCase)
