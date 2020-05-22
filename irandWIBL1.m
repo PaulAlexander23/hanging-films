@@ -1,9 +1,13 @@
-function y0 = irandWIBL1(x, num, A, B)
+function y0 = irandWIBL1(x, num, A, B, seed)
     %IRANDWIBL1 Interface on x with "num" random modes and amplitudes "A" and 
-    % "B" for the surface and flux respectively.
+    % "B" for the surface and flux respectively. Uses seed for random number 
+    % generation.
     if nargin < 2, num = 5; end
     if nargin < 3, A = 1e-4; end
     if nargin < 4, B = 1e-4; end
+    if nargin == 5
+        rng(seed);
+    end
 
     Nx = length(x{1})/2;
     Ny = length(x{2})/2;
