@@ -146,7 +146,7 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
     addpath discretisationMethods
 
     for expectedOrder = [2, 4]
-        resolutions = 2.^(5:9);
+        resolutions = round(logspace(log10(50),log10(500),6));
 
         N = length(resolutions);
         errNorm = ones(N-1, 1);
@@ -160,33 +160,47 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
             expected = actual;
         end
 
+        %hold on
+        %plot(resolutions(2:end), log10(errNorm), 'o');
+        %set(gca, 'Xscale', 'log')
+
         actualOrder = -(gradient(log10(errNorm), log10(resolutions)));
 
-        verifyTrue(testCase, all(actualOrder > expectedOrder - 8e-1))
+        % mean(actualOrder)
+        % errNorm(end)
+        % max(abs(actual),[],[1,2])
+        
+        verifyTrue(testCase, mean(actualOrder) > expectedOrder - 2e-1)
     end
 
     function f = myEval(N, order, minN, maxN)
         diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
         domain = FDDomain(setupX(1, 1, N, N), diffDegrees, order);
         fineX = setupX(1, 1, maxN, maxN);
+        coarseX = setupX(1, 1, minN, minN);
+        dt = 1e-3;
 
-        y = icos(fineX);
-        % y = irand(fineX, 3e-1, 4, 1);
-
-        y = interp2(fineX{1}, fineX{2}, ...
-            y, ...
-            domain.x{1}, domain.x{2}); 
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
+        % y = icos(fineX);
+        % y = irand(fineX, 3e-1, 4, 1);
+
+        %figure; surf(y)
+        %y = interp2(fineX{1}, fineX{2}, ...
+        %    y, ...
+        %    domain.x{1}, domain.x{2});
+        %figure; surf(y)
+
+        % y = icos(domain.x);
+        y = irandLin(domain.x, 3e-1, 20, 1);
+
         y = domain.reshapeToVector(y);
-        f = fbenney2d(domain, y, params);
+        f = dt * fbenney2d(domain, y, params);
         f = domain.reshapeToDomain(f);
 
-        coarseX = setupX(1, 1, minN, minN);
-
-        f = interp2(domain.x{1}, domain.x{2}, ...
+        f = periodicInterp2(domain.x{1}, domain.x{2}, ...
             f, ...
-            coarseX{1}, coarseX{2}); 
+            coarseX{1}, coarseX{2}, 'spline'); 
     end
 end
 
