@@ -75,6 +75,42 @@ function testInterfaceRand(testCase)
         (numberOfModes * 2)^2);
 end
 
+function testInterfaceRandIsNotGridDependant(testCase)
+    x = setupX(1, 1, 64, 64);
+    x2 = setupX(1, 1, 75, 75);
+
+    A = 1e-4;
+    numberOfModes = 5;
+    seed = 1;
+
+    expected = irand(x, A, numberOfModes, seed);
+    [X, Y] = meshgrid(x{1}, x{2});
+    [X2, Y2] = meshgrid(x2{1}, x2{2});
+    actual = periodicInterp2(X2, Y2, ...
+        irand(x2, A, numberOfModes, seed), ...
+        X, Y, 'spline');
+
+    verifyEqual(testCase, actual, expected, 'AbsTol', 2e-8)
+end
+
+function testInterfaceRandLinIsNotGridDependant(testCase)
+    x = setupX(1, 1, 64, 64);
+    x2 = setupX(1, 1, 75, 75);
+
+    A = 1e-4;
+    numberOfModes = 5;
+    seed = 1;
+
+    expected = irandLin(x, A, numberOfModes, seed);
+    [X, Y] = meshgrid(x{1}, x{2});
+    [X2, Y2] = meshgrid(x2{1}, x2{2});
+    actual = periodicInterp2(X2, Y2, ...
+        irandLin(x2, A, numberOfModes, seed), ...
+        X, Y, 'spline');
+
+    verifyEqual(testCase, actual, expected, 'AbsTol', 1e-8)
+end
+
 function testInterfaceLoad(testCase)
     x = setupX(1, 1, 2^8, 2^8);
     
@@ -98,7 +134,8 @@ function testInterfaceLoadWithRand(testCase)
 
     actual = iloadWithRand(x, 'data/testInterfaceLoad.mat', alpha);
     disturbance = actual - icos(x);
-    verifyTrue(testCase, max(max(abs(disturbance))) <= alpha+1e-13);
+
+    verifyTrue(testCase, max(max(abs(disturbance))) <= alpha+1e-2);
     verifyEqual(testCase, sum(sum(abs(fft2(disturbance)) > 1e-10)), ...
         (5 * 2)^2);
 end
