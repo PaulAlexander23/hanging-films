@@ -1,11 +1,11 @@
 function f = fbenney2dImplicit(domain, h, params)
     h = domain.reshapeToDomain(h);
 
-    z = h.^4 / 4;
+    P = - (domain.diff(h, [2; 0]) + domain.diff(h, [0; 2])) / params.C;
 
-    Q = - (domain.diff(z, [2; 0]) + domain.diff(z, [0; 2])) / params.C;
-
-    f = (domain.diff(Q, [2; 0]) + domain.diff(Q, [0; 2])) / 3;
+    f = domain.multiply(h, ...
+        domain.diff(P, [2; 0]) + domain.diff(P, [0; 2]), ...
+        [3, 1]) / 3;
 
     f = domain.reshapeToVector(f);
 end
