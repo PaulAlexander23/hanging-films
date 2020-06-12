@@ -160,24 +160,24 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
             expected = actual;
         end
 
-        %hold on
-        %plot(resolutions(2:end), log10(errNorm), 'o');
-        %set(gca, 'Xscale', 'log')
+        % hold on
+        % plot(resolutions(2:end), log10(errNorm), 'o');
+        % set(gca, 'Xscale', 'log')
 
         actualOrder = -(gradient(log10(errNorm), log10(resolutions)));
 
-        % mean(actualOrder)
-        % errNorm(end)
-        % max(abs(actual),[],[1,2])
+        %  mean(actualOrder)
+        %  errNorm(end)
+        %  max(abs(actual),[],[1,2])
         
         verifyTrue(testCase, mean(actualOrder) > expectedOrder - 2e-1)
     end
 
     function f = myEval(N, order, minN, maxN)
         diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
-        domain = FDDomain(setupX(1, 1, N, N), diffDegrees, order);
-        fineX = setupX(1, 1, maxN, maxN);
-        coarseX = setupX(1, 1, minN, minN);
+        domain = FDDomain(setupX(32, 32, N, N), diffDegrees, order);
+        fineX = setupX(32, 32, maxN, maxN);
+        coarseX = setupX(32, 32, minN, minN);
         dt = 1e-3;
 
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
@@ -193,6 +193,7 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
 
         % y = icos(domain.x);
         y = irandLin(domain.x, 3e-1, 20, 1);
+        % y = iloadInterp(domain.x, "ics/ic-tw-benney-2d.mat");
 
         y = domain.reshapeToVector(y);
         f = dt * fbenney2d(domain, y, params);
@@ -201,6 +202,79 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
         f = periodicInterp2(domain.x{1}, domain.x{2}, ...
             f, ...
             coarseX{1}, coarseX{2}, 'spline'); 
+    end
+end
+
+function testFiniteDifferenceFWIBL1ConvergenceBetweenResolutions(testCase)
+    addpath discretisationMethods
+
+    for expectedOrder = [2, 4]
+        resolutions = round(logspace(log10(100),log10(500),6));
+
+        N = length(resolutions);
+        absError = ones(N-1, 1);
+        relError = ones(N-1, 1);
+
+        expected = myEval(resolutions(1), expectedOrder, resolutions(1), resolutions(end));
+        for n = 2:N
+            actual = myEval(resolutions(n), expectedOrder, resolutions(1),resolutions(end));
+
+            % fprintf("Norm: %.15e\n", norm(actual))
+
+            absError(n-1) = max(abs(actual - expected), [], [1,2]);
+            % fprintf("Max abs error: %.15e\n", absError(n-1))
+            relError(n-1) = max(abs(actual - expected)./abs(expected), [], [1,2]);
+            % fprintf("Max rel error: %.15e\n", relError(n-1))
+
+            expected = actual;
+        end
+
+        % hold on
+        % plot(resolutions(2:end), log10(absError), 'o');
+        % set(gca, 'Xscale', 'log')
+
+        actualOrder = -(gradient(log10(absError), log10(resolutions)));
+
+        % mean(actualOrder)
+        % absError(end)
+        % max(abs(actual),[],[1,2])
+        
+        verifyTrue(testCase, mean(actualOrder) > expectedOrder - 2e-1)
+    end
+
+    function f = myEval(N, order, minN, maxN)
+        diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
+        domain = FDDomain(setupX(1, 1, N, N), diffDegrees, order);
+        fineX = setupX(1, 1, maxN, maxN);
+        coarseX = setupX(1, 1, minN, minN);
+        dt = 1e-4;
+
+        params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
+
+        % y = icos(fineX);
+        % y = irand(fineX, 3e-1, 4, 1);
+
+        %figure; surf(y)
+        %y = interp2(fineX{1}, fineX{2}, ...
+        %    y, ...
+        %    domain.x{1}, domain.x{2});
+        %figure; surf(y)
+
+        % y = icos(domain.x);
+        y = irandLinWIBL1(domain.x, 20, 3e-1, 3e-1, 1);
+
+        y = domain.reshapeToVector(y);
+        f = dt * fwibl1(domain, y, params);
+        f = domain.reshapeToDomain(f);
+
+        fy = periodicInterp2(domain.x{1}, domain.x{2}, ...
+            f(1:end/2,:,:), ...
+            coarseX{1}, coarseX{2}, 'spline'); 
+        ff = periodicInterp2(domain.x{1}, domain.x{2}, ...
+            f(1+end/2:end,:,:), ...
+            coarseX{1}, coarseX{2}, 'spline'); 
+
+        f = [fy; ff];
     end
 end
 
