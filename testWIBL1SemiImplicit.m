@@ -147,9 +147,10 @@ function testSemiImplicitEvolution(testCase)
     myoptimoptions = optimoptions('fsolve', ...
         'Display', 'off', ...
         'SpecifyObjectiveGradient', true);
-    options = struct('optimmethod', @fsolve, ...
-        'optimoptions', myoptimoptions, ...
-        'Jacobian', odejac);
+    options = odeset();
+    options.optimmethod = @fsolve;
+    options.optimoptions = myoptimoptions;
+    options.Jacobian = odejac;
 
     tic
     [~, y] = timeStepper(odefun, t, y0, options);
