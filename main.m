@@ -5,8 +5,8 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     if nargin < 12, method = 'finite-difference'; end
     if nargin < 13, timeStepper = @ode15s; end
     if nargin < 14, timeStepOut = 0.2; end
-    if nargin < 14, timeStep = timeStepOut; end
-    if nargin < 15
+    if nargin < 15, timeStep = timeStepOut; end
+    if nargin < 16
         timeout = -1;
     else
         graceTime = seconds(durationR2018('00:05:00'));
