@@ -14,7 +14,8 @@ function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, 
     params = struct('theta', theta, 'Re', Re, 'C', C, ...
         'a', 0.5, 'b', 0.25, 'c', 2);
 
-    h0 = 1 - params.a * cos(domain.x{1}) - params.b * cos(domain.x{2});
+    h0 = 1 - params.a * cos(2*pi*domain.x{1} / xL) ...
+        - params.b * cos(2 * pi * domain.x{2} / yL);
 
     y0 = domain.reshapeToVector(h0);
 
@@ -43,8 +44,8 @@ function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, 
     solution.y = domain.reshapeToDomain(solution.y);
 
     t = reshape(t, [1, 1, length(t)]);
-    expected = 1 - params.a * cos(domain.x{1} - params.c * t) ...
-        - params.b * cos(domain.x{2});
+    expected = 1 - params.a * cos(2*pi*domain.x{1}/xL - params.c * t) ...
+        - params.b * cos(2*pi*domain.x{2}/yL);
     actual = solution.y;
     err = abs(actual - expected);
 

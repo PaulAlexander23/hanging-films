@@ -12,8 +12,10 @@ function f = fbenneyforcing(t, domain, h0, params)
 
     % f = params.c * params.a * sin(domain.x{1} - params.c * t) + domain.diff(F1, [1;0]) + domain.diff(F2, [0;1]);
 
-    x = domain.x{1};
-    y = domain.x{2};
+    xsf = 2*pi/domain.x{1}(end);
+    ysf = 2*pi/domain.x{2}(end);
+    x = domain.x{1}*xsf;
+    y = domain.x{2}*ysf;
 
     h0 = 1 - params.a * cos(x) - params.b * cos(y);
 
@@ -22,14 +24,14 @@ function f = fbenneyforcing(t, domain, h0, params)
     sy = params.b * sin(y) + 0 * x;
     cy = params.b * cos(y) + 0 * x;
 
-    F1x = 2 * h0.^2 .* sx ...
-        - h0.^2 .* sx.^2 * (2 * cot(params.theta) + 1 / params.C) ...
-        - h0.^3 / 3 .* cx * (2 * cot(params.theta) + 1 / params.C) ...
-        + 16 * params.Re / 5 * h0.^5 .* sx.^2 ...
-        + 8 * params.Re / 15 * h0.^6 .* cx;
+    F1x = 2 * h0.^2 .* sx * xsf ...
+        - h0.^2 .* sx.^2 * xsf^2 * (2 * cot(params.theta) + (xsf^2 + ysf^2) / params.C) ...
+        - h0.^3 / 3 .* cx * xsf^2 * (2 * cot(params.theta) + (xsf^2 + ysf^2) / params.C) ...
+        + 16 * params.Re / 5 * h0.^5 .* sx.^2 * xsf^2 ...
+        + 8 * params.Re / 15 * h0.^6 .* cx * xsf^2;
 
-    F2y = - h0.^2 .* sy.^2 * (2 * cot(params.theta) + 1 / params.C) ...
-        - h0.^3 / 3 .* cy * (2 * cot(params.theta) + 1 / params.C);
+    F2y = - h0.^2 .* sy.^2 * ysf^2 * (2 * cot(params.theta) + (xsf^2 + ysf^2) / params.C) ...
+        - h0.^3 / 3 .* cy * ysf^2 * (2 * cot(params.theta) + (xsf^2 + ysf^2) / params.C);
 
     f = - params.c * sx + F1x + F2y;
 
