@@ -8,7 +8,7 @@ function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, 
     addpath('timeSteppingMethods/')
     addpath('discretisationMethods');
 
-    t = (0:0.2:tFinal)';
+    t = (0:timeStep:tFinal)';
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 4);
     params = struct('theta', theta, 'Re', Re, 'C', C, ...
