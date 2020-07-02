@@ -18,7 +18,7 @@ function testBenney(testCase)
     y0 = domain.reshapeToVector(h0);
 
     explicitOdefun = @(t, y) fbenney2dExplicit(domain, y, params) ...
-          + fbenneyforcing(t, domain, y0, params);
+          + fbenneyforcing(t, domain, params);
     implicitOdefun = @(t, y) fbenney2dImplicit(domain, y, params);
     odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
     odejac = @(t, y) jbenney2dImplicit(domain, y, params);
