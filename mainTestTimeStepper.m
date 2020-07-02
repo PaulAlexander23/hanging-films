@@ -1,5 +1,5 @@
-function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, timeStep, timeout)
-    if nargin < 11
+function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, timeStep, timeStepOut, timeout)
+    if nargin < 12
         timeout = -1;
     else
         graceTime = seconds(durationR2018('00:05:00'));
@@ -8,7 +8,7 @@ function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, 
     addpath('timeSteppingMethods/')
     addpath('discretisationMethods');
 
-    t = (0:timeStep:tFinal)';
+    t = (0:tStepOut:tFinal)';
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
     domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 4);
     params = struct('theta', theta, 'Re', Re, 'C', C, ...
