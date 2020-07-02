@@ -1,3 +1,4 @@
-Save the solution only at a specified frequency to limit file size.
+Use the abstol as a criteria in the iteration.
+Output number of iterations and final dx norm at each output step.
 Add continuation.
 Clean tests.
