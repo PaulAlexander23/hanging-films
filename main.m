@@ -1,7 +1,7 @@
-function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, timeStepper, timeStepOut, timeStep, timeout)
+function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, timeout)
     if nargin < 9, xN = 64; end
     if nargin < 10, yN = 64; end
-    if nargin < 11, AbsTol = 1e-6; end
+    if nargin < 11, RelTol = 1e-6; end
     if nargin < 12, method = 'finite-difference'; end
     if nargin < 13, timeStepper = @ode15s; end
     if nargin < 14, timeStepOut = 0.2; end
@@ -48,7 +48,12 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
 
 
     myoptimoptions = optimoptions('fsolve', ...
-        'Display', 'off');
+        'Display', 'iter');
+    if model == "benney"
+        myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN);
+    elseif model == "wibl1"
+        myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN) * 2;
+    end
 
     if method == "finite-difference"
         myoptimoptions.SpecifyObjectiveGradient = true;
@@ -59,7 +64,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         ...'Vectorized', 'on', ...
         ...'BDF','on', ...
         'Events', @eventNan,...
-        'AbsTol', AbsTol, ...
+        'RelTol', RelTol, ...
         'Events', @(~, ~) eTimeout(timerID, timeout), ...
         'MaxStep', timeStep ...
         ...'InitialStep', 1e-3 ...
