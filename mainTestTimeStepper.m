@@ -1,4 +1,4 @@
-function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, timeStep, timeStepOut, timeout)
+function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, timeStep, tStepOut, timeout)
     if nargin < 12
         timeout = -1;
     else
