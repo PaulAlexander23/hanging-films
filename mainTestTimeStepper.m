@@ -19,9 +19,9 @@ function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, 
 
     y0 = domain.reshapeToVector(h0);
 
-    explicitOdefun = @(t, y) fbenney2dExplicit(domain, y, params) ...
+    explicitOdefun = @(t, y) fbenney2dExplicit(domain, y, params);
+    implicitOdefun = @(t, y) fbenney2dImplicit(domain, y, params) ...
           + fbenneyforcing(t, domain, params);
-    implicitOdefun = @(t, y) fbenney2dImplicit(domain, y, params);
     odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
     odejac = @(t, y) jbenney2dImplicit(domain, y, params);
 
