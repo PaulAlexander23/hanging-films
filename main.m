@@ -48,7 +48,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
 
 
     myoptimoptions = optimoptions('fsolve', ...
-        'Display', 'iter');
+        'Display', 'off');
     if model == "benney"
         myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN);
     elseif model == "wibl1"
