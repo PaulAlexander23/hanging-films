@@ -80,13 +80,4 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
 
     saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments);
 
-    function [value, isterminal, direction] = eventNan(~, y)
-        value = double(~any(isnan(y)));
-        isterminal = 1;
-        direction = 0;
-    end
-
-    function secondsOut = durationR2018(stringIn)
-        secondsOut = duration(cell2mat(cellfun(@str2num,split(char(stringIn),':'),'UniformOutput',false)'));
-    end
 end
