@@ -1,5 +1,5 @@
 function [value, isTerminal, direction] = eDewet(y)
-    value = min(y,[],[1,2]);
+    value = min(min(y));
     isTerminal = 1;
     direction = 0;
 end

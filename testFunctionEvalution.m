@@ -155,7 +155,7 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
         for n = 2:N
             actual = myEval(resolutions(n), expectedOrder, resolutions(1),resolutions(end));
 
-            errNorm(n-1) = max(abs(actual - expected), [], [1,2]);
+            errNorm(n-1) = max(max(abs(actual - expected)));
 
             expected = actual;
         end
@@ -221,9 +221,9 @@ function testFiniteDifferenceFWIBL1ConvergenceBetweenResolutions(testCase)
 
             % fprintf("Norm: %.15e\n", norm(actual))
 
-            absError(n-1) = max(abs(actual - expected), [], [1,2]);
+            absError(n-1) = max(max(abs(actual - expected)));
             % fprintf("Max abs error: %.15e\n", absError(n-1))
-            relError(n-1) = max(abs(actual - expected)./abs(expected), [], [1,2]);
+            relError(n-1) = max(max(abs(actual - expected)./abs(expected)));
             % fprintf("Max rel error: %.15e\n", relError(n-1))
 
             expected = actual;
@@ -485,7 +485,7 @@ function testFiniteDifferenceWIBL1ConvergenceBetweenResolutions(testCase)
         for n = 2:N
             actual = myEval(resolutions(n), expectedOrder, resolutions(1),resolutions(end));
 
-            errNorm(n-1) = max(abs(actual - expected), [], [1,2]);
+            errNorm(n-1) = max(max(abs(actual - expected)));
 
             expected = actual;
         end
