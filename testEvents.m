@@ -5,7 +5,7 @@ end
 function testTimeoutTriggered(testCase)
 
     timerID = tic;
-    options = odeset('Events', @(t,y) eTimeout(timerID, 5e-2), 'MaxStep', 1e-6);
+    options = odeset('Events', @(t,y) eTimeout(timerID, 1e-1), 'MaxStep', 1e-6);
 
     [~,~,te,~,~] = ode45(@(t,y)-y, [0,1], 1, options);
 
