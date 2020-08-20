@@ -69,7 +69,7 @@ function testInterfaceRand(testCase)
     A = 1e-4;
     numberOfModes = 5;
 
-    actual = irand(x, A, numberOfModes);
+    actual = irand(x, A, numberOfModes, 0);
     verifyTrue(testCase, max(max(abs(actual-1))) <= A);
     verifyEqual(testCase, sum(sum(abs(fft2(actual-1)) > 1e-10)), ...
         (numberOfModes * 2)^2);
