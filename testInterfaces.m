@@ -119,6 +119,14 @@ function testInterfaceLoad(testCase)
     verifyEqual(testCase, actual, expected);
 end
 
+function testInterfaceLoadFromData(testCase)
+    x = setupX(1, 1, 2^8, 2^8);
+    
+    actual = iload(x, 'data/testInterfaceLoadData.mat');
+    load("data/testInterfaceLoadDataExpected.mat","expected")
+    verifyEqual(testCase, actual, expected);
+end
+
 function testInterfaceLoadWithPert(testCase)
     x = setupX(1, 1, 2^8, 2^8);
     alpha = 0.2;
