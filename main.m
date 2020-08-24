@@ -12,7 +12,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         graceTime = seconds(durationR2018('00:05:00'));
         timeout = seconds(durationR2018(timeout)) - graceTime;
     end
-    addpath('timeSteppingMethods/')
+    addpath('../ivp-solver/')
     boolSemiImplicit = isSemiImplicit(timeStepper);
 
     params = struct('theta', theta, 'Re', Re, 'C', C);

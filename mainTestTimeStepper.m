@@ -5,8 +5,7 @@ function mainTestTimeStepper(theta, Re, C, xL, yL, tFinal, xN, yN, timeStepper, 
         graceTime = seconds(durationR2018('00:05:00'));
         timeout = seconds(durationR2018(timeout)) - graceTime;
     end
-    addpath('timeSteppingMethods/')
-    addpath('discretisationMethods');
+    addpath('../ivp-solver');
 
     t = (0:tStepOut:tFinal)';
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
