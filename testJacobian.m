@@ -3,6 +3,7 @@ function tests = testJacobian()
 end
 
 function testBenneyJacobian(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
 
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
@@ -39,6 +40,7 @@ end
 % end
 
 function testWIBL1Jacobian(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
 
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
@@ -58,23 +60,6 @@ function testWIBL1Jacobian(testCase)
     verifyEqual(testCase, actual, expected, 'AbsTol', 1e-3, 'RelTol', 1e-3)
 end
 
-
-function fVector = Fbenney(domain, yVector, params)
-    y = domain.reshapeToDomain(yVector);
-    f = fbenney2d(domain, y, params);
-    fVector = domain.reshapeToVector(f);
-end
-
-function fVector = FWIBL1(domain, yVector, params)
-    y = [domain.reshapeToDomain(yVector(1:end/2)); ...
-        domain.reshapeToDomain(yVector(1+end/2:end))];
-
-    f = fwibl1(domain, y, params);
-
-    fVector = [domain.reshapeToVector(f(1:end/2, :, :)); ...
-        domain.reshapeToVector(f(1+end/2:end, :, :))];
-end
-
 function J = jacobianNumerical(F, u)
     N = length(u);
     epsilon = 1e-6;
@@ -88,16 +73,16 @@ function J = jacobianNumerical(F, u)
     end
 end
 
-function J = jacobianNumericalPS(F, u)
-    N = length(u);
-    epsilon = 1e-5;
-    e = eye(N);
-    J = zeros(N, N/2);
-
-    Fu = F(u);
-
-    for j = 1:N / 2
-        epsilonRescaled = epsilon;
-        J(:, j) = (F(e(:, j)*epsilonRescaled+u) - Fu) / epsilonRescaled;
-    end
-end
+%function J = jacobianNumericalPS(F, u)
+%    N = length(u);
+%    epsilon = 1e-5;
+%    e = eye(N);
+%    J = zeros(N, N/2);
+%
+%    Fu = F(u);
+%
+%    for j = 1:N / 2
+%        epsilonRescaled = epsilon;
+%        J(:, j) = (F(e(:, j)*epsilonRescaled+u) - Fu) / epsilonRescaled;
+%    end
+%end

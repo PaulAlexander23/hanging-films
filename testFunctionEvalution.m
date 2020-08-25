@@ -128,6 +128,7 @@ function testFiniteDifferenceFbenney1dResolution(testCase)
 end
 
 function testFiniteDifferenceFbenney2dSize(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     domain = FDDomain(setupX(1, 1, 2^8, 2^8), diffDegrees, 4);
@@ -143,6 +144,7 @@ function testFiniteDifferenceFbenney2dSize(testCase)
 end
 
 function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
 
     for expectedOrder = [2, 4]
@@ -206,6 +208,7 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
 end
 
 function testFiniteDifferenceFWIBL1ConvergenceBetweenResolutions(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
 
     for expectedOrder = [2, 4]
@@ -279,6 +282,7 @@ function testFiniteDifferenceFWIBL1ConvergenceBetweenResolutions(testCase)
 end
 
 function testPseudoSpectralFbenney2dSize(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
     domain = PSDomain(setupX(1, 1, 2^8, 2^8));
     y = icos(domain.x);
@@ -293,6 +297,7 @@ function testPseudoSpectralFbenney2dSize(testCase)
 end
 
 function testPseudoSpectralFbenney2dResolutionDefault(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods /
 
     expected = eval(2^10);
@@ -320,6 +325,7 @@ function testPseudoSpectralFbenney2dResolutionDefault(testCase)
 end
 
 function testPseudoSpectralFbenney2dResolutionAntiAliasing(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods /
 
     N = 2.^(5:8);
@@ -350,6 +356,7 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasing(testCase)
 end
 
 function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods /
 
     N = 2.^(5:8);
@@ -377,6 +384,7 @@ function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
 end
 
 function testFiniteDifferenceEqualsPseudoSpectralFbenney2d(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     M = 2^7;
@@ -399,6 +407,7 @@ function testFiniteDifferenceEqualsPseudoSpectralFbenney2d(testCase)
 end
 
 function testFiniteDifferenceEqualsPseudoSpectralFbenney2dDiagonal(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     domain = FDDomain(setupX(1, 1, 2^8, 2^8), diffDegrees, 4);
@@ -417,6 +426,7 @@ end
 
 %% WIBL1
 function testFiniteDifferenceWIBL1Size(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
 
     domain = FDDomain(setupX(1, 1, 2^6, 2^6), [1, 0; 0, 1; 2, 0; 0, 2]', 4);
@@ -433,6 +443,7 @@ function testFiniteDifferenceWIBL1Size(testCase)
 end
 
 function testFiniteDifferenceWIBL1Resolution(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
 
     expected = eval(2^10);
@@ -473,6 +484,7 @@ function testFiniteDifferenceWIBL1Resolution(testCase)
 end
 
 function testFiniteDifferenceWIBL1ConvergenceBetweenResolutions(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
 
     for expectedOrder = [2, 4]
@@ -528,6 +540,7 @@ function testFiniteDifferenceWIBL1ConvergenceBetweenResolutions(testCase)
 end
 
 function testPseudoSpectralWIBL1Size(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
     domain = PSDomain(setupX(1, 1, 2^6, 2^6));
     y = domain.fft(1+0.1*cos(4*pi*domain.x{1})+0.1*cos(4*pi*domain.x{2}));
@@ -543,6 +556,7 @@ function testPseudoSpectralWIBL1Size(testCase)
 end
 
 function testPseudoSpectralWIBL1Resolution(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
 
 
@@ -582,6 +596,7 @@ function testPseudoSpectralWIBL1Resolution(testCase)
 end
 
 function testFiniteDifferenceEqualsPseudoSpectralFwibl12d(testCase)
+    addpath("../ivp-solver/");
     addpath discretisationMethods
     diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
     domain = FDDomain(setupX(1, 1, 2^8, 2^8), diffDegrees, 4);
