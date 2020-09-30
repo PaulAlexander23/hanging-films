@@ -603,3 +603,48 @@ function testFiniteDifferenceEqualsPseudoSpectralFwibl12d(testCase)
 
     verifyEqual(testCase, actualFD, actualPS, 'RelTol', 6e-4, 'AbsTol', 1e-3)
 end
+
+%% Hybrid
+
+function testHybridEqualsBenney(testCase)
+    addpath discretisationMethods
+
+    domain = FDDomain(setupX(1, 1, 2^6, 2^6), [1, 0; 0, 1; 2, 0; 0, 2]', 4);
+    y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
+
+    params = struct('theta', pi/4, 'Re', 1, 'C', 0.01, ...
+        'epsilon', 1, 'delta', 0);
+    P = 2 * cot(params.theta) * y - ...
+        (domain.diff(y, [2; 0]) + domain.diff(y, [0; 2])) / params.C;
+    f = 2 / 3 * domain.multiply(y, y, [2, 1]) - ...
+        1 / 3 * domain.multiply(y, domain.diff(P, [1; 0]), [3, 1]) + ...
+        8 * params.Re / 15 * domain.multiply(y, domain.diff(y, [1; 0]), [6, 1]);
+
+    Y = [y; f];
+
+    Y = domain.reshapeToVector(Y);
+    expected = fbenney2d(domain, domain.reshapeToVector(y), params);
+    actual = fhybrid(domain, Y, params);
+
+    verifyEqual(testCase, actual(1:end/2,:), expected, 'RelTol', 1e-11)
+end
+
+function testHybridEqualsWIBL1(testCase)
+    addpath discretisationMethods
+
+    domain = FDDomain(setupX(1, 1, 2^6, 2^6), [1, 0; 0, 1; 2, 0; 0, 2]', 4);
+    y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
+    f = 2 / 3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
+
+    params = struct('theta', pi/4, 'Re', 1, 'C', 0.01, ...
+        'epsilon', 0, 'delta', 1);
+
+    Y = [y; f];
+
+    Y = domain.reshapeToVector(Y);
+    expected = fwibl1(domain, Y, params);
+    actual = fhybrid(domain, Y, params);
+
+    verifyEqual(testCase, actual, expected, 'AbsTol', 1e-15, 'RelTol', 1e-10)
+end
+
