@@ -1,4 +1,4 @@
-function saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments)
+function filename = saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments)
     filename = makeFilename("data", ivpArguments, timePointsArguments);
 
     if strlength(filename) > 255

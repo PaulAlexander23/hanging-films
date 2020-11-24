@@ -99,8 +99,9 @@ function testSaveFilenameLength(testCase)
     
     expected = 1;
     
-    saveData(expected, ivpArguments, timePointsArguments, timeStepperArguments);
+    filename = saveData(expected, ivpArguments, timePointsArguments, timeStepperArguments);
 
+    delete(char(filename + '.mat'));
 end
 
 function testSaveAndLoadData(testCase)
@@ -127,12 +128,11 @@ function testSaveAndLoadData(testCase)
     
     expected = 1;
     
-    saveData(expected, ivpArguments, timePointsArguments, timeStepperArguments);
+    filename = saveData(expected, ivpArguments, timePointsArguments, timeStepperArguments);
     
     actual = loadData(ivpArguments, timePointsArguments);
     
     verifyEqual(testCase, actual, expected);
     
-    filename = makeFilename("data", ivpArguments, timePointsArguments);
     delete(char(filename + '.mat'));
 end
