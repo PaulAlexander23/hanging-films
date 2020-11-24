@@ -1,11 +1,12 @@
-function J = jbenney2d(domain, u, params)
+function J = jbenney2d(domain, U, params)
+    u = domain.reshapeToDomain(U);
+
     Dx = domain.diffMat([1; 0]) ;
     Dy = domain.diffMat([0; 1]);
     Lap = domain.diffMat([2; 0]) + domain.diffMat([0; 2]);
     Lap_Dx = Dx * Lap;
     Lap_Dy = Dy * Lap;
     
-    U = domain.reshapeToVector(u);
     dUdx = domain.reshapeToVector(domain.diff(u, [1; 0]));
     dUdy = domain.reshapeToVector(domain.diff(u, [0; 1]));
     

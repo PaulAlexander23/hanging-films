@@ -1,7 +1,6 @@
-function filename = makeFilename(prefix, ivpArguments, timePointsArguments, timeStepperArguments)
-    
-    timeStepperArguments = rmfield(timeStepperArguments, 'outputOpt');
+function filename = makeFilename(prefix, ivpArguments, timePointsArguments)
+    ivpArguments = rmfield(ivpArguments, 'interface');
     
     filename = prefix + struct2str(ivpArguments) + ...
-        struct2str(timePointsArguments) + struct2str(timeStepperArguments);
+        struct2str(timePointsArguments);
 end

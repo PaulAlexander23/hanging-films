@@ -12,7 +12,7 @@ function testBenneyJacobian(testCase)
 
     yVector = domain.reshapeToVector(y);
 
-    F = @(u) Fbenney(domain, u, params);
+    F = @(u)fbenney2d(domain,u,params);
 
     expected = jacobianNumerical(F, yVector);
     actual = jbenney2d(domain, yVector, params);
@@ -50,10 +50,52 @@ function testWIBL1Jacobian(testCase)
     yVector = [domain.reshapeToVector(y(1:end/2, :, :)); ...
         domain.reshapeToVector(y(1+end/2:end, :, :))];
 
-    F = @(u) FWIBL1(domain, u, params);
+    F = @(u)fwibl1(domain, u, params);
 
     expected = jacobianNumerical(F, yVector);
-    actual = jwibl1(domain, y, params);
+    actual = jwibl1(domain, yVector, params);
+
+    verifyEqual(testCase, actual, expected, 'AbsTol', 1e-3, 'RelTol', 1e-3)
+end
+
+function testHybridJacobian(testCase)
+    addpath discretisationMethods
+
+    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
+    domain = FDDomain(setupX(1, 1, 32, 32), diffDegrees, 4);
+    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
+    params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01, 'epsilon', 1, ...
+        'delta', 1);
+
+    y = [y; 2 / 3 * y];
+    yVector = [domain.reshapeToVector(y(1:end/2, :, :)); ...
+        domain.reshapeToVector(y(1+end/2:end, :, :))];
+
+    F = @(u)fhybrid(domain, u, params);
+
+    expected = jacobianNumerical(F, yVector);
+    actual = jhybrid(domain, yVector, params);
+
+    verifyEqual(testCase, actual, expected, 'AbsTol', 1e-3, 'RelTol', 1e-3)
+end
+
+function testHybridJacobianInplace(testCase)
+    addpath discretisationMethods
+
+    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
+    domain = FDDomain(setupX(1, 1, 32, 32), diffDegrees, 4);
+    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
+    params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01, 'epsilon', 1, ...
+        'delta', 1);
+
+    y = [y; 2 / 3 * y];
+    yVector = [domain.reshapeToVector(y(1:end/2, :, :)); ...
+        domain.reshapeToVector(y(1+end/2:end, :, :))];
+
+    F = @(u)fhybrid(domain, u, params);
+
+    expected = jacobianNumerical(F, yVector);
+    [~, actual] = fhybrid(domain, yVector, params);
 
     verifyEqual(testCase, actual, expected, 'AbsTol', 1e-3, 'RelTol', 1e-3)
 end

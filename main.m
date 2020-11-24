@@ -1,51 +1,98 @@
-function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, AbsTol, method, timeStepper)
+function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, epsilon, delta, timeout)
     if nargin < 9, xN = 64; end
     if nargin < 10, yN = 64; end
-    if nargin < 11, AbsTol = 1e-6; end
-    if nargin < 12, method = "finite-difference"; end
+    if nargin < 11, RelTol = 1e-6; end
+    if nargin < 12, method = 'finite-difference'; end
     if nargin < 13, timeStepper = @ode15s; end
-    
-    [ivpArguments, timePointsArguments, timeStepperArguments]...
-            = parseArguments(theta, Re, C, xLength, yLength, xN, yN, method, ...
-            model, interface, tFinal, AbsTol, timeStepper);
-    
+    if nargin < 14, timeStepOut = 0.2; end
+    if nargin < 15, timeStep = timeStepOut; end
+    if nargin < 16, epsilon = 1; end
+    if nargin < 17, delta = 0; end
+    if nargin < 18
+        timeout = -1;
+    else
+        graceTime = seconds(durationR2018('00:05:00'));
+        timeout = seconds(durationR2018(timeout)) - graceTime;
+    end
+    addpath('timeSteppingMethods/')
+    boolSemiImplicit = isSemiImplicit(timeStepper);
+
+    params = struct('theta', theta, 'Re', Re, 'C', C, 'epsilon', epsilon, ...
+        'delta', delta);
+
+    domainArguments = struct('xLength', xLength, 'yLength', yLength, 'xN', xN, ...
+        'yN', yN, 'method', method);
+
+    if ~boolSemiImplicit
+        if model == "benney"
+            odefun = @fbenney2d;
+            odejac = @jbenney2d;
+        elseif model == "wibl1"
+            odefun = @fwibl1;
+            odejac = @jwibl1;
+        elseif model == "hybrid"
+            odefun = @fhybrid;
+            odejac = @jhybrid;
+        end
+    else
+        if model == "benney"
+            explicitOdefun = @fbenney2dExplicit;
+            implicitOdefun = @fbenney2dImplicit;
+            odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
+            odejac = @jbenney2dImplicit;
+        elseif model == "wibl1"
+            explicitOdefun = @fwibl1Explicit;
+            implicitOdefun = @fwibl1Implicit;
+            odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
+            odejac = @jwibl1Implicit;
+        elseif model == "hybrid"
+            error("Not implemented");
+        end
+    end
+    ivpArguments = struct('domainArguments',domainArguments,'params',params,...
+        'odefun',odefun,'odejac',odejac,'interface',interface);
+
+    timePointsArguments = struct('tStep', timeStepOut, 'tFinal', tFinal);
+
+
+    myoptimoptions = optimoptions('fsolve', ...
+        'Display', 'off');
+    if model == "benney"
+        myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN);
+    elseif model == "wibl1"
+        myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN) * 2;
+    elseif model == "hybrid"
+        myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN) * 2;
+    end
+
+    if method == "finite-difference"
+        myoptimoptions.SpecifyObjectiveGradient = true;
+    end
+
+    timerID = tic;
+    odeoptDefault = odeset( ...
+        ...'Vectorized', 'on', ...
+        ...'BDF','on', ...
+        'RelTol', RelTol, ...
+        'MaxStep', timeStep ...
+        ...'InitialStep', 1e-3 ...
+        ...'OutputFcn', 'odeprint',...
+        ...'OutputSel', 1 ...
+        );
+    if model == "benney"
+        odeoptDefault.Events = @(t,y) benneyEvents(t, y, timerID, timeout);
+    elseif model == "wibl1"
+        odeoptDefault.Events = @(t,y) wibl1Events(t, y, timerID, timeout);
+    elseif model == "hybrid"
+        odeoptDefault.Events = @(t,y) wibl1Events(t, y, timerID, timeout);
+    end
+    odeoptDefault.optimoptions = myoptimoptions;
+
+    timeStepperArguments = struct('timeStepper', timeStepper, ...
+        'odeopt', odeoptDefault);
+
     solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
-    
+
     saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments);
-    
-    function [ivpArguments, timePointsArguments, timeStepperArguments]...
-            = parseArguments(theta, Re, C, xLength, yLength, xN, yN, method, ...
-            model, interface, tFinal, AbsTol, timeStepper)
-        params = struct('theta', theta, 'Re', Re, 'C', C);
-    
-        domainArguments = struct('xLength', xLength, 'yLength', yLength, 'xN', xN, ...
-            'yN', yN, 'method', method);
-        
-        ivpArguments = struct('domainArguments',domainArguments,'params',params,...
-            'model',model,'interface',interface);
-        
-        timePointsArguments = struct('tStep', 0.2, 'tFinal', tFinal);
-        
-        odeoptDefault = odeset( ...
-            ...'Vectorized', 'on', ...
-            ...'BDF','on', ...
-            'Events', @eventNan,...
-            'AbsTol', AbsTol ...
-            ...'MaxStep', 5e-6 ...
-            ...'InitialStep', 1e-3 ...
-            );
-        odeoptOutput = odeset( ...
-            'OutputFcn', 'odeprint',...
-            'OutputSel', 1 ...
-            );
-        
-        timeStepperArguments = struct('timeStepper', timeStepper, ...
-            'odeopt', odeoptDefault, 'outputOpt', odeoptOutput);
-    end
-    
-    function [value, isterminal, direction] = eventNan(~, y)
-        value = double(~any(isnan(y)));
-        isterminal = 1;
-        direction = 0;
-    end
+
 end

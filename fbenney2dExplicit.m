@@ -1,0 +1,26 @@
+function f = fbenney2dExplicit(domain, h, params)
+    h = domain.reshapeToDomain(h);
+
+    hx = domain.diff(h, [1;0]);
+    hxx = domain.diff(h, [2;0]);
+    hy = domain.diff(h, [0;1]);
+
+    Q = 2 * cot(params.theta) * h;
+    P = 2 * cot(params.theta) * h ...
+        - (hxx + domain.diff(h, [0; 2])) / params.C;
+    
+    dF1dx = 2 * domain.multiply(h, hx, [2, 1]) ...
+        - 1 / 3 * domain.multiply(h, domain.diff(Q, [2; 0]), [3, 1]) ...
+        - domain.multiply(domain.multiply(h, hx, [2, 1]), ...
+        domain.diff(P, [1; 0])) ...
+        + 16 * params.Re / 5 * domain.multiply(h, hx, [5, 2]) ...
+        + 8 * params.Re / 15 * domain.multiply(h, hxx, [6, 1]);
+
+    dF2dy = - 1 / 3 * domain.multiply(h, domain.diff(Q, [0; 2]), [3, 1]) ...
+        - domain.multiply(domain.multiply(h, hy, [2, 1]), ...
+        domain.diff(P, [0; 1]));
+
+    f = - dF1dx - dF2dy;
+    
+    f = domain.reshapeToVector(f);
+end
