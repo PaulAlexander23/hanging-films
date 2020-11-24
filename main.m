@@ -1,4 +1,4 @@
-function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, epsilon, delta, timeout)
+function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, timeout)
     if nargin < 9, xN = 64; end
     if nargin < 10, yN = 64; end
     if nargin < 11, RelTol = 1e-6; end
@@ -6,9 +6,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     if nargin < 13, timeStepper = @ode15s; end
     if nargin < 14, timeStepOut = 0.2; end
     if nargin < 15, timeStep = timeStepOut; end
-    if nargin < 16, epsilon = 1; end
-    if nargin < 17, delta = 0; end
-    if nargin < 18
+    if nargin < 16
         timeout = -1;
     else
         graceTime = seconds(durationR2018('00:05:00'));
@@ -30,9 +28,6 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         elseif model == "wibl1"
             odefun = @fwibl1;
             odejac = @jwibl1;
-        elseif model == "hybrid"
-            odefun = @fhybrid;
-            odejac = @jhybrid;
         end
     else
         if model == "benney"
@@ -45,8 +40,6 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
             implicitOdefun = @fwibl1Implicit;
             odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
             odejac = @jwibl1Implicit;
-        elseif model == "hybrid"
-            error("Not implemented");
         end
     end
     ivpArguments = struct('domainArguments',domainArguments,'params',params,...
@@ -60,8 +53,6 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     if model == "benney"
         myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN);
     elseif model == "wibl1"
-        myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN) * 2;
-    elseif model == "hybrid"
         myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN) * 2;
     end
 
@@ -82,8 +73,6 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     if model == "benney"
         odeoptDefault.Events = @(t,y) benneyEvents(t, y, timerID, timeout);
     elseif model == "wibl1"
-        odeoptDefault.Events = @(t,y) wibl1Events(t, y, timerID, timeout);
-    elseif model == "hybrid"
         odeoptDefault.Events = @(t,y) wibl1Events(t, y, timerID, timeout);
     end
     odeoptDefault.optimoptions = myoptimoptions;
