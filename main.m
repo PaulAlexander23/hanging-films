@@ -1,11 +1,4 @@
 function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, timeout)
-    if nargin < 9, xN = 64; end
-    if nargin < 10, yN = 64; end
-    if nargin < 11, RelTol = 1e-6; end
-    if nargin < 12, method = 'finite-difference'; end
-    if nargin < 13, timeStepper = @ode15s; end
-    if nargin < 14, timeStepOut = 0.2; end
-    if nargin < 15, timeStep = timeStepOut; end
     if nargin < 16
         timeout = -1;
     else
