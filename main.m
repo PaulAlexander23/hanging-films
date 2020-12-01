@@ -8,8 +8,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     addpath('timeSteppingMethods/')
     boolSemiImplicit = isSemiImplicit(timeStepper);
 
-    params = struct('theta', theta, 'Re', Re, 'C', C, 'epsilon', epsilon, ...
-        'delta', delta);
+    params = struct('theta', theta, 'Re', Re, 'C', C);
 
     domainArguments = struct('xLength', xLength, 'yLength', yLength, 'xN', xN, ...
         'yN', yN, 'method', method);
