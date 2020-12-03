@@ -5,8 +5,7 @@ end
 function testBenneyJacobian(testCase)
     addpath discretisationMethods
 
-    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
-    domain = FDDomain(setupX(1, 1, 32, 32), diffDegrees, 4);
+    domain = tFDDomain();
     y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
@@ -17,32 +16,13 @@ function testBenneyJacobian(testCase)
     expected = jacobianNumerical(F, yVector);
     actual = jbenney2d(domain, yVector, params);
 
-    verifyEqual(testCase, actual, expected, 'RelTol', 1e-7)
+   verifyEqual(testCase, actual, expected, 'RelTol', 1e-6)
 end
-
-% function testBenneyJacobianPS(testCase)
-%     addpath discretisationMethods
-%
-%     domain = PSDomain(setupX(1,1,2^6,2^6), nan, true, 2);
-%     y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2}');
-%     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
-%     y = domain.fft(y);
-%
-%     yVector = domain.reshapeToVector(y);
-%
-%     F = @(u) Fbenney(domain, u, params);
-%
-%     expected = jacobianNumericalPS(F, yVector);
-%     actual = jbenney2d(domain, yVector, params);
-%
-%     verifyEqual(testCase, actual, expected, 'RelTol', 1e-7)
-% end
 
 function testWIBL1Jacobian(testCase)
     addpath discretisationMethods
 
-    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
-    domain = FDDomain(setupX(1, 1, 32, 32), diffDegrees, 4);
+    domain = tFDDomain();
     y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
@@ -61,8 +41,7 @@ end
 function testHybridJacobian(testCase)
     addpath discretisationMethods
 
-    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
-    domain = FDDomain(setupX(1, 1, 32, 32), diffDegrees, 4);
+    domain = tFDDomain();
     y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01, 'epsilon', 1, ...
         'delta', 1);
@@ -82,8 +61,7 @@ end
 function testHybridJacobianInplace(testCase)
     addpath discretisationMethods
 
-    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
-    domain = FDDomain(setupX(1, 1, 32, 32), diffDegrees, 4);
+    domain = tFDDomain();
     y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01, 'epsilon', 1, ...
         'delta', 1);
@@ -142,4 +120,10 @@ function J = jacobianNumericalPS(F, u)
         epsilonRescaled = epsilon;
         J(:, j) = (F(e(:, j)*epsilonRescaled+u) - Fu) / epsilonRescaled;
     end
+end
+
+function domain = tFDDomain()
+
+    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 4, 0; 0, 3; 0, 4; 2, 2; 2, 1; 1, 2; 3, 0]';
+    domain = FDDomain(setupX(1, 1, 8, 8), diffDegrees, 2);
 end

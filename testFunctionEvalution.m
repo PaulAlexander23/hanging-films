@@ -5,9 +5,8 @@ end
 %% Burgers function evaluation
 function testFiniteDifferenceFburgersSize(testCase)
     addpath discretisationMethods
-    N = 2^6;
-    x = {linspace(2*pi/N, 2*pi, N)'};
-    domain = FDDomain(x, [1, 2], 4);
+    N = 4;
+    domain = tFDDomain(N);
     y = cos(domain.x{1});
     params = struct('nu', 0.1);
 
@@ -32,8 +31,7 @@ function testFiniteDifferenceFburgers1dResolution(testCase)
     verifyEqual(testCase, error(6), zeros(1, 1), 'AbsTol', 1e-4);
 
     function f = eval(N)
-        x = {linspace(2*pi/N, 2*pi, N)'};
-        domain = FDDomain(x, [1, 2], 4);
+        domain = tFDDomain(N);
         y = cos(domain.x{1});
         params = struct('nu', 0.1);
 
@@ -89,9 +87,8 @@ end
 %% Benney function evaluation
 function testFiniteDifferenceFbenney1dSize(testCase)
     addpath discretisationMethods
-    N = 2^6;
-    x = {linspace(2*pi/N, 2*pi, N)'};
-    domain = FDDomain(x, [1, 2], 4);
+    N = 4;
+    domain = tFDDomain(4);
     y = 1 + 0.25 * cos(domain.x{1});
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
@@ -116,8 +113,7 @@ function testFiniteDifferenceFbenney1dResolution(testCase)
     verifyEqual(testCase, error(6), zeros(1, 1), 'AbsTol', 1e-3);
 
     function f = eval(N)
-        x = {linspace(2*pi/N, 2*pi, N)'};
-        domain = FDDomain(x, [1, 2], 4);
+        domain = tFDDomain(N);
         y = 1 + 0.25 * cos(domain.x{1});
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
@@ -146,7 +142,7 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
     addpath discretisationMethods
 
     for expectedOrder = [2, 4]
-        resolutions = round(logspace(log10(50),log10(500),6));
+        resolutions = round(logspace(log10(50),log10(250),6));
 
         N = length(resolutions);
         errNorm = ones(N-1, 1);
@@ -169,8 +165,7 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
         %  mean(actualOrder)
         %  errNorm(end)
         %  max(abs(actual),[],[1,2])
-        
-        verifyTrue(testCase, mean(actualOrder) > expectedOrder - 2e-1)
+        verifyTrue(testCase, mean(actualOrder) > expectedOrder - 3e-1)
     end
 
     function f = myEval(N, order, minN, maxN)
@@ -209,7 +204,7 @@ function testFiniteDifferenceFWIBL1ConvergenceBetweenResolutions(testCase)
     addpath discretisationMethods
 
     for expectedOrder = [2, 4]
-        resolutions = round(logspace(log10(100),log10(500),6));
+        resolutions = round(logspace(log10(100),log10(250),6));
 
         N = length(resolutions);
         absError = ones(N-1, 1);
@@ -295,9 +290,10 @@ end
 function testPseudoSpectralFbenney2dResolutionDefault(testCase)
     addpath discretisationMethods /
 
-    expected = eval(2^10);
-    error = zeros(5, 1);
-    for n = 1:6
+    p = 7;
+    expected = eval(2^p);
+    error = zeros(p-3, 1);
+    for n = 1:p-3
         actual = eval(2^(n + 3));
         error(n) = max(max(abs(actual-expected)));
     end
@@ -305,7 +301,8 @@ function testPseudoSpectralFbenney2dResolutionDefault(testCase)
     %     figure; plot(4:9, log10(error));
     %     figure; plot(4:9, log10(error./max(abs(actual),[],[1,2])));
 
-    verifyEqual(testCase, error(6), zeros(1, 1), 'AbsTol', 1e3);
+    verifyEqual(testCase, error(end), zeros(1, 1), 'AbsTol', 1e3);
+
     function f = eval(N)
         domain = PSDomain(setupX(1, 1, N, N));
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
@@ -322,7 +319,7 @@ end
 function testPseudoSpectralFbenney2dResolutionAntiAliasing(testCase)
     addpath discretisationMethods /
 
-    N = 2.^(5:8);
+    N = 2.^(5:7);
     expected = eval(N(end), N(end));
     abserror = zeros(length(N), 1);
     relerror = zeros(length(N), 1);
@@ -352,7 +349,7 @@ end
 function testPseudoSpectralFbenney2dResolutionAntiAliasingReal(testCase)
     addpath discretisationMethods /
 
-    N = 2.^(5:8);
+    N = 2.^(5:7);
     expected = eval(N(end), N(end));
     error = zeros(length(N), 1);
     for n = 1:length(N)
@@ -435,9 +432,10 @@ end
 function testFiniteDifferenceWIBL1Resolution(testCase)
     addpath discretisationMethods
 
-    expected = eval(2^10);
-    error = zeros(5, 1);
-    for n = 1:6
+    p = 7;
+    expected = eval(2^p);
+    error = zeros(p-3, 1);
+    for n = 1:p-3
         actual = eval(2^(n + 3));
         error(n) = max(max(abs(actual-expected)));
     end
@@ -445,7 +443,7 @@ function testFiniteDifferenceWIBL1Resolution(testCase)
     %     figure; plot(4:9, log10(error));
     %     figure; plot(4:9, log10(error/max(abs(actual),[],[1,2])));
 
-    verifyEqual(testCase, error(6), zeros(1, 1), 'AbsTol', 1e2);
+    verifyEqual(testCase, error(end), zeros(1, 1), 'AbsTol', 1e2);
 
     function f = eval(N)
         diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
@@ -476,7 +474,7 @@ function testFiniteDifferenceWIBL1ConvergenceBetweenResolutions(testCase)
     addpath discretisationMethods
 
     for expectedOrder = [2, 4]
-        resolutions = 2.^(5:9);
+        resolutions = 2.^(5:8);
 
         N = length(resolutions);
         errNorm = ones(N-1, 1);
@@ -648,3 +646,8 @@ function testHybridEqualsWIBL1(testCase)
     verifyEqual(testCase, actual, expected, 'AbsTol', 1e-15, 'RelTol', 1e-10)
 end
 
+function domain = tFDDomain(N)
+    if nargin < 1, N = 2^6; end
+    x = {linspace(2*pi/N, 2*pi, N)'};
+    domain = FDDomain(x, [1, 2], 4);
+end
