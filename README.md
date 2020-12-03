@@ -8,6 +8,14 @@ Run tests in Matlab:
 
     runtests
 
+Code coverage:
+
+    profile on
+    runtests
+    profile off
+
+Current Folder > Reports > Coverage Report
+
 Usage:
 
     main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, timeout)
