@@ -1,21 +1,10 @@
 function dYdt = fwibl2Regularised(domain, Y, params)
+
     Y = domain.reshapeToDomain(Y);
 
     h = Y(1:end/3, :, :);
     F1 = Y(end/3+1:2*end/3, :, :);
     F2 = Y(2*end/3+1:end, :, :);
-
-
-    theta = pi/2 + beta;
-    g = 9.81;
-
-    ReWave = h_N^3 * g * sin(theta) / (3 * nu^2);
-    KaWave = sigma / (rho * (g * sin(theta))^(1/3) * nu^(4/3));
-    CtWave = cot(theta);
-
-    delta = (3 * ReWave)^(11/9) / (KaWave^(1/3));
-    eta = (3 * ReWave)^(4/9) / (KaWave^(2/3));
-    zeta = CtWave * (3 * ReWave)^(2/9) / (KaWave^(1/3));
 
     dhdx = domain.diff(h, [1; 0]);
     d2hdx2 = domain.diff(h, [2; 0]);
@@ -39,10 +28,16 @@ function dYdt = fwibl2Regularised(domain, Y, params)
     d2F2dy2 = domain.diff(F2, [0; 2]);
     d2F2dxy = domain.diff(F2, [1; 1]);
     
-
-
-
     dhdt = - dF1dx - dF2dy;
+
+
+    Re = 2/3 * params.Re;
+    Ka = params.Re * 2^(-1/3) / params.C;
+    Ct = cot(params.theta);
+
+    delta = (3 * Re) ^ (11/9) / (Ka^(1/3));
+    eta = (3 * Re) ^ (4/9) / (Ka^(2/3));
+    zeta = Ct * (3 * Re) ^ (2/9) / (Ka^(1/3));
 
     dF1dt = delta * (9/7 * F1.^2 ./ h.^2 * dhdx - 17/7 * F1 ./ h * dF1dx) ...
         + (5/6 * h - 5/2 * F1 ./ h.^2 + delta * ( ...
@@ -69,7 +64,6 @@ function dYdt = fwibl2Regularised(domain, Y, params)
         - 73/16 * F1 .* d2hdxy ./ h + d2F2dx2 + 7/2 * d2F1dxy) ...
         - 5/6 * zeta * h .* dhdy + 5/6 * h .* (d3hdx2y + d3hdy3);
       
-
     dYdt = cat(1, dhdt, dF1dt, dF2dt);
 
     dYdt = domain.reshapeToVector(dYdt);
