@@ -1,11 +1,16 @@
 function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, timeout)
+
+    % Check last argument is provided otherwise default infinite timeout
     if nargin < 16
         timeout = -1;
     else
         graceTime = seconds(durationR2018('00:05:00'));
         timeout = seconds(durationR2018(timeout)) - graceTime;
     end
+
+    % Include packages
     addpath('timeSteppingMethods/')
+
     boolSemiImplicit = isSemiImplicit(timeStepper);
 
     params = struct('theta', theta, 'Re', Re, 'C', C);
@@ -72,6 +77,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     timeStepperArguments = struct('timeStepper', timeStepper, ...
         'odeopt', odeoptDefault);
 
+    % Solve initial value problem
     solution = solveIVP(ivpArguments, timePointsArguments, timeStepperArguments);
 
     saveData(solution, ivpArguments, timePointsArguments, timeStepperArguments);
