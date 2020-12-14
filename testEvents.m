@@ -83,3 +83,21 @@ function testDewetWIBL1NotTriggered(testCase)
 
     verifyEqual(testCase, length(te), 0)
 end
+
+function testDewetWIBL2Triggered(testCase)
+
+    options = odeset('Events', @(t,y) eDewetWIBL2(y));
+
+    [~,~,te,~,~] = ode45(@(t,y)[-1;-1;-1], [0,1], [0.5;0.4;1], options);
+
+    verifyEqual(testCase, length(te), 1)
+end
+
+function testDewetWIBL2NotTriggered(testCase)
+
+    options = odeset('Events', @(t,y) eDewetWIBL2(y));
+
+    [~,~,te,~,~] = ode45(@(t,y)[-1;-1;1], [0,1], [1.5;0.4;0.1], options);
+
+    verifyEqual(testCase, length(te), 0)
+end
