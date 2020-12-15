@@ -18,6 +18,9 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     domainArguments = struct('xLength', xLength, 'yLength', yLength, 'xN', xN, ...
         'yN', yN, 'method', method);
 
+    % Select function and jacobian script depending on if the method is semi
+    % implicit.
+    odejac = @(domain, y, params) 1;
     if ~boolSemiImplicit
         if model == "benney"
             odefun = @fbenney2d;
@@ -25,6 +28,8 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         elseif model == "wibl1"
             odefun = @fwibl1;
             odejac = @jwibl1;
+        elseif model == "wibl2"
+            odefun = @fwibl2Regularised;
         end
     else
         if model == "benney"
@@ -37,8 +42,11 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
             implicitOdefun = @fwibl1Implicit;
             odefun = struct('explicit', explicitOdefun, 'implicit', implicitOdefun);
             odejac = @jwibl1Implicit;
+        elseif model == "wibl2"
+            error("Not implemented");
         end
     end
+
     ivpArguments = struct('domainArguments',domainArguments,'params',params,...
         'odefun',odefun,'odejac',odejac,'interface',interface);
 
@@ -51,11 +59,14 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN);
     elseif model == "wibl1"
         myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN) * 2;
+    elseif model == "wibl2"
+        myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN) * 3;
     end
 
-    if method == "finite-difference"
+    if method == "finite-difference" && (model == "benney" || model == "wibl1")
         myoptimoptions.SpecifyObjectiveGradient = true;
     end
+    myoptimoptions.SpecifyObjectiveGradient = false;
 
     timerID = tic;
     odeoptDefault = odeset( ...
@@ -71,6 +82,8 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         odeoptDefault.Events = @(t,y) benneyEvents(t, y, timerID, timeout);
     elseif model == "wibl1"
         odeoptDefault.Events = @(t,y) wibl1Events(t, y, timerID, timeout);
+    elseif model == "wibl2"
+        odeoptDefault.Events = @(t,y) wibl2Events(t, y, timerID, timeout);
     end
     odeoptDefault.optimoptions = myoptimoptions;
 
