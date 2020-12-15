@@ -5,13 +5,13 @@ function domain = setupDomain(args)
     x = setupX(args.xLength, args.yLength, args.xN, args.yN);
 
     if args.method == "finite-difference"
-        problemDiffDegrees = [1, 0; 2, 0; 0, 1; 0, 2]';
+        problemDiffDegrees = combvec(0:3,0:3);
         accuracy = 4;
         direction = "central";
         domain = FDDomain(x, problemDiffDegrees, accuracy, direction);
     elseif args.method == "pseudo-spectral"
         AA = true;
-        complex = true;
+        complex = false;
         domain = PSDomain(x, AA, complex);
     end
 end
