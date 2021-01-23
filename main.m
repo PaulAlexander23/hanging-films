@@ -29,7 +29,9 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
             odefun = @fwibl1;
             odejac = @jwibl1;
         elseif model == "wibl2"
-            odefun = @fwibl2Regularised;
+            odefun = @fwibl2RegularisedNusselt;
+        elseif model == "ledda"
+            odefun = @fledda;
         end
     else
         if model == "benney"
@@ -44,6 +46,8 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
             odejac = @jwibl1Implicit;
         elseif model == "wibl2"
             error("Not implemented");
+        elseif model == "ledda"
+            error("Not implemented");
         end
     end
 
@@ -55,7 +59,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
 
     myoptimoptions = optimoptions('fsolve', ...
         'Display', 'off');
-    if model == "benney"
+    if model == "benney" || model == "ledda"
         myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN);
     elseif model == "wibl1"
         myoptimoptions.StepTolerance = RelTol * sqrt(xN * yN) * 2;
@@ -66,7 +70,6 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
     if method == "finite-difference" && (model == "benney" || model == "wibl1")
         myoptimoptions.SpecifyObjectiveGradient = true;
     end
-    myoptimoptions.SpecifyObjectiveGradient = false;
 
     timerID = tic;
     odeoptDefault = odeset( ...
@@ -78,7 +81,7 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
         ...'OutputFcn', 'odeprint',...
         ...'OutputSel', 1 ...
         );
-    if model == "benney"
+    if model == "benney" || model == "ledda"
         odeoptDefault.Events = @(t,y) benneyEvents(t, y, timerID, timeout);
     elseif model == "wibl1"
         odeoptDefault.Events = @(t,y) wibl1Events(t, y, timerID, timeout);
