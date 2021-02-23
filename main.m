@@ -29,7 +29,8 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
             odefun = @fwibl1;
             odejac = @jwibl1;
         elseif model == "wibl2"
-            odefun = @fwibl2RegularisedNusselt;
+            %odefun = @fwibl2RegularisedNusselt;
+            odefun = @fwibl2;
         elseif model == "ledda"
             odefun = @fledda;
         end
