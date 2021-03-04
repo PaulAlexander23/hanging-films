@@ -16,6 +16,27 @@ Code coverage:
 
 Current Folder > Reports > Coverage Report
 
-Usage:
+## Usage:
 
-    main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, timeout)
+Include a ODE function in the folder with an interface:
+
+    dydt = fODE(domain, y, params);
+
+where 
+
+    domain
+
+is an object formed by initialising one of the domain classes within the discretisation methods folder
+
+    y
+
+is a vector of interface values, and
+
+    params
+
+is a structure of all the parameters contained within the ODE.
+
+
+The solver is then called as,
+
+    main(fODE, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, RelTol, method, timeStepper, timeStepOut, timeStep, timeout)
