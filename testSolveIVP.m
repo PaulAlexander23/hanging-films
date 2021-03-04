@@ -102,7 +102,7 @@ end
 function testSolveIVPWIBL1FiniteDifference(testCase)
     addpath('discretisationMethods/')
     
-    odefun = @fwibl1;
+    odefun = @fwibl1STF;
     odejac = @jwibl1;
     params = struct('theta', 1, 'Re', 1, 'C', 1);
     tFinal = 0.5;

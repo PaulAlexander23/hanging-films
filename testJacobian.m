@@ -30,7 +30,7 @@ function testWIBL1Jacobian(testCase)
     yVector = [domain.reshapeToVector(y(1:end/2, :, :)); ...
         domain.reshapeToVector(y(1+end/2:end, :, :))];
 
-    F = @(u)fwibl1(domain, u, params);
+    F = @(u)fwibl1STF(domain, u, params);
 
     expected = jacobianNumerical(F, yVector);
     actual = jwibl1(domain, yVector, params);
@@ -89,7 +89,7 @@ function fVector = FWIBL1(domain, yVector, params)
     y = [domain.reshapeToDomain(yVector(1:end/2)); ...
         domain.reshapeToDomain(yVector(1+end/2:end))];
 
-    f = fwibl1(domain, y, params);
+    f = fwibl1STF(domain, y, params);
 
     fVector = [domain.reshapeToVector(f(1:end/2, :, :)); ...
         domain.reshapeToVector(f(1+end/2:end, :, :))];

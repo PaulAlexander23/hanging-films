@@ -14,7 +14,7 @@ function testFiniteDifference(testCase)
     
     actual = setupDomain(args);
     expected = FDDomain(setupX(args.xLength, args.yLength, args.xN, args.yN),...
-        [1, 0; 2, 0; 0, 1; 0, 2]', 4);
+        combvec(0:3,0:3), 4);
     
     verifyEqual(testCase, actual, expected);
 end
@@ -25,7 +25,7 @@ function testPseudoSpectral(testCase)
     
     actual = setupDomain(args);
     expected = PSDomain(setupX(args.xLength, args.yLength, args.xN, args.yN),...
-        true, true);
+        true, false);
     
     verifyEqual(testCase, actual, expected);
 end

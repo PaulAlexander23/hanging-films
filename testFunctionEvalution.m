@@ -200,79 +200,6 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
     end
 end
 
-function testFiniteDifferenceFWIBL1ConvergenceBetweenResolutions(testCase)
-    addpath discretisationMethods
-
-    for expectedOrder = [2, 4]
-        resolutions = round(logspace(log10(100),log10(250),6));
-
-        N = length(resolutions);
-        absError = ones(N-1, 1);
-        relError = ones(N-1, 1);
-
-        expected = myEval(resolutions(1), expectedOrder, resolutions(1), resolutions(end));
-        for n = 2:N
-            actual = myEval(resolutions(n), expectedOrder, resolutions(1),resolutions(end));
-
-            % fprintf("Norm: %.15e\n", norm(actual))
-
-            absError(n-1) = max(max(abs(actual - expected)));
-            % fprintf("Max abs error: %.15e\n", absError(n-1))
-            relError(n-1) = max(max(abs(actual - expected)./abs(expected)));
-            % fprintf("Max rel error: %.15e\n", relError(n-1))
-
-            expected = actual;
-        end
-
-        % hold on
-        % plot(resolutions(2:end), log10(absError), 'o');
-        % set(gca, 'Xscale', 'log')
-
-        actualOrder = -(gradient(log10(absError), log10(resolutions)));
-
-        % mean(actualOrder)
-        % absError(end)
-        % max(abs(actual),[],[1,2])
-        
-        verifyTrue(testCase, mean(actualOrder) > expectedOrder - 2e-1)
-    end
-
-    function f = myEval(N, order, minN, maxN)
-        diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
-        domain = FDDomain(setupX(1, 1, N, N), diffDegrees, order);
-        fineX = setupX(1, 1, maxN, maxN);
-        coarseX = setupX(1, 1, minN, minN);
-        dt = 1e-4;
-
-        params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
-
-        % y = icos(fineX);
-        % y = irand(fineX, 3e-1, 4, 1);
-
-        %figure; surf(y)
-        %y = interp2(fineX{1}, fineX{2}, ...
-        %    y, ...
-        %    domain.x{1}, domain.x{2});
-        %figure; surf(y)
-
-        % y = icos(domain.x);
-        y = irandLinWIBL1(domain.x, 20, 3e-1, 3e-1, 1);
-
-        y = domain.reshapeToVector(y);
-        f = dt * fwibl1(domain, y, params);
-        f = domain.reshapeToDomain(f);
-
-        fy = periodicInterp2(domain.x{1}, domain.x{2}, ...
-            f(1:end/2,:,:), ...
-            coarseX{1}, coarseX{2}, 'spline'); 
-        ff = periodicInterp2(domain.x{1}, domain.x{2}, ...
-            f(1+end/2:end,:,:), ...
-            coarseX{1}, coarseX{2}, 'spline'); 
-
-        f = [fy; ff];
-    end
-end
-
 function testPseudoSpectralFbenney2dSize(testCase)
     addpath discretisationMethods
     domain = PSDomain(setupX(1, 1, 2^8, 2^8));
@@ -412,18 +339,18 @@ function testFiniteDifferenceEqualsPseudoSpectralFbenney2dDiagonal(testCase)
     verifyEqual(testCase, actual, expected, 'RelTol', 1e-2, 'AbsTol', 2e-1)
 end
 
-%% WIBL1
+%% WIBL1STF
 function testFiniteDifferenceWIBL1Size(testCase)
     addpath discretisationMethods
 
-    domain = FDDomain(setupX(1, 1, 2^6, 2^6), [1, 0; 0, 1; 2, 0; 0, 2]', 4);
+    domain = FDDomain(setupX(1, 1, 2^6, 2^6), [1, 0; 0, 1; 2, 0; 0, 2; 3, 0; 1, 2]', 4);
     y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
     f = 2 / 3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
     Y = [y; f];
     params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
     Y = domain.reshapeToVector(Y);
-    actual = fwibl1(domain, Y, params);
+    actual = fwibl1STF(domain, Y, params);
     expectedSize = [2^7 * 2^6, 1];
 
     verifySize(testCase, actual, expectedSize)
@@ -446,7 +373,7 @@ function testFiniteDifferenceWIBL1Resolution(testCase)
     verifyEqual(testCase, error(end), zeros(1, 1), 'AbsTol', 1e2);
 
     function f = eval(N)
-        diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
+        diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 3, 0; 1, 2]';
         domain = FDDomain(setupX(1, 1, N, N), diffDegrees, 4);
         y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
         F1 = 2 / 3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
@@ -454,7 +381,7 @@ function testFiniteDifferenceWIBL1Resolution(testCase)
         params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
         Y = domain.reshapeToVector(Y);
-        f = fwibl1(domain, Y, params);
+        f = fwibl1STF(domain, Y, params);
         f = domain.reshapeToDomain(f);
 
         newy = myinterp(domain, f(1:end/2, :));
@@ -494,7 +421,7 @@ function testFiniteDifferenceWIBL1ConvergenceBetweenResolutions(testCase)
     end
 
     function f = myEval(N, order, minN, maxN)
-        diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
+        diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 3, 0; 1, 2]';
         domain = FDDomain(setupX(1, 1, N, N), diffDegrees, order);
         fineX = setupX(1, 1, maxN, maxN);
 
@@ -511,7 +438,7 @@ function testFiniteDifferenceWIBL1ConvergenceBetweenResolutions(testCase)
         params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
         y = domain.reshapeToVector(y);
-        f = fwibl1(domain, y, params);
+        f = fwibl1STF(domain, y, params);
         f = domain.reshapeToDomain(f);
 
         coarseX = setupX(1, 1, minN, minN);
@@ -534,7 +461,7 @@ function testPseudoSpectralWIBL1Size(testCase)
     params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
     Y = domain.reshapeToVector(Y);
-    actual = fwibl1(domain, Y, params);
+    actual = fwibl1STF(domain, Y, params);
     expectedSize = [2^7 * 2^6, 1];
 
     verifySize(testCase, actual, expectedSize)
@@ -564,7 +491,7 @@ function testPseudoSpectralWIBL1Resolution(testCase)
         params = struct('theta', pi/4, 'Re', 1, 'C', 0.01);
 
         Y = domain.reshapeToVector(Y);
-        f = fwibl1(domain, Y, params);
+        f = fwibl1STF(domain, Y, params);
         f = domain.reshapeToDomain(f);
 
         f = domain.ifft(f);
@@ -581,7 +508,7 @@ end
 
 function testFiniteDifferenceEqualsPseudoSpectralFwibl12d(testCase)
     addpath discretisationMethods
-    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2]';
+    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 3, 0; 1, 2]';
     domain = FDDomain(setupX(1, 1, 2^8, 2^8), diffDegrees, 4);
     domainPS = PSDomain(setupX(1, 1, 2^8, 2^8));
     y = 1 + 0.1 * (cos(2*pi*domain.x{1}) + cos(2*pi*domain.x{2}));
@@ -591,10 +518,10 @@ function testFiniteDifferenceEqualsPseudoSpectralFwibl12d(testCase)
     params = struct('theta', 7/8*pi, 'Re', 1, 'C', 0.01);
 
     Y = domain.reshapeToVector(Y);
-    actualFD = fwibl1(domain, Y, params);
+    actualFD = fwibl1STF(domain, Y, params);
     actualFD = domain.reshapeToDomain(actualFD);
     fY = domain.reshapeToVector(fY);
-    Z = fwibl1(domainPS, fY, params);
+    Z = fwibl1STF(domainPS, fY, params);
     Z = domain.reshapeToDomain(Z);
     actualPS = [domainPS.ifft(Z(1:end/2, :)); ...
         domainPS.ifft(Z(1+end/2:end, :))];
@@ -630,7 +557,7 @@ end
 function testHybridEqualsWIBL1(testCase)
     addpath discretisationMethods
 
-    domain = FDDomain(setupX(1, 1, 2^6, 2^6), [1, 0; 0, 1; 2, 0; 0, 2]', 4);
+    domain = FDDomain(setupX(1, 1, 2^6, 2^6), [1, 0; 0, 1; 2, 0; 0, 2; 3, 0; 1, 2]', 4);
     y = 1 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
     f = 2 / 3 + 0.1 * cos(4*pi*domain.x{1}) + 0.1 * cos(4*pi*domain.x{2});
 
@@ -640,10 +567,87 @@ function testHybridEqualsWIBL1(testCase)
     Y = [y; f];
 
     Y = domain.reshapeToVector(Y);
-    expected = fwibl1(domain, Y, params);
+    expected = fwibl1STF(domain, Y, params);
     actual = fhybrid(domain, Y, params);
 
-    verifyEqual(testCase, actual, expected, 'AbsTol', 1e-15, 'RelTol', 1e-10)
+    verifyEqual(testCase, actual, expected, 'AbsTol', 1e-5, 'RelTol', 1e-4)
+end
+
+function testFiniteDifferenceFleddaSize(testCase)
+    addpath discretisationMethods
+    diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 1, 1]';
+    domain = FDDomain(setupX(1, 1, 2^8, 2^8), diffDegrees, 4);
+    y = 1 + 0.25 * cos(2*pi*domain.x{1}) + 0.25 * cos(2*pi*domain.x{2});
+    params = struct('u', 1);
+
+    y = domain.reshapeToVector(y);
+    actual = fledda(domain, y, params);
+
+    expectedSize = [2^8 * 2^8, 1];
+
+    verifySize(testCase, actual, expectedSize)
+end
+
+function testFiniteDifferenceFleddaConvergenceBetweenResolutions(testCase)
+    addpath discretisationMethods
+
+    for expectedOrder = [2, 4]
+        resolutions = round(logspace(log10(50),log10(250),6));
+
+        N = length(resolutions);
+        errNorm = ones(N-1, 1);
+
+        expected = myEval(resolutions(1), expectedOrder, resolutions(1), resolutions(end));
+        for n = 2:N
+            actual = myEval(resolutions(n), expectedOrder, resolutions(1),resolutions(end));
+
+            errNorm(n-1) = max(max(abs(actual - expected)));
+
+            expected = actual;
+        end
+
+        % hold on
+        % plot(resolutions(2:end), log10(errNorm), 'o');
+        % set(gca, 'Xscale', 'log')
+
+        actualOrder = -(gradient(log10(errNorm), log10(resolutions)));
+
+        %  mean(actualOrder)
+        %  errNorm(end)
+        %  max(abs(actual),[],[1,2])
+        verifyTrue(testCase, mean(actualOrder) > expectedOrder - 3e-1)
+    end
+
+    function f = myEval(N, order, minN, maxN)
+        diffDegrees = [1, 0; 0, 1; 2, 0; 0, 2; 1, 1]';
+        domain = FDDomain(setupX(32, 32, N, N), diffDegrees, order);
+        fineX = setupX(32, 32, maxN, maxN);
+        coarseX = setupX(32, 32, minN, minN);
+        dt = 1e-3;
+
+        params = struct('u', 1);
+
+        % y = icos(fineX);
+        % y = irand(fineX, 3e-1, 4, 1);
+
+        %figure; surf(y)
+        %y = interp2(fineX{1}, fineX{2}, ...
+        %    y, ...
+        %    domain.x{1}, domain.x{2});
+        %figure; surf(y)
+
+        % y = icos(domain.x);
+        y = irandLin(domain.x, 3e-1, 20, 1);
+        % y = iloadInterp(domain.x, "ics/ic-tw-benney-2d.mat");
+
+        y = domain.reshapeToVector(y);
+        f = dt * fledda(domain, y, params);
+        f = domain.reshapeToDomain(f);
+
+        f = periodicInterp2(domain.x{1}, domain.x{2}, ...
+            f, ...
+            coarseX{1}, coarseX{2}, 'spline'); 
+    end
 end
 
 function domain = tFDDomain(N)

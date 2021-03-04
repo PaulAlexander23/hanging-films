@@ -34,11 +34,11 @@ function testSplitCombinesToMakeFWIBL1(testCase)
     addpath('discretisationMethods')
     xL = 2*pi; yL = 2*pi; xN = 128; yN = 128;
     x = {linspace(xL/xN,xL,xN),linspace(yL/yN,yL,yN)};
-    domain = FDDomain(x, [1, 0; 2, 0; 0, 1; 0, 2]', 2);
+    domain = FDDomain(x, combvec(0:3,0:3), 2);
     h = [icos(domain.x);2/3*icos(domain.x)];
     params = struct('theta', 7*pi/8, 'Re', 1, 'C', 1e-2); 
     h = domain.reshapeToVector(h);
-    expected = fwibl1(domain, h, params);
+    expected = fwibl1STF(domain, h, params);
     actual = fwibl1Explicit(domain, h, params) + ...
         fwibl1Implicit(domain, h, params);
     
