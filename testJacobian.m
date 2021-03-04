@@ -33,7 +33,7 @@ function testWIBL1Jacobian(testCase)
     F = @(u)fwibl1STF(domain, u, params);
 
     expected = jacobianNumerical(F, yVector);
-    actual = jwibl1(domain, yVector, params);
+    actual = jwibl1STF(domain, yVector, params);
 
     verifyEqual(testCase, actual, expected, 'AbsTol', 1e-3, 'RelTol', 1e-3)
 end

@@ -26,8 +26,8 @@ function main(model, theta, Re, C, xLength, yLength, tFinal, interface, xN, yN, 
             odefun = @fbenney2d;
             odejac = @jbenney2d;
         elseif model == "wibl1"
-            odefun = @fwibl1;
-            odejac = @jwibl1;
+            odefun = @fwibl1STF;
+            odejac = @jwibl1STF;
         elseif model == "wibl2"
             %odefun = @fwibl2RegularisedNusselt;
             odefun = @fwibl2;

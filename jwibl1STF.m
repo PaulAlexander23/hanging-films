@@ -1,4 +1,4 @@
-function jacobian = jwibl1(domain, y, params)
+function jacobian = jwibl1STF(domain, y, params)
     h = domain.reshapeToDomain(y(1:end/2, :, :));
     F1 = domain.reshapeToDomain(y(end/2+1:end, :, :));
     
