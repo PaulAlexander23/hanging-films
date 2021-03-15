@@ -1,5 +1,7 @@
-function y0 = iloadProfileBenney(x, filename)
+function y0 = iloadProfileBenney(x, filename, perturabtionAmplitude)
     load(filename,'y');
 
-    y0 = repmat(y.', [length(x{1}),1]);
+    perturbation = - perturabtionAmplitude * cos(2*pi/x{1}(end) * x{1});
+
+    y0 = y.' + perturbation;
 end

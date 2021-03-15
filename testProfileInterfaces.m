@@ -9,7 +9,7 @@ function testBenney(testCase)
     N = 64;
     x = setupX(1, 1, M, N);
 
-    actual = iloadProfileBenney(x, "data/ic-rivulet-benney.mat");
+    actual = iloadProfileBenney(x, "data/ic-rivulet-benney.mat", 1e-3);
 
     verifySize(testCase, actual, [M,N]);
 end
@@ -21,7 +21,7 @@ function testWIBL1STF(testCase)
     N = 64;
     x = setupX(1, 1, M, N);
 
-    actual = iloadProfileWIBL1STF(x, "data/ic-rivulet-wibl1-stf.mat");
+    actual = iloadProfileWIBL1STF(x, "data/ic-rivulet-wibl1-stf.mat", 1e-3);
 
     verifySize(testCase, actual, [2*M,N]);
 end
@@ -33,7 +33,7 @@ function testWIBL1(testCase)
     N = 64;
     x = setupX(1, 1, M, N);
 
-    actual = iloadProfileWIBL1(x, "data/ic-rivulet-wibl1.mat");
+    actual = iloadProfileWIBL1(x, "data/ic-rivulet-wibl1.mat", 1e-3);
 
     verifySize(testCase, actual, [3*M,N]);
 end
@@ -45,7 +45,7 @@ function testWIBL2STF(testCase)
     N = 64;
     x = setupX(1, 1, M, N);
 
-    actual = iloadProfileWIBL2STF(x, "data/ic-rivulet-wibl2-stf.mat");
+    actual = iloadProfileWIBL2STF(x, "data/ic-rivulet-wibl2-stf.mat", 1e-3);
 
     verifySize(testCase, actual, [3*M,N]);
 end
@@ -57,7 +57,7 @@ function testWIBL2(testCase)
     N = 64;
     x = setupX(1, 1, M, N);
 
-    actual = iloadProfileWIBL2(x, "data/ic-rivulet-wibl2.mat");
+    actual = iloadProfileWIBL2(x, "data/ic-rivulet-wibl2.mat", 1e-3);
 
     verifySize(testCase, actual, [3*M,N]);
 end
