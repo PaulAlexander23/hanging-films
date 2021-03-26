@@ -14,7 +14,7 @@ function omega = dispersionRelationBenney(domain, hbar, params, alpha, modes)
         volume = abs(real(sum(V)));
         zeroVolumeIndices = volume > tolerance;
 
-        val = val(zeroVolumeIndices);
+        %val = val(zeroVolumeIndices);
 
         [~,I] = sort(real(val), "descend");
 

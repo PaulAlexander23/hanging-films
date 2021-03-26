@@ -17,7 +17,7 @@ function omega = dispersionRelationWIBL2(domain, hbar, F1bar, F2bar, params, alp
         zeroFlux1Indices = flux1 > tolerance;
         zeroFlux2Indices = flux2 > tolerance;
 
-        val = val(logical(zeroVolumeIndices));
+        %val = val(logical(zeroVolumeIndices));
 
         [~,I] = sort(real(val), "descend");
 
