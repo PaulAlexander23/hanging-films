@@ -9,10 +9,10 @@ function A = linearisedBenneyFourier(domain, hbar, params, alpha)
     hbarz3 = domain.ifft(domain.diff(domain.fft(hbar), 3));
     hbarz4 = domain.ifft(domain.diff(domain.fft(hbar), 4));
 
-    A = zeros(N/2,N/2);
+    A = zeros(N,N);
 
-    for n = 1:N/2
-        fhhat = zeros(N/2,1);
+    for n = 1:N
+        fhhat = zeros(N,1);
         fhhat(n) = 1;
 
         hhat = domain.ifft(fhhat);
@@ -51,7 +51,7 @@ function A = linearisedBenneyFourier(domain, hbar, params, alpha)
             - epsilon.^3.*hbar.^2.*hbarz3.*hhatz./params.C ...
             - 2.*epsilon.^3.*hbar.*hhat.*hbarz.*hbarz3./params.C;
     
-        A(1:N/2,n) = domain.fft(row);
+        A(:,n) = domain.fft(row);
     end
 
 end

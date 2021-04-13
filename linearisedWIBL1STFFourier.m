@@ -9,10 +9,10 @@ function [A] = linearisedWIBL1STF(domain, hbar, F1bar, params, alpha)
     hbarz3 = domain.ifft(domain.diff(domain.fft(hbar), 3));
     hbarz4 = domain.ifft(domain.diff(domain.fft(hbar), 4));
 
-    A = zeros(N/2, N/2);
+    A = zeros(N, N);
 
-    for n = 1:N/2
-        y = zeros(N/2,1);
+    for n = 1:N
+        y = zeros(N,1);
         y(n) = 1;
         
         fhhat = y(1:end/2);
@@ -30,7 +30,7 @@ function [A] = linearisedWIBL1STF(domain, hbar, F1bar, params, alpha)
 
         A2 = 9.*1i.*alpha.*F1bar.^2.*hhat./(7.*hbar.^2) - 17.*1i.*alpha.*F1bar.*F1hat./(7.*hbar) - 5.*1i.*alpha.*hbar.*hhat.*cot(params.theta)./(3.*params.Re) + 5.*F1bar.*hhat./(params.Re.*epsilon.*hbar.^3) - 5.*F1hat./(2.*params.Re.*epsilon.*hbar.^2) + 5.*hhat./(3.*params.Re.*epsilon) - 5.*1i.*alpha.^3.*hbar.*hhat./(6.*params.C.*params.Re.*epsilon) - 5.*1i.*alpha.^2.*beta.*hbar.*hhat./(6.*params.C.*params.Re.*epsilon) - 5.*alpha.^2.*hbar.*hhatz./(6.*params.C.*params.Re.*epsilon);
 
-        A(1:N/2,n) = [domain.fft(A1); ...
+        A(1:N,n) = [domain.fft(A1); ...
             domain.fft(A2)];
     end
 

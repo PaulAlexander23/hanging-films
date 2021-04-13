@@ -10,10 +10,10 @@ function [A] = linearisedWIBL2STFFourier(domain, hbar, F1bar, F2bar, params, alp
     F1barz = domain.ifft(domain.diff(domain.fft(F1bar), 1));
     F2barz = domain.ifft(domain.diff(domain.fft(F2bar), 1));
 
-    A = zeros(N/2, N/2);
+    A = zeros(N, N);
 
-    for n = 1:N/2
-        y = zeros(N/2,1);
+    for n = 1:N
+        y = zeros(N,1);
         y(n) = 1;
         
         fhhat = y(1:end/3);
@@ -84,7 +84,7 @@ function [A] = linearisedWIBL2STFFourier(domain, hbar, F1bar, F2bar, params, alp
             + 5.*hbar.*hhatz3./(6.*params.C.*params.Re.*epsilon) ...
             + 5.*hhat.*hbarz3./(6.*params.C.*params.Re.*epsilon);
 
-        A(1:N/2,n) = [domain.fft(A1); ...
+        A(1:N,n) = [domain.fft(A1); ...
             domain.fft(A2); ...
             domain.fft(A3)];
     end
