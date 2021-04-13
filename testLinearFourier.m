@@ -38,12 +38,12 @@ function testBenneyDROutputSize(testCase)
     data = load("data/ic-rivulet-benney.mat");
     hbar = data.y;
 
-    alpha = linspace(1e-3,1)';
+    alpha = linspace(1e-3,1,3)';
     modes = zN;
 
     actual = dispersionRelationBenneyFourier(domain, hbar, params, alpha, modes);
 
-    verifySize(testCase, actual, [100,zN]);
+    verifySize(testCase, actual, [3,zN]);
 
 end
 
@@ -85,12 +85,12 @@ function testWIBL1STFDROutputSize(testCase)
     hbar = data.y(1:end/2);
     F1bar = data.y(1+end/2:end);
 
-    alpha = linspace(1e-3,1)';
+    alpha = linspace(1e-3,1,3)';
     modes = zN;
 
     actual = dispersionRelationWIBL1STFFourier(domain, hbar, F1bar, params, alpha, modes);
 
-    verifySize(testCase, actual, [100,zN]);
+    verifySize(testCase, actual, [3,zN]);
 
 end
 
@@ -135,12 +135,12 @@ function testWIBL1DROutputSize(testCase)
     F1bar = data.y(1+end/3:2/3*end);
     F2bar = data.y(1+2*end/3:end);
 
-    alpha = linspace(1e-3,1)';
+    alpha = linspace(1e-3,1,3)';
     modes = zN;
 
     actual = dispersionRelationWIBL1Fourier(domain, hbar, F1bar, F2bar, params, alpha, modes);
 
-    verifySize(testCase, actual, [100,zN]);
+    verifySize(testCase, actual, [3,zN]);
 
 end
 
@@ -185,12 +185,12 @@ function testWIBL2STFDROutputSize(testCase)
     F1bar = data.y(1+end/3:2/3*end);
     F2bar = data.y(1+2*end/3:end);
 
-    alpha = linspace(1e-3,1)';
+    alpha = linspace(1e-3,1,3)';
     modes = zN;
 
     actual = dispersionRelationWIBL2STFFourier(domain, hbar, F1bar, F2bar, params, alpha, modes);
 
-    verifySize(testCase, actual, [100,zN]);
+    verifySize(testCase, actual, [3,zN]);
 
 end
 
@@ -235,11 +235,11 @@ function testWIBL2DROutputSize(testCase)
     F1bar = data.y(1+end/3:2/3*end);
     F2bar = data.y(1+2*end/3:end);
 
-    alpha = linspace(1e-3,1)';
+    alpha = linspace(1e-3,1,3)';
     modes = zN;
 
     actual = dispersionRelationWIBL2Fourier(domain, hbar, F1bar, F2bar, params, alpha, modes);
 
-    verifySize(testCase, actual, [100,zN]);
+    verifySize(testCase, actual, [3,zN]);
 
 end
