@@ -160,7 +160,7 @@ function testFiniteDifferenceFbenney2dConvergenceBetweenResolutions(testCase)
         % plot(resolutions(2:end), log10(errNorm), 'o');
         % set(gca, 'Xscale', 'log')
 
-        actualOrder = -(gradient(log10(errNorm), log10(resolutions)));
+        actualOrder = -(diff(log10(errNorm.')) ./ diff(log10(resolutions(1:N-1))));
 
         %  mean(actualOrder)
         %  errNorm(end)
@@ -415,7 +415,7 @@ function testFiniteDifferenceWIBL1ConvergenceBetweenResolutions(testCase)
             expected = actual;
         end
 
-        actualOrder = -(gradient(log10(errNorm), log10(resolutions)));
+        actualOrder = -(gradient(log10(errNorm), log10(resolutions(1:N-1))));
 
         verifyTrue(testCase,all(actualOrder > expectedOrder - 9e-1))
     end
