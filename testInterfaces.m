@@ -40,6 +40,25 @@ function testInterfaceRivulet(testCase)
     verifyEqual(testCase, actual, expected);
 end
 
+function testInterfaceRivuletWIBL2(testCase)
+    x = setupX(1, 1, 2^8, 2^8);
+    rivulet_amplitude = 2e-1;
+    number_of_rivulets = 3;
+    noise_amplitude = 1e-4;
+
+    actual = irivuletWIBL2(x, rivulet_amplitude, number_of_rivulets, noise_amplitude);
+
+    h0 = 1 + 0 * x{1} - rivulet_amplitude * cos(2*pi/x{2}(end) * x{2} * number_of_rivulets);
+    f0 = 2/3 * h0;
+    g0 = 0 * x{1} + 0 * x{2};
+    y0 = [h0; f0; g0];
+    rng(0);
+    noise = noise_amplitude * (rand(size(y0)) - 1);
+    expected = y0 + noise;
+
+    verifyEqual(testCase, actual, expected);
+end
+
 function testInterfaceDoubleX(testCase)
     x = setupX(1, 1, 2^8, 2^8);
 
